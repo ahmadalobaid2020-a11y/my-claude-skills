@@ -8,6 +8,7 @@ Personal Claude Code skills.
 | `video-shorts` | Cut vertical 9:16 shorts from a long video, blur or crop framing, burned captions and title. |
 | `thumbnail` | YouTube thumbnails (1280x720) from HTML + Chromium, Arabic fonts, small-size preview check. |
 | `real-sfx` | Real recorded sound effects (own files or CC0 from Freesound) placed at timestamps and mixed under the voice. |
+| `openverse` | Openly licensed sounds and images from Openverse (CC0/CC), licence and credits kept per file. No API key. |
 | `audio-cleanup` | Denoise, de-ess, compress and normalise voice audio (YouTube -14 LUFS by default). |
 | `youtube-seo` | Titles, description, tags and real-timestamp chapters from a transcript. |
 | `social-post` | X/Instagram/TikTok/LinkedIn posts and threads from a video or text. |
