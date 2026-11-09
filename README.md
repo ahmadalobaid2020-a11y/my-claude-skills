@@ -12,7 +12,7 @@ Personal Claude Code skills.
 | `youtube-seo` | Titles, description, tags and real-timestamp chapters from a transcript. |
 | `social-post` | X/Instagram/TikTok/LinkedIn posts and threads from a video or text. |
 | `yt-dlp` | Download video, audio, subtitles and info with yt-dlp. |
-| `hypit` | Clone/produce videos with AI agents via SVML Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
+| `hypit` | Clone/produce videos with AI agents via SVML. Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
 
 Install: `./install.sh` (copies skills to `~/.claude/skills`, installs faster-whisper).
 Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium; yt-dlp is installed separately;
