@@ -1,0 +1,589 @@
+<title>لعبة سرعة الثقة</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<style>
+/* Layout: a game console — sticky HUD with a "trust speedometer", mode tabs, one centered stage per mode. RTL. */
+:root{
+  --bg:#EDF0F7; --surface:#FFFFFF; --surface-2:#F5F7FC; --ink:#141B33; --muted:#5B6482; --line:#D6DBEA;
+  --accent:#2F5BEA; --accent-ink:#FFFFFF; --good:#1E9A55; --bad:#D63A3A; --warn:#C97F06;
+  --good-soft:#E3F5EA; --bad-soft:#FCE7E7; --warn-soft:#FDF1DC;
+  --shadow:0 1px 2px rgba(20,27,51,.06),0 6px 20px rgba(20,27,51,.06);
+  --font-display:"Lalezar","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1222; --surface:#161D33; --surface-2:#1C2440; --ink:#EDF0FA; --muted:#9AA3C0; --line:#2A3354;
+  --accent:#7C9BFF; --accent-ink:#0D1222; --good:#3DD68C; --bad:#FF6B6B; --warn:#F5B53D;
+  --good-soft:#16352A; --bad-soft:#3A1D24; --warn-soft:#3A2E16;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1222; --surface:#161D33; --surface-2:#1C2440; --ink:#EDF0FA; --muted:#9AA3C0; --line:#2A3354;
+  --accent:#7C9BFF; --accent-ink:#0D1222; --good:#3DD68C; --bad:#FF6B6B; --warn:#F5B53D;
+  --good-soft:#16352A; --bad-soft:#3A1D24; --warn-soft:#3A2E16;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.app{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+
+/* HUD */
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+.brand b{font-family:var(--font-display);font-size:26px;font-weight:400;letter-spacing:0}
+.brand small{color:var(--muted);font-size:12px;letter-spacing:.06em;direction:ltr;text-align:right}
+.gauge{display:flex;align-items:center;gap:6px;margin-inline-start:auto}
+.gauge svg{width:92px;height:54px;display:block}
+.gauge .val{display:flex;flex-direction:column;line-height:1}
+.gauge .val b{font-family:var(--font-display);font-size:24px;font-weight:400;font-variant-numeric:tabular-nums}
+.gauge .val small{font-size:11px;color:var(--muted)}
+.stats{display:flex;gap:8px}
+.stat{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:4px 10px;text-align:center;min-width:58px}
+.stat b{display:block;font-family:var(--font-display);font-size:20px;font-weight:400;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat small{font-size:11px;color:var(--muted)}
+.stat.fire b{color:var(--warn)}
+.iconbtn{border:1px solid var(--line);background:var(--surface-2);border-radius:10px;width:40px;height:40px;font-size:18px}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:14px 0 6px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tab i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.stage{margin-top:12px}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;letter-spacing:0;text-wrap:balance;margin:0}
+h2{font-size:30px;line-height:1.2}
+h3{font-size:22px}
+.lead{color:var(--muted);margin:6px 0 18px;max-width:62ch}
+.en{direction:ltr;unicode-bidi:isolate;font-size:.82em;color:var(--muted);letter-spacing:.01em}
+
+/* Home */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:center;margin:8px 0 22px}
+.hero h1{font-size:clamp(34px,6vw,54px);line-height:1.1}
+.hero p{color:var(--muted);max-width:52ch}
+.pyramid{display:grid;grid-template-columns:repeat(13,1fr);gap:4px}
+.pyramid span{aspect-ratio:1/2.4;border-radius:6px;background:var(--c);max-width:100%;transform-origin:bottom;animation:rise .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*40ms)}
+@keyframes rise{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:6px;vertical-align:middle;background:var(--c)}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.mode{all:unset;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow);transition:transform .15s}
+.mode:hover{transform:translateY(-2px)}
+.mode:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mode .ic{flex:0 0 52px;height:52px;border-radius:12px;background:var(--c);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-size:26px}
+.mode h3{font-size:22px}
+.mode p{margin:2px 0 0;color:var(--muted);font-size:14px}
+
+/* Common */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:12px;padding:12px 22px;font-weight:700;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;border-radius:9px;padding:7px 14px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:var(--shadow);color:var(--accent)}
+.progress{display:flex;gap:5px;margin:14px 0}
+.progress span{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.progress span.ok{background:var(--good)} .progress span.no{background:var(--bad)} .progress span.now{background:var(--accent)}
+.toolbar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+
+/* Matching */
+.match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:14px}
+.col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.col h4{margin:0;font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.tile{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:start;min-height:56px;transition:transform .12s,background .2s,border-color .2s;line-height:1.5}
+.tile:hover:not(:disabled){border-color:var(--muted)}
+.tile.name{font-weight:700;display:flex;align-items:center;gap:10px}
+.tile.name .dot{width:12px;height:12px;border-radius:50%;background:var(--c);flex:0 0 auto}
+.tile.name .en{display:block;font-weight:400}
+.tile.sel{border-color:var(--c,var(--accent));box-shadow:0 0 0 4px color-mix(in srgb,var(--c,var(--accent)) 25%,transparent);transform:scale(1.02)}
+.tile.done{background:var(--c);border-color:var(--c);color:#fff;cursor:default}
+.tile.done .en{color:rgba(255,255,255,.85)}
+.tile.done .dot{background:#fff}
+.tile.text{font-size:15px}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* Quiz */
+.qcard{position:relative;overflow:hidden}
+.qcard .kind{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;padding:3px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.qcard .prompt{font-size:20px;font-weight:700;margin:12px 0 6px;text-wrap:pretty}
+.quote{border-inline-start:4px solid var(--accent);background:var(--surface-2);border-radius:10px;padding:12px 16px;margin:10px 0 16px;font-size:18px}
+.quote .en{display:block;margin-top:4px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:start;display:flex;align-items:center;gap:10px;font-weight:500;min-width:0}
+.opt .k{flex:0 0 28px;height:28px;border-radius:8px;background:var(--c,var(--surface-2));color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-size:16px}
+.opt:hover:not(:disabled){border-color:var(--muted)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.feedback{margin-top:14px;padding:12px 14px;border-radius:12px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.feedback.ok{background:var(--good-soft)} .feedback.no{background:var(--bad-soft)}
+.feedback p{margin:0;flex:1 1 280px;min-width:0}
+
+/* Sort */
+.bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.bin{border:0;border-radius:14px;padding:16px 10px;color:#fff;font-family:var(--font-display);font-size:22px;line-height:1.2;transition:transform .12s}
+.bin small{display:block;font-family:var(--font-body);font-size:12px;opacity:.9}
+.bin:hover:not(:disabled){transform:translateY(-2px)}
+.bin:disabled{opacity:.45;cursor:default}
+.bin.picked{opacity:1;outline:4px solid var(--ink);outline-offset:2px}
+.b-true{background:#1E9A55} .b-opp{background:#D63A3A} .b-cf{background:#C27A06}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:var(--c);color:#fff;font-weight:700}
+
+/* Scenarios */
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.chip .n{width:24px;height:24px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,var(--surface))}
+.chip.hit{border-color:var(--good);background:var(--good-soft)}
+.chip.miss{border-style:dashed;border-color:var(--good)}
+.chip.err{border-color:var(--bad);background:var(--bad-soft);text-decoration:line-through}
+.chip:disabled{cursor:default}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.flip{all:unset;cursor:pointer;perspective:900px;min-height:250px;display:block}
+.flip:focus-visible .inner{outline:3px solid var(--accent);outline-offset:3px}
+.flip .inner{position:relative;width:100%;height:100%;min-height:250px;transition:transform .5s;transform-style:preserve-3d;border-radius:var(--r)}
+.flip.on .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r);padding:16px;display:flex;flex-direction:column;overflow:auto}
+.front{background:var(--c);color:#fff;justify-content:space-between}
+.front .num{font-family:var(--font-display);font-size:44px;line-height:1;opacity:.9}
+.front h3{font-size:28px}
+.front .en{color:rgba(255,255,255,.85);font-size:14px}
+.front .grp{font-size:12px;font-weight:700;letter-spacing:.05em;background:rgba(255,255,255,.2);border-radius:999px;padding:3px 10px;align-self:flex-start}
+.back{background:var(--surface);border:2px solid var(--c);transform:rotateY(180deg);font-size:13.5px;gap:6px}
+.back b{color:var(--c);font-size:12px;letter-spacing:.04em}
+.back p{margin:0}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+
+/* End screen */
+.end{text-align:center;padding:30px 20px}
+.stars{font-size:44px;letter-spacing:6px;margin:10px 0;color:var(--warn)}
+.stars .off{color:var(--line)}
+.end .big{font-family:var(--font-display);font-size:56px;line-height:1}
+
+canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
+
+@media (max-width:640px){
+  .hero{grid-template-columns:1fr}
+  .match{grid-template-columns:1fr 1fr;gap:8px}
+  .tile{padding:10px;font-size:14px}
+  .tile.text{font-size:13px}
+  .opts{grid-template-columns:1fr}
+  .bin{font-size:18px;padding:12px 6px}
+  .stats .stat{min-width:48px;padding:3px 6px}
+  .gauge svg{width:72px;height:44px}
+  .brand b{font-size:22px}
+  h2{font-size:25px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" dir="rtl" lang="ar">
+  <header class="hud">
+    <div class="brand"><b>سرعة الثقة</b><small>SPEED OF TRUST · GAME</small></div>
+    <div class="gauge" title="مؤشر سرعة الثقة: نسبة إجاباتك الصحيحة">
+      <svg viewBox="0 0 100 58" aria-hidden="true">
+        <path d="M10 52 A40 40 0 0 1 90 52" fill="none" stroke="var(--line)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gArc" d="M10 52 A40 40 0 0 1 90 52" fill="none" stroke="var(--good)" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+        <g id="gNeedle" style="transform-origin:50px 52px;transition:transform .6s cubic-bezier(.2,.8,.2,1)"><line x1="50" y1="52" x2="50" y2="18" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></g>
+        <circle cx="50" cy="52" r="5" fill="var(--ink)"/>
+      </svg>
+      <div class="val"><b id="gVal">0</b><small>سرعة الثقة ٪</small></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sScore">0</b><small>النقاط</small></div>
+      <div class="stat fire"><b id="sStreak">0</b><small>متتالية</small></div>
+      <div class="stat"><b id="sBest">0</b><small>الأفضل</small></div>
+    </div>
+    <button class="iconbtn" id="mute" aria-label="تشغيل الصوت أو كتمه" title="الصوت">🔊</button>
+  </header>
+
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main class="stage" id="stage"></main>
+</div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+/* ---------- DATA (from the Trust Action Cards) ---------- */
+const G = {char:{ar:"الشخصية",en:"Character"}, comp:{ar:"الكفاءة",en:"Competence"}, both:{ar:"الاثنان معًا",en:"Both"}};
+const B = [
+ {id:1,g:"char",c:"#E5484D",ar:"تحدّث بصدق",en:"Talk Truthfully",
+  def:"قل الحقيقة كاملة. كن صادقًا وواقعيًا، استخدم لغة بسيطة، وسمِّ الأشياء بأسمائها، ودع الناس يعرفون موقفك.",
+  opp:"الكذب أو الخداع.",
+  cf:"تلميع الكلام والمبالغة و«التجميل»، أو حجب المعلومات والمجاملة. قول الحقيقة تقنيًا مع ترك انطباع خاطئ.",
+  ph:[["هكذا أرى الموقف...","Here's how I see the situation..."],["هذه هي الحقائق كما أراها...","These are the facts as I see them..."],["أحترمك وأريد أن أكون صريحًا معك.","I respect you, and I want to be direct with you."],["دعني أخبرك بما لاحظته...","Let me tell you what I've observed..."]]},
+ {id:2,g:"char",c:"#EA6A12",ar:"أظهِر الاحترام",en:"Demonstrate Respect",
+  def:"اهتمّ بالآخرين بصدق وأظهر ذلك. قدّر الناس مهما كان دورهم، خاصة من لا يستطيعون تقديم شيء لك، وأظهر اللطف في التفاصيل الصغيرة.",
+  opp:"عدم احترام الآخرين أو الاهتمام بهم، واستصغارهم أو تجاهلهم تمامًا.",
+  cf:"تصنّع الاحترام. احترام من يستطيعون نفعك فقط دون غيرهم، وتحمّل الآخرين دون تقبّلهم فعلًا.",
+  ph:[["أحترمك وأقدّرك.","I respect and appreciate you."],["شكرًا على كل ما تقوم به.","Thank you for all you're doing."],["ما رأيك أنت؟","What is your opinion?"],["ترى الأمور بشكل مختلف، وأحتاج أن أستمع إليك.","You see things differently—I need to listen to you."]]},
+ {id:3,g:"char",c:"#D6409F",ar:"اصنع الشفافية",en:"Create Transparency",
+  def:"كن منفتحًا وواضحًا وأصيلًا. أعلن نيتك، واشرح «لماذا» وراء «ماذا»، ومِلْ إلى الإفصاح.",
+  opp:"الإخفاء والتستّر والتعتيم.",
+  cf:"الأجندات الخفية، وإظهار الأشياء على غير حقيقتها، و«التظاهر» بدل «الكينونة»، وادّعاء الانفتاح.",
+  ph:[["نيتي هي...","My intent is..."],["دعني أريك البيانات...","Let me show you the data..."],["بسبب الاعتبارات القانونية، هذا كل ما أستطيع قوله...","Because of the legal/compliance considerations, this is all I can say..."],["الأمور لا تسير جيدًا الآن.","Things aren't going well right now."]]},
+ {id:4,g:"char",c:"#C2365A",ar:"صحّح الأخطاء",en:"Right Wrongs",
+  def:"أصلح الأمور عندما تخطئ. اعترف بأخطائك بتواضع، واعتذر بسرعة وصدق، وعوّض وزِد قليلًا، والتزم بالتعلّم.",
+  opp:"إنكار الأخطاء أو تبريرها.",
+  cf:"التستّر على الأخطاء وإخفاؤها بدل الاعتراف بها وإصلاحها، والتصرّف بدافع الكبرياء، وعدم الاعتراف إلا عند الانكشاف.",
+  ph:[["أنا آسف.","I'm sorry."],["كنت مخطئًا بشأن...","I was wrong about..."],["ماذا يمكنني أن أفعل لإصلاح الأمر؟","What can I do to make this right?"],["كيف نتعلّم من هذا الموقف؟","How can we learn from this situation?"]]},
+ {id:5,g:"char",c:"#B5730A",ar:"أظهِر الولاء",en:"Show Loyalty",
+  def:"انسب الفضل لأصحابه، وتحدّث عن الناس كأنهم حاضرون، ودافع عمّن ليسوا موجودين ليتحدثوا عن أنفسهم.",
+  opp:"نسب الفضل لنفسك أو خيانة الآخرين.",
+  cf:"ازدواجية الوجه: مدح الناس في حضورهم والتقليل من إسهامهم في غيابهم، والكلام المعسول أمامهم والذم خلفهم، والنميمة.",
+  ph:[["أريد أن أشكر زميلنا على هذا الإنجاز.","I want to acknowledge ___ for this accomplishment."],["يجب أن نتحدث عن هذا عندما يكون الشخص حاضرًا.","We should talk about this when this person is here."],["ما الذي يصبّ في مصلحة هذا الشخص؟","What is in the best interest of this person?"]]},
+ {id:6,g:"comp",c:"#0D74CE",ar:"حقّق النتائج",en:"Deliver Results",
+  def:"أدِّ باستمرار، وأنجز الأشياء الصحيحة، وابنِ سجلًا من النتائج المرغوبة والمستدامة.",
+  opp:"الأداء الضعيف أو الفشل في التسليم.",
+  cf:"نتائج قصيرة المدى غير مستدامة، وتقديم أنشطة بدل نتائج، و«العمل الوهمي» بدل العمل الحقيقي.",
+  ph:[["ما النتائج المحددة المتوقعة منا؟ ومتى؟","What specific results are we expected to deliver? By when?"],["كيف سنقيس النجاح؟","How will we measure success?"],["بحلول الموعد النهائي ألتزم بتسليم...","By the deadline, I commit to deliver..."],["أنهينا العمل. هل هذا ما توقعته؟","We've finished. Is this what you expected?"]]},
+ {id:7,g:"comp",c:"#0F9484",ar:"تحسّن باستمرار",en:"Get Better",
+  def:"انمُ وتحسّن باستمرار، وكن متعلّمًا دائمًا، وتعلّم من الإخفاقات، واطلب التغذية الراجعة وتقبّلها وتصرّف بناءً عليها.",
+  opp:"التراجع، وادّعاء معرفة كل شيء، وفقدان القيمة والأهمية.",
+  cf:"تحسينات «موضة الشهر» التي لا تدوم، وإقحام كل شيء فيما تجيده، والحديث عن النمو دون نمو فعلي.",
+  ph:[["أين يمكنني أن أتحسّن؟","Where can I get better?"],["كيف أبلي الآن؟","How am I doing now?"],["كيف سنحصل على تغذية راجعة منتظمة؟","How will we get regular feedback?"],["ما مخاطر عدم فعل أي شيء؟","What are the risks of doing nothing?"]]},
+ {id:8,g:"comp",c:"#3E63DD",ar:"واجه الواقع",en:"Confront Reality",
+  def:"تعامل مع القضايا مباشرة، حتى «المسكوت عنها». اعترف بما لم يُقل، وعالج الأمور الصعبة، وبادر بشجاعة بغض النظر عن المنصب.",
+  opp:"تجاهل الواقع أو التصرّف كأنه غير موجود؛ الإنكار.",
+  cf:"التظاهر بمواجهة الواقع مع التهرّب منه فعليًا، أو الاعتراف به دون فعل أي شيء حياله.",
+  ph:[["لنكن واقعيين.","Let's get real."],["ما الذي لا تقوله ويجب أن يُقال؟","What are you not saying that needs to be said?"],["ما الأمر المسكوت عنه هنا؟","What is the “undiscussable” here?"],["ماذا سيحدث إن لم نواجه هذه القضية مباشرة؟","What will happen if we don't face this issue directly?"]]},
+ {id:9,g:"comp",c:"#00889E",ar:"وضّح التوقعات",en:"Clarify Expectations",
+  def:"شارك توقعاتك، واتفق مع الآخرين على توقعات مشتركة، وأعِد التفاوض عليها عند الحاجة إن أمكن.",
+  opp:"ترك التوقعات غير محددة أو غامضة.",
+  cf:"تخمين توقعات الآخرين أو افتراضها، وعدم تحديد التفاصيل (النتائج، المواعيد، الموارد)، وفرض التوقعات.",
+  ph:[["ما الذي تريدني أن أسلّمه بالضبط؟ ومتى؟","What exactly do you want me to deliver? By when?"],["ما الأهم لدينا: الجودة أم السرعة أم التكلفة؟","What do we care about most—quality, speed, or cost?"],["ما الذي فهمته من هذه المحادثة؟","What have you understood from this conversation?"],["من غيرنا يحتاج أن يعرف بهذا؟","Who else needs to know about this?"]]},
+ {id:10,g:"comp",c:"#23875A",ar:"مارِس المساءلة",en:"Practice Accountability",
+  def:"تحمّل مسؤولية النتائج. حاسب نفسك أولًا ثم ساعد الآخرين على محاسبة أنفسهم، وحدّد كيف ومتى ستقيّمون سير الأمور.",
+  opp:"عدم تحمّل المسؤولية: «ليس ذنبي».",
+  cf:"توجيه أصابع الاتهام ولوم الآخرين: «إنه ذنبهم»، وحماية النفس والآخرين من العواقب.",
+  ph:[["أنا مسؤول عن...","I'm responsible for..."],["سأتحمّل مسؤولية ذلك.","I'll take responsibility for that."],["كيف ومتى سنجتمع لمتابعة التقدّم؟","How and when will we meet to track progress?"],["هل حققنا النتائج المتوقعة؟","Did we deliver the expected results?"]]},
+ {id:11,g:"both",c:"#8E4EC6",ar:"استمع أولًا",en:"Listen First",
+  def:"استمع قبل أن تتكلّم. اسعَ إلى الفهم أولًا، وقُد بالفضول للوصول إلى فهم أفضل.",
+  opp:"التحدّث أولًا والاستماع أخيرًا، أو عدم الاستماع إطلاقًا.",
+  cf:"الاستماع دون فهم أو افتراض أنك تفهم مسبقًا، والاستماع فقط لتجهيز ردّك، والتظاهر بالاستماع.",
+  ph:[["ما أسمعك تقوله هو...","What I hear you saying is..."],["دعني أتأكد أنني أفهم ما تحاول قوله...","Let me make sure I understand what you're trying to say..."],["هل هناك ما تودّ إضافته؟","Is there anything you'd add to what you've said?"]]},
+ {id:12,g:"both",c:"#6E56CF",ar:"أوفِ بالتزاماتك",en:"Keep Commitments",
+  def:"قل بوضوح ما ستفعله ثم افعله. التزم بوعي وأوفِ بالتزامك تقريبًا بأي ثمن، وإن تعذّر ذلك فأبلغ الطرف الآخر.",
+  opp:"نقض الالتزامات أو خُلف الوعود.",
+  cf:"الوعد بالكثير وتسليم القليل، والتزامات غامضة لا يمكن محاسبتك عليها، والخوف من النقض لدرجة عدم الالتزام أصلًا.",
+  ph:[["أعدك بأن...","I promise to..."],["يمكنك الاعتماد عليّ في...","You can count on me to..."],["هل هذا التزام أريده حقًا؟","Is this a commitment I really want to make?"]]},
+ {id:13,g:"both",c:"#A43FB3",ar:"امنح الثقة",en:"Extend Trust",
+  def:"أظهر ميلك إلى الثقة بمنحها للآخرين بدرجات: بسخاء لمن استحقها، وبشروط لمن يسعى لاستحقاقها، مع مراعاة الموقف والمخاطر والمصداقية.",
+  opp:"حجب الثقة.",
+  cf:"ثقة «زائفة»: منح المسؤولية دون الصلاحية أو الموارد، أو قول «أثق بك» ثم الإدارة التفصيلية والتحويم فوق الشخص.",
+  ph:[["أنا أؤمن بك.","I believe in you."],["سجلّك يمنحني الثقة.","Your track record gives me confidence."],["نحن نعتمد عليك.","We're depending on you."],["يمكنك التحدث معي في هذا الأمر في أي وقت.","You can talk to me about this anytime."]]}
+];
+const CORES = [
+ {id:"I",ar:"النزاهة",en:"Integrity",q:"هل أنا متّسق؟",g:"char",c:"#E5484D",desc:"أن تكون صادقًا بعمق وأصيلًا، وتشمل الاتساق والتواضع والشجاعة."},
+ {id:"N",ar:"النية",en:"Intent",q:"ما أجندتي؟",g:"char",c:"#D6409F",desc:"دافعك وأجندتك. أعلن نيتك بوضوح كي لا يشكّ فيها الآخرون، وافترض حسن نيتهم."},
+ {id:"C",ar:"القدرات",en:"Capabilities",q:"هل أنا مواكب؟",g:"comp",c:"#0D74CE",desc:"وسيلتك لتحقيق النتائج: المواهب والاتجاهات والمهارات والمعرفة والأسلوب."},
+ {id:"R",ar:"النتائج",en:"Results",q:"ما سجلّي؟",g:"comp",c:"#23875A",desc:"حصيلة أدائك السابق والحالي والمتوقع."}
+];
+const SIT = [
+ ["أحتاج إلى تفويض مهمة لشخص ما",[13,9,10],"امنح الثقة"],
+ ["أحتاج إلى محاسبة الآخرين",[1,2,10,12],"امنح الثقة"],
+ ["أريد إلهام الآخرين ليبذلوا أفضل ما لديهم",[5,9,10,13],"امنح الثقة"],
+ ["شخص ما لا يؤدي عمله جيدًا",[8,11,1,9,13],"امنح الثقة"],
+ ["أفتقر إلى الثقة في زميل عمل",[5,9,1,13],"امنح الثقة"],
+ ["طُلب مني العمل مع شخص لا أعرفه جيدًا",[2,3,11,9,13],"امنح الثقة"],
+ ["الآخرون لا يمنحونني الثقة",[11,2,12,6,10],"امنح الثقة"],
+ ["أحتاج إلى استعادة الثقة في علاقة متضرّرة",[2,4,12,10],"استعِد الثقة"],
+ ["شخص ما لم يفِ بالتزام مهم",[8,11,2,1],"استعِد الثقة"],
+ ["أنا لم أفِ بالتزام مهم",[4,12,6,10],"استعِد الثقة"],
+ ["شخص نسب لنفسه فضل شيء قمت به",[2,3,1],"استعِد الثقة"],
+ ["خذلنا العملاء",[1,3,4,9,12,10],"استعِد الثقة"],
+ ["أشعر أنه تم تجاوزي في ترقية أو مكافأة",[2,1,5,9,10],"استعِد الثقة"],
+ ["أُلام على شيء ليس ذنبي",[3,2,10,9,12],"استعِد الثقة"],
+ ["فريقنا يعاني من مشكلة في المصداقية",[10,4,6,3,7],"استعِد الثقة"],
+ ["أحدهم أساء فهم بريدي أو رسائلي",[2,3,9,7,10],"استعِد الثقة"],
+ ["أواجه مشكلات مع زميل عمل",[1,2,11,5],"استعِد الثقة"],
+ ["المدير لا يثق بي",[11,9,10,6,7],"استعِد الثقة"],
+ ["أنا لا أثق بالمدير",[2,8,1,9,10],"استعِد الثقة"],
+ ["التشاؤم يتزايد بسبب نقص الثقة",[8,3,5,12,13],"استعِد الثقة"],
+ ["أحتاج إلى التفاوض على اتفاق مع شخص ما",[11,1,2,9,12],"طوّر الثقة"],
+ ["أشعر بالإساءة",[11,2,1,5],"طوّر الثقة"],
+ ["عميل يتصرّف بشكل غير منطقي",[2,11,9,12],"طوّر الثقة"],
+ ["أشعر بالإرهاق والضغط في العمل",[8,3,9],"طوّر الثقة"],
+ ["موظف جديد ينضم إلى فريقنا",[2,3,9,13],"طوّر الثقة"],
+ ["حصلت على قائد جديد",[2,6,10,9,13],"طوّر الثقة"],
+ ["أريد كسب ثقة شخص يختلف معي في الآراء",[2,11,1,5,13],"طوّر الثقة"],
+ ["شخص ما يقوّض عملي",[2,11,3,8,10],"طوّر الثقة"],
+ ["الناس من حولي بدؤوا يتحدثون عن شخص آخر",[8,5,2],"طوّر الثقة"],
+ ["لست متأكدًا مما يتوقعه الآخرون مني",[3,11,9,10],"طوّر الثقة"],
+ ["الناس لا يتحدثون عن القضايا المهمة",[8,2,1,3],"طوّر الثقة"],
+ ["أشعر بأنني غير مفهوم",[1,3,11],"طوّر الثقة"]
+];
+const byId = id => B.find(b=>b.id===id);
+const AR_NUM = n => String(n).replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
+
+/* ---------- STATE ---------- */
+const hot = window.claude && window.claude.hot;
+const S = {score:0,answered:0,correct:0,streak:0,best:0,mode:"home",muted:false};
+try{ S.best = +localStorage.getItem("sot-best")||0; S.muted = localStorage.getItem("sot-muted")==="1"; }catch(e){}
+if(hot && hot.snapshot){ try{ hot.snapshot(()=>({score:S.score,answered:S.answered,correct:S.correct,streak:S.streak,mode:S.mode})); }catch(e){} }
+
+const $ = s => document.querySelector(s);
+const el = (tag,attrs={},html="") => { const e=document.createElement(tag); for(const k in attrs){ if(k==="style") e.style.cssText=attrs[k]; else if(k.startsWith("on")) e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); } if(html) e.innerHTML=html; return e; };
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = (a,n) => shuffle(a).slice(0,n);
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+/* ---------- SOUND ---------- */
+let AC=null;
+function tone(freqs,dur=.12,type="sine"){
+  if(S.muted) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach((f,i)=>{ const o=AC.createOscillator(), g=AC.createGain(); o.type=type; o.frequency.value=f;
+      const t=AC.currentTime+i*dur*.8; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.18,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      o.connect(g).connect(AC.destination); o.start(t); o.stop(t+dur+.02); });
+  }catch(e){}
+}
+const sGood=()=>tone([660,880],.12), sBad=()=>tone([220,180],.16,"triangle"), sWin=()=>tone([523,659,784,1047],.14), sClick=()=>tone([520],.05);
+$("#mute").addEventListener("click",()=>{S.muted=!S.muted; $("#mute").textContent=S.muted?"🔇":"🔊"; try{localStorage.setItem("sot-muted",S.muted?"1":"0")}catch(e){} });
+$("#mute").textContent=S.muted?"🔇":"🔊";
+
+/* ---------- HUD ---------- */
+function hud(){
+  $("#sScore").textContent=AR_NUM(S.score); $("#sStreak").textContent=AR_NUM(S.streak); $("#sBest").textContent=AR_NUM(S.best);
+  const pct = S.answered? Math.round(S.correct/S.answered*100):0;
+  $("#gVal").textContent=AR_NUM(pct);
+  $("#gArc").setAttribute("stroke-dasharray",pct+" 100");
+  $("#gArc").setAttribute("stroke", pct>=75?"var(--good)":pct>=45?"var(--warn)":"var(--bad)");
+  $("#gNeedle").style.transform=`rotate(${-90+pct*1.8}deg)`;
+}
+function award(ok,pts=10){
+  S.answered++;
+  if(ok){ S.correct++; S.streak++; S.score += pts + Math.min(S.streak-1,5)*2; sGood(); }
+  else { S.streak=0; sBad(); }
+  if(S.score>S.best){ S.best=S.score; try{localStorage.setItem("sot-best",S.best)}catch(e){} }
+  hud();
+}
+
+/* ---------- CONFETTI ---------- */
+const fx=$("#fx"), ctx=fx.getContext("2d"); let parts=[], raf=0;
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  fx.width=innerWidth*devicePixelRatio; fx.height=innerHeight*devicePixelRatio;
+  const cols=B.map(b=>b.c);
+  for(let i=0;i<160;i++) parts.push({x:fx.width/2+(Math.random()-.5)*fx.width*.3,y:fx.height*.35,vx:(Math.random()-.5)*16*devicePixelRatio,vy:(-Math.random()*16-4)*devicePixelRatio,s:(5+Math.random()*7)*devicePixelRatio,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:rnd(cols),life:0});
+  if(!raf) loop();
+}
+function loop(){
+  ctx.clearRect(0,0,fx.width,fx.height);
+  parts.forEach(p=>{p.vy+=.45*devicePixelRatio;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life++;
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore();});
+  parts=parts.filter(p=>p.y<fx.height+40 && p.life<240);
+  raf = parts.length? requestAnimationFrame(loop):0;
+  if(!raf) ctx.clearRect(0,0,fx.width,fx.height);
+}
+
+/* ---------- NAV ---------- */
+const MODES=[
+ {k:"home",ar:"الرئيسية",c:"#5B6482"},
+ {k:"match",ar:"المطابقة",c:"#0D74CE",ic:"⇄",d:"صِل كل سلوك بتعريفه أو عكسه أو صورته الزائفة. الأزواج الصحيحة تتلوّن بلون السلوك."},
+ {k:"quiz",ar:"اختيار من متعدد",c:"#E5484D",ic:"؟",d:"عشرة أسئلة متنوعة: عبارات «ماذا تقول»، الصور الزائفة، الأضداد، والجوانب الأربعة للمصداقية."},
+ {k:"sort",ar:"حقيقي أم زائف؟",c:"#C27A06",ic:"⚖",d:"اقرأ الوصف وقرّر: هل هو السلوك الحقيقي، أم عكسه، أم صورته الزائفة؟"},
+ {k:"sit",ar:"مواقف العمل",c:"#8E4EC6",ic:"✦",d:"موقف حقيقي من بيئة العمل: اختر كل السلوكيات التي توصي بها البطاقات لهذا الموقف."},
+ {k:"cards",ar:"بطاقات المراجعة",c:"#23875A",ic:"❖",d:"اقلب بطاقات السلوكيات الثلاثة عشر والجوانب الأربعة لمراجعة كل شيء قبل اللعب."}
+];
+function nav(){
+  const t=$("#tabs"); t.innerHTML="";
+  MODES.forEach(m=>{ const b=el("button",{class:"tab",role:"tab","aria-selected":S.mode===m.k?"true":"false",style:`--c:${m.c}`,onclick:()=>go(m.k)},`<i></i>${m.ar}`); t.appendChild(b); });
+}
+function go(k){ S.mode=k; sClick(); nav(); render(); window.scrollTo({top:0,behavior:"smooth"}); try{ if(location.hash!=="#"+k) history.replaceState(null,"","#"+k);}catch(e){} }
+function render(){ const st=$("#stage"); st.innerHTML=""; ({home,match,quiz,sort,sit,cards})[S.mode](st); }
+
+function endScreen(st,{title,correct,total,again}){
+  const ratio = correct/total, stars = ratio>=.9?3:ratio>=.6?2:ratio>0?1:0;
+  const p=el("div",{class:"panel end"});
+  p.innerHTML=`<h2>${title}</h2>
+   <div class="stars">${[0,1,2].map(i=>`<span class="${i<stars?"":"off"}">★</span>`).join("")}</div>
+   <div class="big">${AR_NUM(correct)} / ${AR_NUM(total)}</div>
+   <p class="lead" style="margin-inline:auto">${stars===3?"ممتاز! ثقتك تسير بأقصى سرعة.":stars===2?"أداء جيد. جولة أخرى وتصل للقمة.":"البداية دائمًا من الذات. راجع البطاقات ثم حاول مجددًا."}</p>`;
+  const r=el("div",{class:"row",style:"justify-content:center"});
+  r.append(el("button",{class:"btn",onclick:again},"جولة جديدة"), el("button",{class:"btn ghost",onclick:()=>go("cards")},"راجع البطاقات"), el("button",{class:"btn ghost",onclick:()=>go("home")},"الرئيسية"));
+  p.appendChild(r); st.appendChild(p);
+  if(stars>=2){ confetti(); sWin(); }
+}
+
+/* ---------- HOME ---------- */
+function home(st){
+  const h=el("section",{class:"hero"});
+  h.innerHTML=`<div><h1>تعلّم سلوكيات الثقة الثلاثة عشر باللعب</h1>
+    <p>مبنية على بطاقات «سرعة الثقة»: الجوانب الأربعة للمصداقية، والسلوكيات الثلاثة عشر عالية الثقة، وأضدادها وصورها الزائفة، ومواقف العمل الحقيقية. كل إجابة صحيحة ترفع مؤشر سرعة الثقة في الأعلى.</p>
+    <div class="legend"><span><i style="--c:#E5484D"></i>الشخصية (١–٥)</span><span><i style="--c:#0D74CE"></i>الكفاءة (٦–١٠)</span><span><i style="--c:#8E4EC6"></i>الاثنان معًا (١١–١٣)</span></div></div>
+    <div><div class="pyramid">${B.map((b,i)=>`<span title="${b.ar}" style="--c:${b.c};--i:${i}"></span>`).join("")}</div></div>`;
+  st.appendChild(h);
+  const g=el("div",{class:"modes"});
+  MODES.slice(1).forEach(m=>{ g.appendChild(el("button",{class:"mode",style:`--c:${m.c}`,onclick:()=>go(m.k)},`<span class="ic">${m.ic}</span><span><h3>${m.ar}</h3><p>${m.d}</p></span>`)); });
+  st.appendChild(g);
+}
+
+/* ---------- MATCHING ---------- */
+const MK={def:"التعريف",opp:"العكس",cf:"الصورة الزائفة",core:"الجوانب الأربعة"};
+let matchKind="def";
+function match(st){
+  const tb=el("div",{class:"toolbar"});
+  tb.innerHTML=`<div><h2>المطابقة</h2><p class="lead" style="margin-bottom:0">اختر سلوكًا من العمود الأول، ثم اختر الوصف الذي يطابقه.</p></div>`;
+  const seg=el("div",{class:"seg",role:"group","aria-label":"نوع المطابقة"});
+  Object.keys(MK).forEach(k=>seg.appendChild(el("button",{"aria-pressed":matchKind===k?"true":"false",onclick:()=>{matchKind=k;render();}},MK[k])));
+  tb.appendChild(seg); st.appendChild(tb);
+
+  const items = matchKind==="core" ? CORES.map(c=>({key:c.id,c:c.c,ar:c.ar,en:c.en,text:`<b>${c.q}</b> ${c.desc}`}))
+    : pick(B,5).map(b=>({key:b.id,c:b.c,ar:b.ar,en:b.en,text:b[matchKind]}));
+  let sel=null, left=items.length, miss=0;
+  const prog=el("div",{class:"progress"}); items.forEach(()=>prog.appendChild(el("span"))); st.appendChild(prog);
+  const wrap=el("div",{class:"match"});
+  const cA=el("div",{class:"col"},"<h4>السلوك</h4>"), cB=el("div",{class:"col"},`<h4>${MK[matchKind]}</h4>`);
+  const names = shuffle(items).map(it=>{ const b=el("button",{class:"tile name",style:`--c:${it.c}`},`<span class="dot"></span><span>${it.ar}<span class="en">${it.en}</span></span>`); b.dataset.k=it.key; b.onclick=()=>{ if(b.classList.contains("done"))return; sClick(); names.forEach(n=>n.classList.remove("sel")); b.classList.add("sel"); sel=b; }; cA.appendChild(b); return b; });
+  shuffle(items).forEach(it=>{ const t=el("button",{class:"tile text"},it.text); t.onclick=()=>{
+      if(t.classList.contains("done")) return;
+      if(!sel){ t.classList.add("shake"); setTimeout(()=>t.classList.remove("shake"),350); return; }
+      if(sel.dataset.k==String(it.key)){
+        award(true); [sel,t].forEach(x=>{x.classList.remove("sel");x.classList.add("done");x.style.setProperty("--c",it.c);x.setAttribute("aria-disabled","true")});
+        prog.children[items.length-left].className="ok"; sel=null; left--;
+        if(!left) setTimeout(()=>{ st.innerHTML=""; endScreen(st,{title:"اكتملت المطابقة!",correct:Math.max(items.length-miss,0),total:items.length,again:render}); },500);
+      } else { award(false); miss++; [sel,t].forEach(x=>{x.classList.add("shake");setTimeout(()=>x.classList.remove("shake"),350)}); }
+    }; cB.appendChild(t); });
+  wrap.append(cA,cB); st.appendChild(wrap);
+}
+
+/* ---------- QUIZ ---------- */
+function makeQ(){
+  const type = rnd(["ph","ph","cf","opp","grp","core","def"]);
+  if(type==="core"){ const c=rnd(CORES); return {kind:"الجوانب الأربعة للمصداقية",prompt:"أي جانب من جوانب المصداقية يسأل:",quote:`«${c.q}» — ${c.desc}`,
+      opts:shuffle(CORES).map(o=>({label:`${o.ar} <span class="en">${o.en}</span>`,c:o.c,ok:o.id===c.id})),why:`${c.ar} (${c.en}) جانب من جوانب ${G[c.g].ar}.`}; }
+  const b=rnd(B);
+  if(type==="grp"){ return {kind:"الإطار",prompt:`إلى أي جانب ينتمي سلوك «${b.ar}»؟`,
+      opts:["char","comp","both"].map(g=>({label:`${G[g].ar} <span class="en">${G[g].en}</span>`,c:{char:"#E5484D",comp:"#0D74CE",both:"#8E4EC6"}[g],ok:g===b.g})),
+      why:`السلوكيات ١–٥ تنبع من الشخصية، و٦–١٠ من الكفاءة، و١١–١٣ مزيج من الاثنين. «${b.ar}» رقم ${AR_NUM(b.id)}.`}; }
+  const opts = shuffle([b,...pick(B.filter(x=>x.id!==b.id),3)]).map(o=>({label:`${o.ar} <span class="en">${o.en}</span>`,c:o.c,ok:o.id===b.id}));
+  if(type==="ph"){ const p=rnd(b.ph); return {kind:"عبارات «ماذا تقول»",prompt:"أي سلوك تمارسه عندما تقول:",quote:`«${p[0]}»<span class="en">"${p[1]}"</span>`,opts,why:`هذه من عبارات سلوك «${b.ar}».`}; }
+  if(type==="cf") return {kind:"الصورة الزائفة",prompt:"هذا الوصف هو الصورة الزائفة (Counterfeit) لأي سلوك؟",quote:b.cf,opts,why:`الصورة الزائفة لـ«${b.ar}» تبدو كالسلوك لكنها تهدم الثقة.`};
+  if(type==="opp") return {kind:"العكس",prompt:"هذا هو عكس (Opposite) أي سلوك؟",quote:b.opp,opts,why:`عكس «${b.ar}»: ${b.opp}`};
+  return {kind:"التعريف",prompt:"أي سلوك يصفه هذا التعريف؟",quote:b.def,opts,why:`هذا تعريف «${b.ar}».`};
+}
+function quiz(st){
+  const N=10, qs=[]; const seen=new Set();
+  while(qs.length<N){ const q=makeQ(); if(seen.has(q.quote+q.prompt)) continue; seen.add(q.quote+q.prompt); qs.push(q); }
+  let i=0, right=0; const res=[];
+  const head=el("div",{class:"toolbar"},`<div><h2>اختيار من متعدد</h2><p class="lead" style="margin-bottom:0">عشرة أسئلة. المتتالية الصحيحة تضاعف نقاطك.</p></div>`);
+  const prog=el("div",{class:"progress"}); const box=el("div");
+  st.append(head,prog,box);
+  function draw(){
+    prog.innerHTML=qs.map((_,k)=>`<span class="${res[k]===true?"ok":res[k]===false?"no":k===i?"now":""}"></span>`).join("");
+    const q=qs[i]; box.innerHTML="";
+    const card=el("div",{class:"panel qcard"});
+    card.innerHTML=`<span class="kind">${q.kind} · ${AR_NUM(i+1)}/${AR_NUM(N)}</span><div class="prompt">${q.prompt}</div>${q.quote?`<div class="quote">${q.quote}</div>`:""}`;
+    const os=el("div",{class:"opts"}); const letters="أبجد";
+    q.opts.forEach((o,k)=>{ const b=el("button",{class:"opt",style:`--c:${o.c}`},`<span class="k">${letters[k]}</span><span>${o.label}</span>`);
+      b.onclick=()=>{ [...os.children].forEach((x,j)=>{x.disabled=true; if(q.opts[j].ok) x.classList.add("right");}); if(!o.ok) b.classList.add("wrong");
+        res[i]=o.ok; if(o.ok) right++; award(o.ok);
+        prog.children[i].className=o.ok?"ok":"no";
+        const fb=el("div",{class:"feedback "+(o.ok?"ok":"no")},`<p><b>${o.ok?"إجابة صحيحة!":"ليست هذه."}</b> ${q.why}</p>`);
+        const nx=el("button",{class:"btn",onclick:()=>{ i++; if(i<N) draw(); else { st.innerHTML=""; endScreen(st,{title:"انتهى الاختبار",correct:right,total:N,again:render}); } }}, i<N-1?"السؤال التالي":"النتيجة");
+        fb.appendChild(nx); card.appendChild(fb); nx.focus(); };
+      os.appendChild(b); });
+    card.appendChild(os); box.appendChild(card);
+  }
+  draw();
+}
+
+/* ---------- SORT ---------- */
+function sort(st){
+  const N=10; const items=pick(B,N).map(b=>{ const k=rnd(["def","opp","cf"]); return {b,k,text:b[k]}; });
+  let i=0,right=0; const res=[];
+  st.appendChild(el("div",{class:"toolbar"},`<div><h2>حقيقي أم زائف؟</h2><p class="lead" style="margin-bottom:0">لكل سلوك ثلاثة وجوه: السلوك الحقيقي، وعكسه الصريح، وصورته الزائفة التي تبدو كالسلوك لكنها تهدم الثقة.</p></div>`));
+  const prog=el("div",{class:"progress"}), box=el("div"); st.append(prog,box);
+  const LBL={def:["السلوك الحقيقي","يبني الثقة","b-true"],opp:["العكس","يهدم الثقة صراحة","b-opp"],cf:["الصورة الزائفة","تبدو جيدة لكنها خادعة","b-cf"]};
+  function draw(){
+    prog.innerHTML=items.map((_,k)=>`<span class="${res[k]===true?"ok":res[k]===false?"no":k===i?"now":""}"></span>`).join("");
+    const it=items[i]; box.innerHTML="";
+    const card=el("div",{class:"panel"});
+    card.innerHTML=`<span class="badge" style="--c:${it.b.c}">${AR_NUM(it.b.id)} · ${it.b.ar} <span class="en" style="color:rgba(255,255,255,.85)">${it.b.en}</span></span><div class="quote" style="border-color:${it.b.c};margin-top:14px">${it.text}</div><div style="color:var(--muted);font-size:14px">هذا الوصف هو...</div>`;
+    const bins=el("div",{class:"bins"});
+    ["def","opp","cf"].forEach(k=>{ const b=el("button",{class:"bin "+LBL[k][2]},`${LBL[k][0]}<small>${LBL[k][1]}</small>`);
+      b.onclick=()=>{ const ok=k===it.k; [...bins.children].forEach(x=>x.disabled=true); b.classList.add("picked");
+        res[i]=ok; if(ok) right++; award(ok); prog.children[i].className=ok?"ok":"no";
+        const fb=el("div",{class:"feedback "+(ok?"ok":"no")},`<p><b>${ok?"صحيح!":"ليس تمامًا."}</b> هذا هو <b>${LBL[it.k][0]}</b> لسلوك «${it.b.ar}».</p>`);
+        const nx=el("button",{class:"btn",onclick:()=>{ i++; if(i<N) draw(); else { st.innerHTML=""; endScreen(st,{title:"انتهى التصنيف",correct:right,total:N,again:render}); } }}, i<N-1?"التالي":"النتيجة");
+        fb.appendChild(nx); card.appendChild(fb); nx.focus(); };
+      bins.appendChild(b); });
+    card.appendChild(bins); box.appendChild(card);
+  }
+  draw();
+}
+
+/* ---------- SITUATIONS ---------- */
+function sit(st){
+  const N=6; const qs=pick(SIT,N); let i=0,perfect=0; const res=[];
+  st.appendChild(el("div",{class:"toolbar"},`<div><h2>مواقف العمل</h2><p class="lead" style="margin-bottom:0">«ماذا أفعل عندما...؟» اختر <b>كل</b> السلوكيات التي توصي بها بطاقات الثقة، ثم اضغط «تحقّق».</p></div>`));
+  const prog=el("div",{class:"progress"}), box=el("div"); st.append(prog,box);
+  function draw(){
+    prog.innerHTML=qs.map((_,k)=>`<span class="${res[k]===true?"ok":res[k]===false?"no":k===i?"now":""}"></span>`).join("");
+    const [text,ids,idx]=qs[i]; box.innerHTML="";
+    const card=el("div",{class:"panel"});
+    card.innerHTML=`<span class="kind" style="font-size:12px;font-weight:700;color:var(--muted)">فهرس «${idx}» · ${AR_NUM(i+1)}/${AR_NUM(N)}</span><div class="prompt" style="font-size:22px;font-weight:700;margin-top:8px">ماذا أفعل عندما... ${text}؟</div><div style="color:var(--muted);font-size:14px">عدد السلوكيات الموصى بها: ${AR_NUM(ids.length)}</div>`;
+    const pool=shuffle([...ids,...pick(B.map(b=>b.id).filter(x=>!ids.includes(x)),Math.max(3,8-ids.length))]);
+    const chips=el("div",{class:"chips"}); const chosen=new Set();
+    const check=el("button",{class:"btn",disabled:""},"تحقّق");
+    pool.forEach(id=>{ const b=byId(id); const c=el("button",{class:"chip",style:`--c:${b.c}`,"aria-pressed":"false"},`<span class="n">${AR_NUM(id)}</span>${b.ar}`);
+      c.onclick=()=>{ sClick(); if(chosen.has(id)){chosen.delete(id);c.setAttribute("aria-pressed","false")} else {chosen.add(id);c.setAttribute("aria-pressed","true")} check.disabled=!chosen.size; };
+      c.dataset.id=id; chips.appendChild(c); });
+    check.onclick=()=>{
+      let hits=0,wrong=0;
+      [...chips.children].forEach(c=>{ const id=+c.dataset.id; c.disabled=true; const inR=ids.includes(id), sel=chosen.has(id);
+        if(inR&&sel){c.classList.add("hit");hits++} else if(inR){c.classList.add("miss")} else if(sel){c.classList.add("err");wrong++} });
+      const ok=hits===ids.length&&!wrong; res[i]=ok; if(ok) perfect++;
+      award(ok, 10+hits*2); if(!ok && hits){ S.score+=hits*3; hud(); }
+      prog.children[i].className=ok?"ok":"no"; check.remove();
+      const order=ids.map(id=>`<span class="badge" style="--c:${byId(id).c};font-size:13px;padding:3px 10px">${AR_NUM(id)} ${byId(id).ar}</span>`).join(" ");
+      const fb=el("div",{class:"feedback "+(ok?"ok":"no")},`<p><b>${ok?"إجابة كاملة!":`أصبت ${AR_NUM(hits)} من ${AR_NUM(ids.length)}${wrong?` واخترت ${AR_NUM(wrong)} غير موصى به`:""}.`}</b><br>ترتيب البطاقات الموصى به:<br><span style="display:inline-flex;gap:6px;flex-wrap:wrap;margin-top:6px">${order}</span></p>`);
+      const nx=el("button",{class:"btn",onclick:()=>{ i++; if(i<N) draw(); else { st.innerHTML=""; endScreen(st,{title:"انتهت المواقف",correct:perfect,total:N,again:render}); } }}, i<N-1?"الموقف التالي":"النتيجة");
+      fb.appendChild(nx); card.appendChild(fb); nx.focus();
+    };
+    card.append(chips, el("div",{class:"row"})); card.lastChild.appendChild(check); box.appendChild(card);
+  }
+  draw();
+}
+
+/* ---------- CARDS ---------- */
+let cardFilter="all";
+function cards(st){
+  const tb=el("div",{class:"toolbar"},`<div><h2>بطاقات المراجعة</h2><p class="lead" style="margin-bottom:0">اضغط على أي بطاقة لقلبها. ابدأ دائمًا بالجوانب الأربعة للمصداقية قبل ممارسة السلوكيات.</p></div>`);
+  const seg=el("div",{class:"seg"});
+  [["all","الكل"],["cores","الجوانب الأربعة"],["char","الشخصية"],["comp","الكفاءة"],["both","الاثنان"]].forEach(([k,l])=>seg.appendChild(el("button",{"aria-pressed":cardFilter===k?"true":"false",onclick:()=>{cardFilter=k;render();}},l)));
+  tb.appendChild(seg); st.appendChild(tb);
+  const g=el("div",{class:"cards"});
+  const flip=(front,back,c)=>{ const f=el("button",{class:"flip",style:`--c:${c}`,"aria-label":"اقلب البطاقة"},`<div class="inner"><div class="face front">${front}</div><div class="face back">${back}</div></div>`); f.onclick=()=>{f.classList.toggle("on");sClick();}; return f; };
+  if(cardFilter==="all"||cardFilter==="cores") CORES.forEach(c=>g.appendChild(flip(
+    `<span class="grp">جانب من المصداقية · ${G[c.g].ar}</span><div><h3>${c.ar}</h3><div class="en">${c.en}</div></div><div style="font-size:18px">${c.q}</div>`,
+    `<b>${c.ar.toUpperCase()}</b><p>${c.desc}</p>`, c.c)));
+  if(cardFilter!=="cores") B.filter(b=>cardFilter==="all"||b.g===cardFilter).forEach(b=>g.appendChild(flip(
+    `<span class="grp">${G[b.g].ar}</span><div class="num">${AR_NUM(b.id)}</div><div><h3>${b.ar}</h3><div class="en">${b.en}</div></div>`,
+    `<b>السلوك</b><p>${b.def}</p><b>العكس</b><p>${b.opp}</p><b>الصورة الزائفة</b><p>${b.cf}</p><b>ماذا تقول</b><p>${b.ph.slice(0,2).map(p=>"«"+p[0]+"»").join("<br>")}</p>`, b.c)));
+  st.appendChild(g);
+}
+
+/* ---------- BOOT ---------- */
+function start(data){
+  if(data && typeof data==="object"){ ["score","answered","correct","streak"].forEach(k=>{ if(typeof data[k]==="number") S[k]=data[k]; }); }
+  const h=(location.hash||"").slice(1); if(MODES.some(m=>m.k===h)) S.mode=h; else if(data && data.mode && MODES.some(m=>m.k===data.mode)) S.mode=data.mode;
+  hud(); nav(); render();
+}
+addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h!==S.mode && MODES.some(m=>m.k===h)){ S.mode=h; nav(); render(); } });
+if(hot && hot.ready) hot.ready(start); else start(hot && hot.data || {});
+</script>
