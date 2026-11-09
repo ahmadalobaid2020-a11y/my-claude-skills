@@ -12,7 +12,7 @@ Cue syntax: 00:12.5=whoosh.mp3@-8>0.3  -> at 12.5 s, whoosh.mp3, -8 dB, 0.3 s fa
 TIME is SS, MM:SS or HH:MM:SS (decimals allowed). FILE is a path, or a name/ID
 looked up in the sfx dir. --cues reads one cue per line (# comments allowed).
 """
-import argparse, glob, json, os, re, subprocess, sys, urllib.parse, urllib.request
+import argparse, glob, json, os, re, subprocess, sys, urllib.error, urllib.parse, urllib.request
 
 API = "https://freesound.org/apiv2"
 DIR = os.path.expanduser("~/.claude/sfx")
@@ -27,12 +27,19 @@ def secs(t):
 
 
 def api(path, **params):
-    key = os.environ.get("FREESOUND_API_KEY")
-    if not key:
-        sys.exit("FREESOUND_API_KEY is not set (free key: https://freesound.org/apiv2/apply)")
-    params["token"] = key
-    with urllib.request.urlopen(f"{API}{path}?{urllib.parse.urlencode(params)}", timeout=30) as r:
-        return json.load(r)
+    # Key goes in the Authorization header (Freesound's "Token" scheme). In a sandbox whose
+    # proxy injects the key, FREESOUND_API_KEY can be unset: the placeholder gets replaced.
+    key = os.environ.get("FREESOUND_API_KEY", "proxy-injected")
+    req = urllib.request.Request(f"{API}{path}?{urllib.parse.urlencode(params)}",
+                                 headers={"Authorization": f"Token {key}"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            sys.exit("Freesound refused the key: set FREESOUND_API_KEY "
+                     "(free key: https://freesound.org/apiv2/apply)")
+        raise
 
 
 def slug(s):
