@@ -1,4 +1,4 @@
-<title>Speed of Trust Game</title>
+<title>Speed of Trust Guide</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,30 +191,78 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 </style>
 
 
+<style>
+/* Learn-mode additions */
+.hud .meter{margin-inline-start:auto;display:flex;align-items:center;gap:10px;min-width:0}
+.meter .bar{width:140px;max-width:30vw;height:10px;border-radius:5px;background:var(--line);overflow:hidden;display:flex}
+.meter .bar span{flex:1;background:var(--line);transition:background .3s}
+.meter .bar span.on{background:var(--c)}
+.meter small{color:var(--muted);font-size:12px;white-space:nowrap}
+.tree{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:6px}
+.branch{border-radius:var(--r);border:1px solid var(--line);background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.branch.wide{grid-column:1/-1}
+.branch h3 small{display:block;font-family:var(--font-body);font-size:13px;color:var(--muted);font-weight:400;letter-spacing:0}
+.corebtn{all:unset;cursor:pointer;border-radius:12px;padding:12px 14px;background:color-mix(in srgb,var(--c) 12%,var(--surface));border:2px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.corebtn:focus-visible{outline:3px solid var(--accent)}
+.corebtn b{color:var(--c);font-size:17px}
+.corebtn .sub{margin-top:8px;display:grid;gap:6px;font-size:14px}
+.corebtn .sub div{background:var(--surface);border-radius:8px;padding:6px 10px}
+.mini{display:flex;flex-wrap:wrap;gap:6px}
+.mini button{border:0;border-radius:999px;padding:5px 12px;background:var(--c);color:#fff;font-size:13px;font-weight:700}
+.mindsets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.mindsets div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:15px}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:16px}
+.picker button{border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 10px;text-align:start;display:flex;gap:8px;align-items:center;font-weight:700;font-size:14px}
+.picker button .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:13px}
+.picker button[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,var(--surface))}
+.picker button.seen::after{content:"✓";margin-inline-start:auto;color:var(--good)}
+.faces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.face3{border-radius:12px;padding:14px;min-width:0}
+.face3 h4{margin:0 0 6px;font-family:var(--font-display);font-size:18px}
+.face3 p{margin:0;font-size:15px}
+.f-real{background:var(--good-soft)} .f-real h4{color:var(--good)}
+.f-opp{background:var(--bad-soft)} .f-opp h4{color:var(--bad)}
+.f-cf{background:var(--warn-soft)} .f-cf h4{color:var(--warn)}
+.say{margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.say li{background:var(--surface-2);border-radius:10px;padding:8px 12px;font-size:15px}
+.links{margin-top:14px;font-size:14px;color:var(--muted)}
+.links ul{margin:6px 0 0;padding-inline-start:20px}
+.stepper{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.stepper .count{color:var(--muted);font-variant-numeric:tabular-nums;flex:1;text-align:center;white-space:nowrap}
+.answer-tag{display:inline-block;margin-inline-start:auto;font-size:12px;font-weight:700;letter-spacing:.05em;color:var(--good)}
+.opt{text-align:start}
+.opt.info{border-color:var(--bad);background:var(--bad-soft)}
+.explain{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-size:15px}
+.explain.right{background:var(--good-soft)} .explain.wrong{background:var(--bad-soft)}
+.reco{display:grid;gap:10px;margin-top:14px}
+.reco .item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:var(--surface-2);border-radius:12px;padding:12px;border-inline-start:5px solid var(--c)}
+.reco .item .n{width:34px;height:34px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:700}
+.reco .item b{display:block}
+.reco .item p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.reco .item q{display:block;margin-top:4px;font-size:14px}
+.steps{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:12px;background:var(--surface-2);border-radius:12px;padding:12px;counter-increment:s}
+.steps li::before{content:counter(s);width:32px;height:32px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:700}
+.steps li b{display:block}
+.steps li span{font-size:14px;color:var(--muted)}
+.filterrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+@media (max-width:640px){
+  .tree,.mindsets,.faces,.say{grid-template-columns:1fr}
+  .meter small{display:none}
+}
+</style>
+
 <div class="app" lang="en">
   <header class="hud">
-    <div class="brand"><b>Speed of Trust</b><small>THE TRUST GAME</small></div>
-    <div class="gauge" title="Trust speedometer: your share of correct answers">
-      <svg viewBox="0 0 100 58" aria-hidden="true">
-        <path d="M10 52 A40 40 0 0 1 90 52" fill="none" stroke="var(--line)" stroke-width="9" stroke-linecap="round"/>
-        <path id="gArc" d="M10 52 A40 40 0 0 1 90 52" fill="none" stroke="var(--good)" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
-        <g id="gNeedle" style="transform-origin:50px 52px;transition:transform .6s cubic-bezier(.2,.8,.2,1)"><line x1="50" y1="52" x2="50" y2="18" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></g>
-        <circle cx="50" cy="52" r="5" fill="var(--ink)"/>
-      </svg>
-      <div class="val"><b id="gVal">0</b><small>trust speed %</small></div>
+    <div class="brand"><b>Speed of Trust</b><small>INTERACTIVE LEARNING GUIDE</small></div>
+    <div class="meter" title="Behaviors you have explored">
+      <small id="mText">0 of 13 behaviors explored</small>
+      <div class="bar" id="mBar"></div>
     </div>
-    <div class="stats">
-      <div class="stat"><b id="sScore">0</b><small>Score</small></div>
-      <div class="stat fire"><b id="sStreak">0</b><small>Streak</small></div>
-      <div class="stat"><b id="sBest">0</b><small>Best</small></div>
-    </div>
-    <button class="iconbtn" id="mute" aria-label="Toggle sound" title="Sound">🔊</button>
   </header>
-
   <nav class="tabs" role="tablist" id="tabs"></nav>
   <main class="stage" id="stage"></main>
 </div>
-<canvas id="fx" aria-hidden="true"></canvas>
 
 <script>
 /* ---------- DATA (from the Trust Action Cards) ---------- */
@@ -288,10 +336,14 @@ const B = [
   ph:["I believe in you.","Your track record gives me confidence.","We're depending on you.","You can talk to me about this anytime.","You have my support."]}
 ];
 const CORES = [
- {id:"I",n:"Integrity",q:"Am I congruent?",g:"char",c:"#E5484D",desc:"Being deeply honest, truthful, and authentic. It includes congruence, humility, and courage."},
- {id:"N",n:"Intent",q:"What's my agenda?",g:"char",c:"#D6409F",desc:"Our motive and agenda. Declare it openly so others don't question it; assume positive intent in others."},
- {id:"C",n:"Capabilities",q:"Am I relevant?",g:"comp",c:"#0D74CE",desc:"Our means to produce results: talents, attitudes, skills, knowledge, and style."},
- {id:"R",n:"Results",q:"What's my track record?",g:"comp",c:"#23875A",desc:"The outcomes of our past, current, and anticipated performance."}
+ {id:"I",n:"Integrity",q:"Am I congruent?",g:"char",c:"#E5484D",desc:"Being deeply honest, truthful, and authentic. It includes congruence, humility, and courage.",
+  parts:[["Congruence","Am I clear on my values, and do I live in harmony with them?"],["Humility","Am I more concerned with being right or doing what is right?"],["Courage","Do I stand firmly for my values, especially in the face of opposition?"]]},
+ {id:"N",n:"Intent",q:"What's my agenda?",g:"char",c:"#D6409F",desc:"Our motive and agenda. Declare it openly so others don't question it; assume positive intent in others.",
+  parts:[["Motive","Do I genuinely care about others as much as I care about myself?"],["Agenda","Do I consistently seek mutual benefit?"],["Clarity","Do I declare intent clearly, signal it, and discuss it?"]]},
+ {id:"C",n:"Capabilities",q:"Am I relevant?",g:"comp",c:"#0D74CE",desc:"Our means to produce results: talents, attitudes, skills, knowledge, and style.",
+  parts:[["Talents","What are my natural gifts and strengths?"],["Attitudes","Do I approach work with energy and determination?"],["Skills & Knowledge","Do I keep upgrading my skills and keep learning?"],["Style","Does my approach get in the way or ease the path?"]]},
+ {id:"R",n:"Results",q:"What's my track record?",g:"comp",c:"#23875A",desc:"The outcomes of our past, current, and anticipated performance.",
+  parts:[["Past performance","Do I have a track record of real outcomes, not busywork?"],["Current performance","Am I producing now, without burning people out?"],["Anticipated performance","Am I building long-term, sustainable outcomes?"]]}
 ];
 const SIT = [
  ["I need to delegate a task to someone",[13,9,10],"Extend Trust"],
@@ -328,261 +380,156 @@ const SIT = [
  ["People won't talk about important issues",[8,2,1,3],"Develop Trust"],
  ["I feel misunderstood",[1,3,11],"Develop Trust"]
 ];
+const TALKS = [
+ {t:"Extend Trust Talk",s:"To others",c:"#A43FB3",steps:[["Start With Self","How do you perceive your own propensity to trust? How do others perceive it?"],["Add Your Analysis","Weigh the 3 vital variables: the opportunity, the risk, and the credibility of the people involved."],["Apply “Smart Trust”","Decide when and how much trust to extend."],["Declare Your Intent. Clarify Expectations.","Define desired results and accountability with the people you trust—usually two-way."],["Practice Accountability","Invite them to report how they're doing against the expectations."]]},
+ {t:"Extend Trust Talk",s:"To those who don't trust you",c:"#A43FB3",steps:[["Start With Self","Focus on giving others someone to trust. Ask: “What can I do to increase your confidence in me?”"],["Listen First. Clarify Expectations.","Understand what they say and report back what you heard."],["Keep Commitments. Deliver Results.","Make a commitment, then do what you said you would do."],["Practice Accountability","Quickly return and report on performance."],["Make, Keep, Repeat","Keep making and keeping small commitments; trust extended will expand."]]},
+ {t:"Restore Trust Talk",s:"When you have made a mistake",c:"#C2365A",steps:[["Start With Self. Practice Accountability.","Accept responsibility. Don't blame, accuse, or excuse. Apologize sincerely."],["Declare Your Intent","Let the other person know you want to make things right."],["Listen First. Demonstrate Respect.","Listen, and respect what you hear and their timetable."],["Signal Your Behavior","Tell them what you'll do and what to expect from you."],["Keep Commitments","Behave yourself out of the problem you behaved yourself into."]]},
+ {t:"Restore Trust Talk",s:"When others have made a mistake",c:"#C2365A",steps:[["Start With Self","What's your intent? How did you contribute? Is the trust worth restoring?"],["Demonstrate Respect. Declare Your Intent.","Share your agenda with the person."],["Confront Reality. Talk Truthfully.","Explain what happened and how trust was lost; own your part."],["Listen First","Make sure you understand their side."],["Clarify Expectations. Extend Smart Trust.","Invite them to make and keep commitments to you."],["Practice Accountability","Invite them to report how they're doing."]]},
+ {t:"Develop Trust Talk",s:"With others",c:"#0D74CE",steps:[["Start With Self","Assess your credibility: how does the other person view your 4 Cores?"],["Declare Your Intent","Say you want a high-confidence relationship; ask permission to explore how."],["Listen First","Ask what matters to them in a high-trust relationship; reflect it back as behaviors."],["Create Transparency","Share three behaviors that matter to you."],["Keep Commitments","Commit to honor the requested behaviors."],["Practice Accountability","Arrange to follow up every few weeks."]]},
+ {t:"Develop Trust Talk",s:"With someone you don't trust",c:"#0D74CE",steps:[["Start With Self","Examine your intent. Is it worth it? Don't give up too soon."],["Separate the Person From the Behavior","Explain the behavior that costs you confidence, its result, and its cost."],["Make a Behavior-Specific Request","Say “Here's what would help me…” and ask what you can do."],["Practice Accountability. Keep Commitments.","Account for your commitments and invite them to do the same."]]}
+];
 const byId = id => B.find(b=>b.id===id);
 
-/* ---------- STATE ---------- */
-const hot = window.claude && window.claude.hot;
-const S = {score:0,answered:0,correct:0,streak:0,best:0,mode:"home",muted:false};
-try{ S.best = +localStorage.getItem("sot-best")||0; S.muted = localStorage.getItem("sot-muted")==="1"; }catch(e){}
-if(hot && hot.snapshot){ try{ hot.snapshot(()=>({score:S.score,answered:S.answered,correct:S.correct,streak:S.streak,mode:S.mode})); }catch(e){} }
-
+/* ---------- helpers & state ---------- */
 const $ = s => document.querySelector(s);
 const el = (tag,attrs={},html="") => { const e=document.createElement(tag); for(const k in attrs){ if(k==="style") e.style.cssText=attrs[k]; else if(k.startsWith("on")) e.addEventListener(k.slice(2),attrs[k]); else e.setAttribute(k,attrs[k]); } if(html) e.innerHTML=html; return e; };
-const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
-const pick = (a,n) => shuffle(a).slice(0,n);
-const rnd = a => a[Math.floor(Math.random()*a.length)];
+let seed=7; const rand=()=>{ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; };
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const S = {mode:"overview", beh:1, q:0, qType:"all", sit:0, sitIdx:"all", talk:0, seen:new Set()};
+try{ (JSON.parse(localStorage.getItem("sot-seen")||"[]")).forEach(x=>S.seen.add(x)); }catch(e){}
+function markSeen(id){ S.seen.add(id); try{localStorage.setItem("sot-seen",JSON.stringify([...S.seen]))}catch(e){} meter(); }
+function meter(){
+  $("#mBar").innerHTML=B.map(b=>`<span class="${S.seen.has(b.id)?"on":""}" style="--c:${b.c}"></span>`).join("");
+  $("#mText").textContent=`${S.seen.size} of 13 behaviors explored`;
+}
+const chip = b => `<span class="badge" style="--c:${b.c};font-size:13px;padding:3px 10px">${b.id} · ${b.n}</span>`;
 
-/* ---------- SOUND ---------- */
-let AC=null;
-function tone(freqs,dur=.12,type="sine"){
-  if(S.muted) return;
-  try{
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
-    freqs.forEach((f,i)=>{ const o=AC.createOscillator(), g=AC.createGain(); o.type=type; o.frequency.value=f;
-      const t=AC.currentTime+i*dur*.8; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.18,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-      o.connect(g).connect(AC.destination); o.start(t); o.stop(t+dur+.02); });
-  }catch(e){}
-}
-const sGood=()=>tone([660,880],.12), sBad=()=>tone([220,180],.16,"triangle"), sWin=()=>tone([523,659,784,1047],.14), sClick=()=>tone([520],.05);
-$("#mute").addEventListener("click",()=>{S.muted=!S.muted; $("#mute").textContent=S.muted?"🔇":"🔊"; try{localStorage.setItem("sot-muted",S.muted?"1":"0")}catch(e){} });
-$("#mute").textContent=S.muted?"🔇":"🔊";
-
-/* ---------- HUD ---------- */
-function hud(){
-  $("#sScore").textContent=S.score; $("#sStreak").textContent=S.streak; $("#sBest").textContent=S.best;
-  const pct = S.answered? Math.round(S.correct/S.answered*100):0;
-  $("#gVal").textContent=pct;
-  $("#gArc").setAttribute("stroke-dasharray",pct+" 100");
-  $("#gArc").setAttribute("stroke", pct>=75?"var(--good)":pct>=45?"var(--warn)":"var(--bad)");
-  $("#gNeedle").style.transform=`rotate(${-90+pct*1.8}deg)`;
-}
-function award(ok,pts=10){
-  S.answered++;
-  if(ok){ S.correct++; S.streak++; S.score += pts + Math.min(S.streak-1,5)*2; sGood(); }
-  else { S.streak=0; sBad(); }
-  if(S.score>S.best){ S.best=S.score; try{localStorage.setItem("sot-best",S.best)}catch(e){} }
-  hud();
-}
-
-/* ---------- CONFETTI ---------- */
-const fx=$("#fx"), ctx=fx.getContext("2d"); let parts=[], raf=0;
-function confetti(){
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  fx.width=innerWidth*devicePixelRatio; fx.height=innerHeight*devicePixelRatio;
-  const cols=B.map(b=>b.c);
-  for(let i=0;i<160;i++) parts.push({x:fx.width/2+(Math.random()-.5)*fx.width*.3,y:fx.height*.35,vx:(Math.random()-.5)*16*devicePixelRatio,vy:(-Math.random()*16-4)*devicePixelRatio,s:(5+Math.random()*7)*devicePixelRatio,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:rnd(cols),life:0});
-  if(!raf) loop();
-}
-function loop(){
-  ctx.clearRect(0,0,fx.width,fx.height);
-  parts.forEach(p=>{p.vy+=.45*devicePixelRatio;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life++;
-    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore();});
-  parts=parts.filter(p=>p.y<fx.height+40 && p.life<240);
-  raf = parts.length? requestAnimationFrame(loop):0;
-  if(!raf) ctx.clearRect(0,0,fx.width,fx.height);
-}
+/* ---------- guided questions (answers shown) ---------- */
+const QS=[];
+B.forEach(b=>{
+  const others=()=>shuffle(B.filter(x=>x.id!==b.id)).slice(0,3);
+  [["phrase","“What to Say” phrase","Which behavior are you practicing when you say:",`“${b.ph[0]}”`,`This is one of the “What to Say” phrases for <b>${b.n}</b>. ${b.def}`],
+   ["def","Definition","Which behavior does this describe?",b.def,`This is the definition of <b>${b.n}</b>.`],
+   ["opp","Opposite","This is the opposite of which behavior?",b.opp,`The opposite of <b>${b.n}</b> openly destroys trust. The real behavior: ${b.def}`],
+   ["cf","Counterfeit","This is the counterfeit of which behavior?",b.cf,`A counterfeit looks like <b>${b.n}</b> on the surface but still erodes trust. The real behavior: ${b.def}`]
+  ].forEach(([type,kind,prompt,quote,why])=>QS.push({type,kind,prompt,quote,why,ans:b,opts:shuffle([b,...others()])}));
+});
+const QT={all:"All",phrase:"Phrases",def:"Definitions",opp:"Opposites",cf:"Counterfeits"};
+const qList=()=>QS.filter(q=>S.qType==="all"||q.type===S.qType);
 
 /* ---------- NAV ---------- */
 const MODES=[
- {k:"home",t:"Home",c:"#5B6482"},
- {k:"match",t:"Matching",c:"#0D74CE",ic:"⇄",d:"Pair each behavior with its definition, opposite, or counterfeit. Correct pairs light up in the behavior's color."},
- {k:"quiz",t:"Multiple Choice",c:"#E5484D",ic:"?",d:"Ten mixed questions: “What to Say” phrases, counterfeits, opposites, and the 4 Cores of Credibility."},
- {k:"sort",t:"Real or Counterfeit?",c:"#C27A06",ic:"⚖",d:"Read the description and decide: is it the real behavior, its opposite, or its counterfeit?"},
- {k:"sit",t:"Workplace Situations",c:"#8E4EC6",ic:"✦",d:"“What do I do when…?” Pick every behavior card the index recommends for the situation."},
- {k:"cards",t:"Study Cards",c:"#23875A",ic:"❖",d:"Flip through the 13 Behaviors and the 4 Cores to review everything before you play."}
+ {k:"overview",t:"The Framework",c:"#5B6482"},
+ {k:"behaviors",t:"13 Behaviors",c:"#0D74CE"},
+ {k:"guided",t:"Guided Q&A",c:"#E5484D"},
+ {k:"situations",t:"Situations",c:"#8E4EC6"},
+ {k:"talks",t:"Trust Talks",c:"#23875A"}
 ];
-function nav(){
-  const t=$("#tabs"); t.innerHTML="";
-  MODES.forEach(m=>{ t.appendChild(el("button",{class:"tab",role:"tab","aria-selected":S.mode===m.k?"true":"false",style:`--c:${m.c}`,onclick:()=>go(m.k)},`<i></i>${m.t}`)); });
-}
-function go(k){ S.mode=k; sClick(); nav(); render(); window.scrollTo({top:0,behavior:"smooth"}); try{ if(location.hash!=="#"+k) history.replaceState(null,"","#"+k);}catch(e){} }
-function render(){ const st=$("#stage"); st.innerHTML=""; ({home,match,quiz,sort,sit,cards})[S.mode](st); }
-
-function endScreen(st,{title,correct,total,again}){
-  const ratio = correct/total, stars = ratio>=.9?3:ratio>=.6?2:ratio>0?1:0;
-  const p=el("div",{class:"panel end"});
-  p.innerHTML=`<h2>${title}</h2>
-   <div class="stars">${[0,1,2].map(i=>`<span class="${i<stars?"":"off"}">★</span>`).join("")}</div>
-   <div class="big">${correct} / ${total}</div>
-   <p class="lead" style="margin-inline:auto">${stars===3?"Excellent! Your trust is moving at full speed.":stars===2?"Good work. One more round and you're at the top.":"Trust starts with self. Review the cards and try again."}</p>`;
-  const r=el("div",{class:"row",style:"justify-content:center"});
-  r.append(el("button",{class:"btn",onclick:again},"New round"), el("button",{class:"btn ghost",onclick:()=>go("cards")},"Review cards"), el("button",{class:"btn ghost",onclick:()=>go("home")},"Home"));
-  p.appendChild(r); st.appendChild(p);
-  if(stars>=2){ confetti(); sWin(); }
+function nav(){ const t=$("#tabs"); t.innerHTML=""; MODES.forEach(m=>t.appendChild(el("button",{class:"tab",role:"tab","aria-selected":S.mode===m.k?"true":"false",style:`--c:${m.c}`,onclick:()=>go(m.k)},`<i></i>${m.t}`))); }
+function go(k,opts={}){ Object.assign(S,opts); S.mode=k; nav(); render(); window.scrollTo({top:0,behavior:"smooth"}); try{ if(location.hash!=="#"+k) history.replaceState(null,"","#"+k);}catch(e){} }
+function render(){ const st=$("#stage"); st.innerHTML=""; ({overview,behaviors,guided,situations,talks})[S.mode](st); }
+function stepper(i,n,onPrev,onNext,label){
+  const w=el("div",{class:"stepper"});
+  const p=el("button",{class:"btn ghost",onclick:onPrev},"← Previous"); if(i===0) p.disabled=true;
+  const x=el("button",{class:"btn",onclick:onNext},"Next →"); if(i===n-1) x.disabled=true;
+  w.append(p,el("span",{class:"count"},`${label||""} ${i+1} of ${n}`),x); return w;
 }
 
-/* ---------- HOME ---------- */
-function home(st){
-  const h=el("section",{class:"hero"});
-  h.innerHTML=`<div><h1>Learn the 13 Behaviors of High Trust by playing</h1>
-    <p>Built from the Speed of Trust Action Cards: the 4 Cores of Credibility, the 13 Behaviors, their opposites and counterfeits, and real workplace situations. Every correct answer pushes the trust speedometer up.</p>
-    <div class="legend"><span><i style="--c:${GC.char}"></i>Character (1–5)</span><span><i style="--c:${GC.comp}"></i>Competence (6–10)</span><span><i style="--c:${GC.both}"></i>Both (11–13)</span></div></div>
-    <div><div class="pyramid">${B.map((b,i)=>`<span title="${b.n}" style="--c:${b.c};--i:${i}"></span>`).join("")}</div></div>`;
-  st.appendChild(h);
-  const g=el("div",{class:"modes"});
-  MODES.slice(1).forEach(m=>g.appendChild(el("button",{class:"mode",style:`--c:${m.c}`,onclick:()=>go(m.k)},`<span class="ic">${m.ic}</span><span><h3>${m.t}</h3><p>${m.d}</p></span>`)));
-  st.appendChild(g);
+/* ---------- OVERVIEW ---------- */
+function overview(st){
+  st.appendChild(el("section",{class:"hero",style:"grid-template-columns:1fr"},`<div><h1>How trust is built</h1>
+   <p>Trust grows from the inside out. It starts with your credibility—the 4 Cores—and shows up in how you act—the 13 Behaviors. Tap any core to open it, and any behavior to study it.</p></div>`));
+  st.appendChild(el("div",{class:"mindsets"},`<div><b>Everything I say and do</b> affects the level of trust in my relationships and teams.</div><div><b>Creating high trust is a set of learnable skills:</b> the 4 Cores of Credibility and the 13 Behaviors.</div><div><b>Trust is built from the inside out,</b> starting with me.</div>`));
+  const tree=el("div",{class:"tree"});
+  const branch=(g,cores,ids,wide)=>{
+    const br=el("div",{class:"branch"+(wide?" wide":""),style:`--c:${GC[g]}`});
+    br.appendChild(el("h3",{style:`color:${GC[g]}`},`${G[g]}<small>${g==="char"?"Who you are: your cores of Integrity and Intent.":g==="comp"?"What you can do: your cores of Capabilities and Results.":"Behaviors that draw equally on character and competence."}</small>`));
+    cores.forEach(c=>{ const b=el("button",{class:"corebtn",style:`--c:${c.c}`,"aria-expanded":"false"},`<b>${c.n}</b> — ${c.q}<div class="sub" hidden><div>${c.desc}</div>${c.parts.map(p=>`<div><b style="font-size:14px">${p[0]}:</b> ${p[1]}</div>`).join("")}</div>`);
+      b.onclick=()=>{ const s=b.querySelector(".sub"); s.hidden=!s.hidden; b.setAttribute("aria-expanded",String(!s.hidden)); }; br.appendChild(b); });
+    const mini=el("div",{class:"mini"}); ids.forEach(id=>{ const bb=byId(id); mini.appendChild(el("button",{style:`--c:${bb.c}`,onclick:()=>go("behaviors",{beh:id})},`${id}. ${bb.n}`)); });
+    br.appendChild(mini); return br; };
+  tree.append(branch("char",CORES.slice(0,2),[1,2,3,4,5]),branch("comp",CORES.slice(2),[6,7,8,9,10]),branch("both",[],[11,12,13],true));
+  st.appendChild(tree);
 }
 
-/* ---------- MATCHING ---------- */
-const MK={def:"Definition",opp:"Opposite",cf:"Counterfeit",core:"4 Cores"};
-let matchKind="def";
-function match(st){
-  const tb=el("div",{class:"toolbar"},`<div><h2>Matching</h2><p class="lead" style="margin-bottom:0">Pick a behavior in the first column, then pick the description that fits it.</p></div>`);
-  const seg=el("div",{class:"seg",role:"group","aria-label":"Match type"});
-  Object.keys(MK).forEach(k=>seg.appendChild(el("button",{"aria-pressed":matchKind===k?"true":"false",onclick:()=>{matchKind=k;render();}},MK[k])));
+/* ---------- BEHAVIORS ---------- */
+function behaviors(st){
+  st.appendChild(el("div",{class:"toolbar"},`<div><h2>The 13 Behaviors of High Trust</h2><p class="lead" style="margin-bottom:0">Each behavior has a real form that builds trust, an opposite that destroys it, and a counterfeit that looks right but still erodes it.</p></div>`));
+  const pk=el("div",{class:"picker"});
+  B.forEach(b=>{ const x=el("button",{style:`--c:${b.c}`,"aria-pressed":S.beh===b.id?"true":"false",class:S.seen.has(b.id)?"seen":""},`<span class="n">${b.id}</span>${b.n}`); x.onclick=()=>{S.beh=b.id;render();}; pk.appendChild(x); });
+  st.appendChild(pk);
+  const b=byId(S.beh); markSeen(b.id);
+  const recs=SIT.filter(s=>s[1].includes(b.id));
+  const p=el("div",{class:"panel",style:`border-top:6px solid ${b.c}`});
+  p.innerHTML=`<div class="row"><span class="badge" style="--c:${b.c}">Behavior ${b.id}</span><span style="color:var(--muted);font-size:14px">${G[b.g]}</span></div>
+   <h2 style="margin-top:8px">${b.n}</h2>
+   <div class="faces">
+    <div class="face3 f-real"><h4>✓ The real behavior</h4><p>${b.def}</p></div>
+    <div class="face3 f-opp"><h4>✕ The opposite</h4><p>${b.opp}</p></div>
+    <div class="face3 f-cf"><h4>⚠ The counterfeit</h4><p>${b.cf}</p></div>
+   </div>
+   <h3 style="margin-top:18px;font-size:18px">What to say</h3>
+   <ul class="say">${b.ph.map(x=>`<li>“${x}”</li>`).join("")}</ul>
+   <div class="links"><b>Recommended in ${recs.length} situations, including:</b><ul>${recs.slice(0,4).map(s=>`<li>${s[0]}</li>`).join("")}</ul></div>`;
+  st.appendChild(p);
+  const i=S.beh-1;
+  p.appendChild(stepper(i,13,()=>{S.beh--;render();},()=>{S.beh++;render();},"Behavior"));
+}
+
+/* ---------- GUIDED Q&A ---------- */
+function guided(st){
+  const tb=el("div",{class:"toolbar"},`<div><h2>Guided Q&amp;A</h2><p class="lead" style="margin-bottom:0">The correct answer is already marked in green. Tap any other option to see why it doesn't fit.</p></div>`);
+  const seg=el("div",{class:"seg"});
+  Object.keys(QT).forEach(k=>seg.appendChild(el("button",{"aria-pressed":S.qType===k?"true":"false",onclick:()=>{S.qType=k;S.q=0;render();}},QT[k])));
   tb.appendChild(seg); st.appendChild(tb);
-  const items = matchKind==="core" ? CORES.map(c=>({key:c.id,c:c.c,n:c.n,text:`<b>${c.q}</b> ${c.desc}`}))
-    : pick(B,5).map(b=>({key:b.id,c:b.c,n:b.n,text:b[matchKind]}));
-  let sel=null, left=items.length, miss=0;
-  const prog=el("div",{class:"progress"}); items.forEach(()=>prog.appendChild(el("span"))); st.appendChild(prog);
-  const wrap=el("div",{class:"match"});
-  const cA=el("div",{class:"col"},`<h4>${matchKind==="core"?"CORE":"BEHAVIOR"}</h4>`), cB=el("div",{class:"col"},`<h4>${MK[matchKind].toUpperCase()}</h4>`);
-  const names = shuffle(items).map(it=>{ const b=el("button",{class:"tile name",style:`--c:${it.c}`},`<span class="dot"></span><span>${it.n}</span>`); b.dataset.k=it.key; b.onclick=()=>{ if(b.classList.contains("done"))return; sClick(); names.forEach(n=>n.classList.remove("sel")); b.classList.add("sel"); sel=b; }; cA.appendChild(b); return b; });
-  shuffle(items).forEach(it=>{ const t=el("button",{class:"tile text"},it.text); t.onclick=()=>{
-      if(t.classList.contains("done")) return;
-      if(!sel){ t.classList.add("shake"); setTimeout(()=>t.classList.remove("shake"),350); return; }
-      if(sel.dataset.k==String(it.key)){
-        award(true); [sel,t].forEach(x=>{x.classList.remove("sel");x.classList.add("done");x.style.setProperty("--c",it.c);x.setAttribute("aria-disabled","true")});
-        prog.children[items.length-left].className="ok"; sel=null; left--;
-        if(!left) setTimeout(()=>{ st.innerHTML=""; endScreen(st,{title:"All matched!",correct:Math.max(items.length-miss,0),total:items.length,again:render}); },500);
-      } else { award(false); miss++; [sel,t].forEach(x=>{x.classList.add("shake");setTimeout(()=>x.classList.remove("shake"),350)}); }
-    }; cB.appendChild(t); });
-  wrap.append(cA,cB); st.appendChild(wrap);
-}
-
-/* ---------- QUIZ ---------- */
-function makeQ(){
-  const type = rnd(["ph","ph","cf","opp","grp","core","def"]);
-  if(type==="core"){ const c=rnd(CORES); return {kind:"4 Cores of Credibility",prompt:"Which Core of Credibility is this?",quote:`“${c.q}” — ${c.desc}`,
-      opts:shuffle(CORES).map(o=>({label:o.n,c:o.c,ok:o.id===c.id})),why:`${c.n} is a ${G[c.g]} core.`}; }
-  const b=rnd(B);
-  if(type==="grp") return {kind:"The Framework",prompt:`Where does “${b.n}” belong?`,
-      opts:["char","comp","both"].map(g=>({label:G[g],c:GC[g],ok:g===b.g})),
-      why:`Behaviors 1–5 flow from Character, 6–10 from Competence, and 11–13 from both. “${b.n}” is #${b.id}.`};
-  const opts = shuffle([b,...pick(B.filter(x=>x.id!==b.id),3)]).map(o=>({label:o.n,c:o.c,ok:o.id===b.id}));
-  if(type==="ph") return {kind:"“What to Say” Phrases",prompt:"Which behavior are you practicing when you say:",quote:`“${rnd(b.ph)}”`,opts,why:`This is a “What to Say” phrase for ${b.n}.`};
-  if(type==="cf") return {kind:"Counterfeit",prompt:"This is the counterfeit of which behavior?",quote:b.cf,opts,why:`The counterfeit of ${b.n} looks like the behavior but destroys trust.`};
-  if(type==="opp") return {kind:"Opposite",prompt:"This is the opposite of which behavior?",quote:b.opp,opts,why:`The opposite of ${b.n}: ${b.opp}`};
-  return {kind:"Definition",prompt:"Which behavior does this describe?",quote:b.def,opts,why:`This is the definition of ${b.n}.`};
-}
-function quiz(st){
-  const N=10, qs=[], seen=new Set();
-  while(qs.length<N){ const q=makeQ(); if(seen.has(q.quote+q.prompt)) continue; seen.add(q.quote+q.prompt); qs.push(q); }
-  let i=0, right=0; const res=[];
-  st.appendChild(el("div",{class:"toolbar"},`<div><h2>Multiple Choice</h2><p class="lead" style="margin-bottom:0">Ten questions. A streak of right answers earns bonus points.</p></div>`));
-  const prog=el("div",{class:"progress"}), box=el("div"); st.append(prog,box);
-  function draw(){
-    prog.innerHTML=qs.map((_,k)=>`<span class="${res[k]===true?"ok":res[k]===false?"no":k===i?"now":""}"></span>`).join("");
-    const q=qs[i]; box.innerHTML="";
-    const card=el("div",{class:"panel qcard"});
-    card.innerHTML=`<span class="kind">${q.kind} · ${i+1}/${N}</span><div class="prompt">${q.prompt}</div>${q.quote?`<div class="quote">${q.quote}</div>`:""}`;
-    const os=el("div",{class:"opts"});
-    q.opts.forEach((o,k)=>{ const b=el("button",{class:"opt",style:`--c:${o.c}`},`<span class="k">${"ABCD"[k]}</span><span>${o.label}</span>`);
-      b.onclick=()=>{ [...os.children].forEach((x,j)=>{x.disabled=true; if(q.opts[j].ok) x.classList.add("right");}); if(!o.ok) b.classList.add("wrong");
-        res[i]=o.ok; if(o.ok) right++; award(o.ok); prog.children[i].className=o.ok?"ok":"no";
-        const fb=el("div",{class:"feedback "+(o.ok?"ok":"no")},`<p><b>${o.ok?"Correct!":"Not quite."}</b> ${q.why}</p>`);
-        const nx=el("button",{class:"btn",onclick:()=>{ i++; if(i<N) draw(); else { st.innerHTML=""; endScreen(st,{title:"Quiz complete",correct:right,total:N,again:render}); } }}, i<N-1?"Next question":"See results");
-        fb.appendChild(nx); card.appendChild(fb); nx.focus(); };
-      os.appendChild(b); });
-    card.appendChild(os); box.appendChild(card);
-  }
-  draw();
-}
-
-/* ---------- SORT ---------- */
-function sort(st){
-  const N=10; const items=pick(B,N).map(b=>{ const k=rnd(["def","opp","cf"]); return {b,k,text:b[k]}; });
-  let i=0,right=0; const res=[];
-  st.appendChild(el("div",{class:"toolbar"},`<div><h2>Real or Counterfeit?</h2><p class="lead" style="margin-bottom:0">Every behavior has three faces: the real behavior, its outright opposite, and its counterfeit—which looks like the behavior but destroys trust.</p></div>`));
-  const prog=el("div",{class:"progress"}), box=el("div"); st.append(prog,box);
-  const LBL={def:["Real Behavior","builds trust","b-true"],opp:["Opposite","openly destroys trust","b-opp"],cf:["Counterfeit","looks good, but isn't","b-cf"]};
-  function draw(){
-    prog.innerHTML=items.map((_,k)=>`<span class="${res[k]===true?"ok":res[k]===false?"no":k===i?"now":""}"></span>`).join("");
-    const it=items[i]; box.innerHTML="";
-    const card=el("div",{class:"panel"});
-    card.innerHTML=`<span class="badge" style="--c:${it.b.c}">${it.b.id} · ${it.b.n}</span><div class="quote" style="border-color:${it.b.c};margin-top:14px">${it.text}</div><div style="color:var(--muted);font-size:14px">This description is the…</div>`;
-    const bins=el("div",{class:"bins"});
-    ["def","opp","cf"].forEach(k=>{ const b=el("button",{class:"bin "+LBL[k][2]},`${LBL[k][0]}<small>${LBL[k][1]}</small>`);
-      b.onclick=()=>{ const ok=k===it.k; [...bins.children].forEach(x=>x.disabled=true); b.classList.add("picked");
-        res[i]=ok; if(ok) right++; award(ok); prog.children[i].className=ok?"ok":"no";
-        const fb=el("div",{class:"feedback "+(ok?"ok":"no")},`<p><b>${ok?"Correct!":"Not quite."}</b> This is the <b>${LBL[it.k][0].toLowerCase()}</b> for ${it.b.n}.</p>`);
-        const nx=el("button",{class:"btn",onclick:()=>{ i++; if(i<N) draw(); else { st.innerHTML=""; endScreen(st,{title:"Sorting complete",correct:right,total:N,again:render}); } }}, i<N-1?"Next":"See results");
-        fb.appendChild(nx); card.appendChild(fb); nx.focus(); };
-      bins.appendChild(b); });
-    card.appendChild(bins); box.appendChild(card);
-  }
-  draw();
+  const list=qList(); S.q=Math.min(S.q,list.length-1); const q=list[S.q];
+  markSeen(q.ans.id);
+  const card=el("div",{class:"panel qcard"});
+  card.innerHTML=`<span class="kind">${q.kind}</span><div class="prompt">${q.prompt}</div><div class="quote" style="border-color:${q.ans.c}">${q.quote}</div>`;
+  const os=el("div",{class:"opts"}); const ex=el("div",{class:"explain right"},`<b>✓ Correct answer: ${q.ans.n}.</b> ${q.why}`);
+  q.opts.forEach((o,k)=>{ const ok=o.id===q.ans.id;
+    const b=el("button",{class:"opt"+(ok?" right":""),style:`--c:${o.c}`},`<span class="k">${"ABCD"[k]}</span><span>${o.n}</span>${ok?'<span class="answer-tag">CORRECT</span>':""}`);
+    b.onclick=()=>{ [...os.children].forEach(x=>x.classList.remove("info"));
+      if(ok){ ex.className="explain right"; ex.innerHTML=`<b>✓ Correct answer: ${q.ans.n}.</b> ${q.why}`; }
+      else { b.classList.add("info"); ex.className="explain wrong"; ex.innerHTML=`<b>Why not ${o.n}?</b> ${o.n} means: ${o.def} That is not what this ${q.kind.toLowerCase()} describes, so the right answer is <b>${q.ans.n}</b>.`; } };
+    os.appendChild(b); });
+  card.append(os,ex,stepper(S.q,list.length,()=>{S.q--;render();},()=>{S.q++;render();},"Question"));
+  st.appendChild(card);
 }
 
 /* ---------- SITUATIONS ---------- */
-function sit(st){
-  const N=6; const qs=pick(SIT,N); let i=0,perfect=0; const res=[];
-  st.appendChild(el("div",{class:"toolbar"},`<div><h2>Workplace Situations</h2><p class="lead" style="margin-bottom:0">“What do I do when…?” Select <b>every</b> behavior card the index recommends, then press Check.</p></div>`));
-  const prog=el("div",{class:"progress"}), box=el("div"); st.append(prog,box);
-  function draw(){
-    prog.innerHTML=qs.map((_,k)=>`<span class="${res[k]===true?"ok":res[k]===false?"no":k===i?"now":""}"></span>`).join("");
-    const [text,ids,idx]=qs[i]; box.innerHTML="";
-    const card=el("div",{class:"panel"});
-    card.innerHTML=`<span class="kind" style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em">“${idx.toUpperCase()}” INDEX · ${i+1}/${N}</span><div class="prompt" style="font-size:22px;font-weight:700;margin-top:8px">What do I do when… ${text.charAt(0).toLowerCase()==="i"&&text[1]===" "?text:text.charAt(0).toLowerCase()+text.slice(1)}?</div><div style="color:var(--muted);font-size:14px">Recommended cards: ${ids.length}</div>`;
-    const pool=shuffle([...ids,...pick(B.map(b=>b.id).filter(x=>!ids.includes(x)),Math.max(3,8-ids.length))]);
-    const chips=el("div",{class:"chips"}); const chosen=new Set();
-    const check=el("button",{class:"btn",disabled:""},"Check");
-    pool.forEach(id=>{ const b=byId(id); const c=el("button",{class:"chip",style:`--c:${b.c}`,"aria-pressed":"false"},`<span class="n">${id}</span>${b.n}`);
-      c.onclick=()=>{ sClick(); if(chosen.has(id)){chosen.delete(id);c.setAttribute("aria-pressed","false")} else {chosen.add(id);c.setAttribute("aria-pressed","true")} check.disabled=!chosen.size; };
-      c.dataset.id=id; chips.appendChild(c); });
-    check.onclick=()=>{
-      let hits=0,wrong=0;
-      [...chips.children].forEach(c=>{ const id=+c.dataset.id; c.disabled=true; const inR=ids.includes(id), sel=chosen.has(id);
-        if(inR&&sel){c.classList.add("hit");hits++} else if(inR){c.classList.add("miss")} else if(sel){c.classList.add("err");wrong++} });
-      const ok=hits===ids.length&&!wrong; res[i]=ok; if(ok) perfect++;
-      award(ok, 10+hits*2); if(!ok && hits){ S.score+=hits*3; hud(); }
-      prog.children[i].className=ok?"ok":"no"; check.remove();
-      const order=ids.map(id=>`<span class="badge" style="--c:${byId(id).c};font-size:13px;padding:3px 10px">${id} ${byId(id).n}</span>`).join(" ");
-      const fb=el("div",{class:"feedback "+(ok?"ok":"no")},`<p><b>${ok?"Perfect!":`You found ${hits} of ${ids.length}${wrong?` and picked ${wrong} that ${wrong>1?"aren't":"isn't"} recommended`:""}.`}</b><br>Recommended cards, in order:<br><span style="display:inline-flex;gap:6px;flex-wrap:wrap;margin-top:6px">${order}</span></p>`);
-      const nx=el("button",{class:"btn",onclick:()=>{ i++; if(i<N) draw(); else { st.innerHTML=""; endScreen(st,{title:"Situations complete",correct:perfect,total:N,again:render}); } }}, i<N-1?"Next situation":"See results");
-      fb.appendChild(nx); card.appendChild(fb); nx.focus();
-    };
-    const row=el("div",{class:"row"}); row.appendChild(check);
-    card.append(chips,row); box.appendChild(card);
-  }
-  draw();
+function situations(st){
+  const tb=el("div",{class:"toolbar"},`<div><h2>What do I do when…?</h2><p class="lead" style="margin-bottom:0">The Action Card index recommends specific behaviors for common workplace situations, in the order to use them. Always check your 4 Cores first.</p></div>`);
+  const seg=el("div",{class:"seg"});
+  [["all","All"],["Extend Trust","Extend"],["Restore Trust","Restore"],["Develop Trust","Develop"]].forEach(([k,l])=>seg.appendChild(el("button",{"aria-pressed":S.sitIdx===k?"true":"false",onclick:()=>{S.sitIdx=k;S.sit=0;render();}},l)));
+  tb.appendChild(seg); st.appendChild(tb);
+  const list=SIT.filter(s=>S.sitIdx==="all"||s[2]===S.sitIdx); S.sit=Math.min(S.sit,list.length-1);
+  const [text,ids,idx]=list[S.sit];
+  const p=el("div",{class:"panel"});
+  const lc=/^(I |I'm )/.test(text)?text:text.charAt(0).toLowerCase()+text.slice(1);
+  p.innerHTML=`<span class="kind">“${idx}” index</span><div class="prompt" style="font-size:22px">What do I do when ${lc}?</div>
+   <div style="color:var(--muted);font-size:14px">Correct choices — use these ${ids.length} behaviors, in this order:</div>
+   <div class="reco">${ids.map(id=>{const b=byId(id);return `<div class="item" style="--c:${b.c}"><span class="n">${id}</span><div><b>${b.n}</b><p>${b.def}</p><q>Try saying: “${b.ph[0]}”</q></div></div>`}).join("")}</div>`;
+  ids.forEach(markSeen);
+  p.appendChild(stepper(S.sit,list.length,()=>{S.sit--;render();},()=>{S.sit++;render();},"Situation"));
+  st.appendChild(p);
 }
 
-/* ---------- CARDS ---------- */
-let cardFilter="all";
-function cards(st){
-  const tb=el("div",{class:"toolbar"},`<div><h2>Study Cards</h2><p class="lead" style="margin-bottom:0">Tap a card to flip it. Always assess your 4 Cores of Credibility before practicing the 13 Behaviors.</p></div>`);
-  const seg=el("div",{class:"seg"});
-  [["all","All"],["cores","4 Cores"],["char","Character"],["comp","Competence"],["both","Both"]].forEach(([k,l])=>seg.appendChild(el("button",{"aria-pressed":cardFilter===k?"true":"false",onclick:()=>{cardFilter=k;render();}},l)));
-  tb.appendChild(seg); st.appendChild(tb);
-  const g=el("div",{class:"cards"});
-  const flip=(front,back,c)=>{ const f=el("button",{class:"flip",style:`--c:${c}`,"aria-label":"Flip card"},`<div class="inner"><div class="face front">${front}</div><div class="face back">${back}</div></div>`); f.onclick=()=>{f.classList.toggle("on");sClick();}; return f; };
-  if(cardFilter==="all"||cardFilter==="cores") CORES.forEach(c=>g.appendChild(flip(
-    `<span class="grp">CORE · ${G[c.g].toUpperCase()}</span><div><h3>${c.n}</h3></div><div style="font-size:18px">${c.q}</div>`,
-    `<b>${c.n.toUpperCase()}</b><p>${c.desc}</p>`, c.c)));
-  if(cardFilter!=="cores") B.filter(b=>cardFilter==="all"||b.g===cardFilter).forEach(b=>g.appendChild(flip(
-    `<span class="grp">${G[b.g].toUpperCase()}</span><div class="num">${b.id}</div><div><h3>${b.n}</h3></div>`,
-    `<b>BEHAVIOR</b><p>${b.def}</p><b>OPPOSITE</b><p>${b.opp}</p><b>COUNTERFEIT</b><p>${b.cf}</p><b>WHAT TO SAY</b><p>${b.ph.slice(0,2).map(p=>"“"+p+"”").join("<br>")}</p>`, b.c)));
-  st.appendChild(g);
+/* ---------- TALKS ---------- */
+function talks(st){
+  st.appendChild(el("div",{class:"toolbar"},`<div><h2>Trust Talks</h2><p class="lead" style="margin-bottom:0">Step-by-step conversations from the Action Cards. Every talk starts with self.</p></div>`));
+  const row=el("div",{class:"filterrow"});
+  TALKS.forEach((t,i)=>row.appendChild(el("button",{class:"chip","aria-pressed":S.talk===i?"true":"false",style:`--c:${t.c}`,onclick:()=>{S.talk=i;render();}},`${t.t.replace(" Talk","")}: ${t.s.toLowerCase()}`)));
+  st.appendChild(row);
+  const t=TALKS[S.talk];
+  const p=el("div",{class:"panel",style:`border-top:6px solid ${t.c};--c:${t.c}`});
+  p.innerHTML=`<h2>${t.t}</h2><div style="color:var(--muted)">${t.s}</div><ol class="steps">${t.steps.map(s=>`<li><div><b>${s[0]}</b><span>${s[1]}</span></div></li>`).join("")}</ol>`;
+  p.appendChild(stepper(S.talk,TALKS.length,()=>{S.talk--;render();},()=>{S.talk++;render();},"Talk"));
+  st.appendChild(p);
 }
 
 /* ---------- BOOT ---------- */
-function start(data){
-  if(data && typeof data==="object"){ ["score","answered","correct","streak"].forEach(k=>{ if(typeof data[k]==="number") S[k]=data[k]; }); }
-  const h=(location.hash||"").slice(1); if(MODES.some(m=>m.k===h)) S.mode=h; else if(data && data.mode && MODES.some(m=>m.k===data.mode)) S.mode=data.mode;
-  hud(); nav(); render();
-}
+function start(){ const h=location.hash.slice(1); if(MODES.some(m=>m.k===h)) S.mode=h; meter(); nav(); render(); }
 addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h!==S.mode && MODES.some(m=>m.k===h)){ S.mode=h; nav(); render(); } });
-if(hot && hot.ready) hot.ready(start); else start(hot && hot.data || {});
+start();
 </script>
