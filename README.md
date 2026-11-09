@@ -14,7 +14,7 @@ Personal Claude Code skills.
 | `yt-dlp` | Download video, audio, subtitles and info with yt-dlp. |
 | `hypit` | Clone/produce videos with AI agents via SVML. Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
 
-Install: `./install.sh` (copies skills to `~/.claude/skills`, installs faster-whisper).
-Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium; yt-dlp is installed separately;
+Install: `./install.sh` (copies skills to `~/.claude/skills`, installs faster-whisper and yt-dlp).
+Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium;
 `real-sfx` search/download needs a free `FREESOUND_API_KEY`;
 `hypit` needs Node 22.15+ (`install.sh` runs the official skill install plus `npm install -g @hypit/hypit`) and a model service such as HypiHub for generation.
