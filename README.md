@@ -14,8 +14,12 @@ Personal Claude Code skills.
 | `social-post` | X/Instagram/TikTok/LinkedIn posts and threads from a video or text. |
 | `yt-dlp` | Download video, audio, subtitles and info with yt-dlp. |
 | `hypit` | Clone/produce videos with AI agents via SVML. Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
+| `reel-studio` | Talking-head or podcast clip to a 9:16 reel: Higgsfield AI B-roll, word-synced captions and split-screen in Remotion. Installed from [harper-carroll/reel-studio-skill](https://github.com/harper-carroll/reel-studio-skill), not stored here. |
+| `reel-studio-gen` | Create clips from a prompt (Pollinations `gen` API) and edit a reel: captions, silence cuts, generated SFX, hook title, CTA card. Installed from [mohamedishagg/reel-studio](https://github.com/mohamedishagg/reel-studio) and renamed to avoid the name clash, not stored here. |
 
 Install: `./install.sh` (copies skills to `~/.claude/skills`, installs faster-whisper and yt-dlp).
 Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium;
 `real-sfx` search/download needs a free `FREESOUND_API_KEY`;
-`hypit` needs Node 22.15+ (`install.sh` runs the official skill install plus `npm install -g @hypit/hypit`) and a model service such as HypiHub for generation.
+`hypit` needs Node 22.15+ (`install.sh` runs the official skill install plus `npm install -g @hypit/hypit`) and a model service such as HypiHub for generation;
+`reel-studio` needs Node 18+ and the Higgsfield MCP (`https://mcp.higgsfield.ai/mcp`, active plan) for B-roll;
+`reel-studio-gen` needs a Pollinations key (`python3 ~/.claude/skills/reel-studio-gen/scripts/gen.py --set-key`).
