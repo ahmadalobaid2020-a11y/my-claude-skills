@@ -14,6 +14,7 @@ Personal Claude Code skills.
 | `social-post` | X/Instagram/TikTok/LinkedIn posts and threads from a video or text. |
 | `yt-dlp` | Download video, audio, subtitles and info with yt-dlp. |
 | `hypit` | Clone/produce videos with AI agents via SVML. Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
+| `security-audit` | Defensive security reviews and full codebase audits/pen-test reports. Installed from [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) (`npx skills add https://github.com/cloudflare/security-audit-skill --skill security-audit --global`), not stored here. |
 
 Install: `./install.sh` (copies skills to `~/.claude/skills`, installs faster-whisper and yt-dlp).
 Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium;
