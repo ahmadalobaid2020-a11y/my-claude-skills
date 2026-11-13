@@ -4,7 +4,8 @@ set -e
 cd "$(dirname "$0")"
 mkdir -p ~/.claude/skills
 cp -r skills/* ~/.claude/skills/
-pip install -q --break-system-packages faster-whisper yt-dlp
+# av 19 dropped an argument faster-whisper 1.2 still passes, so transcription fails with it.
+pip install -q --break-system-packages faster-whisper "av<19" yt-dlp
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
   skills add vercel-labs/skills -g -y      # find-skills skill
