@@ -13,4 +13,10 @@ if command -v npx >/dev/null; then
 else
   echo "npx not found: skipping skills CLI and hypit"
 fi
+if command -v hermes >/dev/null; then
+  # Hermes plugin: live WhatsApp voice calls (needs pairing afterwards, see README)
+  hermes plugins install ashwanthbalakrishnan5/hermes-whatsapp-voice --enable
+else
+  echo "hermes not found: skipping hermes-whatsapp-voice"
+fi
 echo "installed: $(ls skills | tr '\n' ' ')"

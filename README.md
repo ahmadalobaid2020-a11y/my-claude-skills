@@ -14,8 +14,13 @@ Personal Claude Code skills.
 | `social-post` | X/Instagram/TikTok/LinkedIn posts and threads from a video or text. |
 | `yt-dlp` | Download video, audio, subtitles and info with yt-dlp. |
 | `hypit` | Clone/produce videos with AI agents via SVML. Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
+| `hermes-whatsapp-voice` | Not a Claude skill: a [Hermes](https://github.com/NousResearch/hermes-agent) plugin for live voice calls with the Hermes bot over WhatsApp (Gemini Live). Installed from [ashwanthbalakrishnan5/hermes-whatsapp-voice](https://github.com/ashwanthbalakrishnan5/hermes-whatsapp-voice) with `hermes plugins install`, not stored here. |
 
 Install: `./install.sh` (copies skills to `~/.claude/skills`, installs faster-whisper and yt-dlp).
 Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium;
 `real-sfx` search/download needs a free `FREESOUND_API_KEY`;
 `hypit` needs Node 22.15+ (`install.sh` runs the official skill install plus `npm install -g @hypit/hypit`) and a model service such as HypiHub for generation.
+`hermes-whatsapp-voice` is installed only when `hermes` (>= 0.21.5) is on the machine, and still needs manual setup:
+`hermes config set plugins.entries.hermes-whatsapp-voice.settings.owner_number +<your number>`,
+`hermes whatsapp-voice pair` (scan the QR from the bot's phone), then `hermes whatsapp-voice serve`.
+Needs a separate WhatsApp number for the bot and a Gemini API key in Hermes. Unofficial WhatsApp protocol: use a number you can afford to lose.
