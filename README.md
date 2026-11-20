@@ -15,6 +15,7 @@ Personal Claude Code skills.
 | `yt-dlp` | Download video, audio, subtitles and info with yt-dlp. |
 | `hypit` | Clone/produce videos with AI agents via SVML. Installed from [hypit-ai/hypit](https://github.com/hypit-ai/hypit) the official way (`npx skills add hypit-ai/hypit -g`), not stored here. |
 
+| `autoae` | Find and customise animated video templates (intros, outros, titles, lower thirds, logo reveals) with [AutoAE](https://autoae.online). Installed by `install.sh` with `npx skills add https://autoae.online`. Needs Node 24+ and an AutoAE sign-in (`npx @autoae/cli auth login`). |
 | Anthropic skills | `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `frontend-design`, `canvas-design`, `mcp-builder`, `webapp-testing` and the rest of [anthropics/skills](https://github.com/anthropics/skills). Cloned and copied by `install.sh`, not stored here. |
 
 Install: `./install.sh` (copies skills to `~/.claude/skills`, adds the Anthropic skills, installs faster-whisper and yt-dlp).
