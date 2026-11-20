@@ -43,6 +43,26 @@ if command -v uv >/dev/null; then
 else
   echo "uv not found: skipping earshot"
 fi
+# VoiceStudio (debpalash/VoiceStudio): local TTS, voice cloning, dubbing and transcription.
+# Headless CPU backend in ~/VoiceStudio; start it with scripts/voicestudio-start.sh. Models download on request.
+if command -v uv >/dev/null && { command -v bun >/dev/null || [ -x ~/.bun/bin/bun ]; }; then
+  PATH="$HOME/.bun/bin:$PATH"
+  if [ ! -d ~/VoiceStudio/.git ]; then
+    git clone -q --depth 1 https://github.com/debpalash/VoiceStudio.git ~/VoiceStudio || echo "could not clone VoiceStudio"
+  fi
+  if [ -d ~/VoiceStudio ]; then
+    (cd ~/VoiceStudio && OMNIVOICE_TORCH_VARIANT=cpu OMNIVOICE_DEVICE=cpu UV_HTTP_TIMEOUT=300 bun run setup:api >/dev/null) \
+      || echo "VoiceStudio backend setup failed: skipping"
+    if command -v skills >/dev/null; then
+      skills add debpalash/VoiceStudio --skill voicestudio -g -y || echo "voicestudio skill install failed"
+    fi
+    if command -v claude >/dev/null && ! claude mcp get voicestudio >/dev/null 2>&1; then
+      claude mcp add --transport http voicestudio http://127.0.0.1:3900/mcp --scope user || echo "voicestudio MCP registration failed"
+    fi
+  fi
+else
+  echo "uv or bun not found: skipping VoiceStudio"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
