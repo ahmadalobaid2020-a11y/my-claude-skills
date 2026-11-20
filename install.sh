@@ -15,6 +15,14 @@ if git clone -q --depth 1 https://github.com/anthropics/skills.git "$tmp/anthrop
 else
   echo "could not clone anthropics/skills: skipping"
 fi
+# SallyRS/video-director, installed as video-director-sally (designly's video-director keeps the plain name)
+if git clone -q --depth 1 https://github.com/SallyRS/video-director.git "$tmp/sally-vd"; then
+  rm -rf ~/.claude/skills/video-director-sally
+  cp -r "$tmp/sally-vd/skills/video-director" ~/.claude/skills/video-director-sally
+  sed -i '0,/^name: video-director$/s//name: video-director-sally/' ~/.claude/skills/video-director-sally/SKILL.md
+else
+  echo "could not clone SallyRS/video-director: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
