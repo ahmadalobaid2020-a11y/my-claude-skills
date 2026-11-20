@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>صيّاد البريد</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;700&display=swap">
+<style>
+/* Layout: one presenter stage (16:9 on wide screens, natural height on phones), sea-depth palette, coral marks danger, teal marks safety */
+:root{
+  --bg:#EAF1F2; --surface:#FFFFFF; --stage:#F7FAFA; --ink:#0F2430; --muted:#526872; --line:#C9D7DB;
+  --accent:#0E7470; --accent-soft:#D5ECEA; --danger:#C93F24; --danger-soft:#FBE3DC; --safe:#1C7F54; --safe-soft:#DCF1E6; --warn:#9A6514;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#091720; --surface:#11222C; --stage:#0D1D26; --ink:#E3EDEF; --muted:#8FA6AE; --line:#24404B;
+  --accent:#43B9B0; --accent-soft:#143A3C; --danger:#FF7D5E; --danger-soft:#3A1E18; --safe:#52C78F; --safe-soft:#143424; --warn:#E3AC52; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#091720; --surface:#11222C; --stage:#0D1D26; --ink:#E3EDEF; --muted:#8FA6AE; --line:#24404B;
+  --accent:#43B9B0; --accent-soft:#143A3C; --danger:#FF7D5E; --danger-soft:#3A1E18; --safe:#52C78F; --safe-soft:#143424; --warn:#E3AC52; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.brand svg{width:22px;height:22px}
+.top-actions{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:.9rem}
+.count{font-variant-numeric:tabular-nums;font-family:var(--f-mono)}
+
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 14px;font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:var(--surface)}
+
+.stage{background:var(--stage);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden}
+@media (min-width:860px){.stage{aspect-ratio:16/9;max-width:100%}}
+.slide{padding:clamp(20px,4vw,48px);height:100%;display:flex;flex-direction:column;gap:18px;animation:in .35s ease}
+@keyframes in{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide{animation:none}*{transition:none!important}}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.25}
+h2{font-size:clamp(1.4rem,2.6vw,2rem)}
+.lede{color:var(--muted);margin:0;max-width:62ch}
+.grow{flex:1;min-height:0}
+.cols{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;min-height:0}
+@media (max-width:859px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.dot{width:28px;height:6px;border-radius:3px;border:0;background:var(--line);padding:0}
+.dot[aria-current="true"]{background:var(--accent)}
+
+/* Slide 1 */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;height:100%}
+@media (max-width:859px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(2rem,5vw,3.6rem)}
+.hero h1 em{font-style:normal;color:var(--danger)}
+.hint{font-size:.9rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.kbd{font-family:var(--f-mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--surface)}
+.phone{width:min(280px,100%);margin-inline:auto;aspect-ratio:9/16;border:2px solid var(--line);border-radius:28px;background:var(--surface);padding:18px 12px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.phone .notch{width:70px;height:6px;border-radius:3px;background:var(--line);margin:0 auto 8px}
+.notif{background:var(--stage);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.82rem;line-height:1.5;opacity:0;transform:translateY(-12px);animation:drop 6s ease infinite}
+.notif b{display:block;font-size:.8rem}
+.notif.bad{border-color:var(--danger)}
+.notif:nth-child(3){animation-delay:.8s}.notif:nth-child(4){animation-delay:1.6s}
+@keyframes drop{0%{opacity:0;transform:translateY(-12px)}10%,85%{opacity:1;transform:none}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.notif{animation:none;opacity:1;transform:none}}
+.hook{position:absolute;inset-inline-start:18px;top:-10px;width:40px;animation:fish 6s ease-in-out infinite}
+@keyframes fish{0%,100%{transform:translateY(-30px)}50%{transform:translateY(150px)}}
+@media (prefers-reduced-motion:reduce){.hook{animation:none;transform:translateY(60px)}}
+
+/* Slide 2: email */
+.mail{font-size:.95rem}
+.mail .row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mail .k{color:var(--muted);min-width:48px}
+.flag{background:none;border:0;padding:0 3px;border-radius:4px;border-bottom:2px dashed var(--line);text-align:inherit}
+.flag:hover{background:var(--danger-soft)}
+.flag.found{background:var(--danger-soft);border-bottom-color:var(--danger);color:var(--danger)}
+.mail .body{padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.mail .cta{align-self:flex-start;background:var(--accent);color:var(--surface);border-radius:6px;padding:6px 16px;border:0;font-weight:600}
+.mail .cta.found{background:var(--danger)}
+.meter{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--danger);width:0;transition:width .4s}
+.found-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+.found-list li{border-inline-start:3px solid var(--danger);padding-inline-start:10px}
+.found-list li b{display:block}
+.placeholder{color:var(--muted);font-size:.92rem}
+
+/* Slide 3: URL */
+.urls{display:flex;flex-direction:column;gap:6px}
+.url-btn{direction:ltr;text-align:left;font-family:var(--f-mono);font-size:.82rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;overflow-wrap:anywhere}
+.url-btn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.url-in{display:flex;gap:8px}
+.url-in input{flex:1;min-width:0;direction:ltr;font-family:var(--f-mono);font-size:.85rem;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.anatomy{direction:ltr;font-family:var(--f-mono);font-size:clamp(.9rem,1.8vw,1.15rem);padding:14px;border-radius:8px;background:var(--stage);border:1px solid var(--line);overflow-wrap:anywhere;text-align:left}
+.anatomy .sch,.anatomy .sub,.anatomy .path{color:var(--muted)}
+.anatomy .reg{font-weight:600;padding:0 3px;border-radius:3px}
+.anatomy.ok .reg{background:var(--safe-soft);color:var(--safe)}
+.anatomy.bad .reg{background:var(--danger-soft);color:var(--danger)}
+.verdict{font-family:var(--f-display);font-size:1.15rem;font-weight:700}
+.verdict.ok{color:var(--safe)}.verdict.bad{color:var(--danger)}
+.legend{font-size:.85rem;color:var(--muted)}
+
+/* Slide 4: simulation */
+.sim-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sim-controls label{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--muted)}
+.sim-controls input[type=range]{width:140px;accent-color:var(--accent)}
+.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.readout{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.readout small{display:block;color:var(--muted);font-size:.78rem}
+.readout b{font-family:var(--f-mono);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.readout.money b{color:var(--safe);transition:color .3s}
+.readout.money.hit b{color:var(--danger)}
+.track{position:relative;height:12px;border-radius:6px;background:var(--line)}
+.track .fill{position:absolute;inset-block:0;inset-inline-start:0;width:0;border-radius:6px;background:var(--danger)}
+.track .tick{position:absolute;top:-4px;width:2px;height:20px;background:var(--muted);opacity:.5}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0}
+@media (max-width:600px){.lanes{grid-template-columns:1fr}}
+.lane h3{margin:0 0 6px;font-family:var(--f-display);font-size:.95rem}
+.lane ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.88rem}
+.lane li{display:flex;gap:8px;align-items:baseline;opacity:.35;transition:opacity .3s}
+.lane li.on{opacity:1}
+.lane li time{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);min-width:42px;font-variant-numeric:tabular-nums}
+.lane.attacker li.on{color:var(--danger)}
+.stopbox{border-radius:8px;padding:10px 14px;font-size:.95rem}
+.stopbox.ok{background:var(--safe-soft);color:var(--safe)}
+.stopbox.bad{background:var(--danger-soft);color:var(--danger)}
+
+/* Slide 5: quiz */
+.msg{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.msg .from{font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.msg .text{font-size:1.02rem}
+.msg .lnk{direction:ltr;unicode-bidi:isolate;font-family:var(--f-mono);font-size:.85rem;color:var(--accent)}
+.choices{display:flex;gap:10px;flex-wrap:wrap}
+.feedback{border-radius:8px;padding:10px 14px}
+.feedback.ok{background:var(--safe-soft)}.feedback.bad{background:var(--danger-soft)}
+.feedback b{display:block}
+.score{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* Slide 6: checklist */
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:s}
+.steps li{counter-increment:s}
+.step{width:100%;display:flex;gap:12px;align-items:flex-start;text-align:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.step::before{content:counter(s);font-family:var(--f-mono);font-weight:600;width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:50%;border:2px solid var(--line);font-size:.85rem}
+.step[aria-pressed="true"]{border-color:var(--safe)}
+.step[aria-pressed="true"]::before{content:"✓";background:var(--safe);border-color:var(--safe);color:var(--surface)}
+.step b{display:block}
+.step span{color:var(--muted);font-size:.9rem}
+.meter.safe i{background:var(--safe)}
+
+/* Slide 7 */
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:700px){.rules{grid-template-columns:1fr}}
+.rule{border-top:3px solid var(--accent);padding-top:10px}
+.rule b{font-family:var(--f-display);font-size:1.15rem;display:block}
+.rule span{color:var(--muted);font-size:.95rem}
+.closing{font-family:var(--f-display);font-size:clamp(2rem,5vw,3.4rem);font-weight:700;color:var(--accent)}
+</style>
+
+<div class="wrap" dir="rtl" lang="ar">
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v11a4 4 0 1 1-4-4" /><path d="M8 9l-2 2" /></svg>
+      صيّاد البريد
+    </div>
+    <div class="top-actions">
+      <span class="count" id="count">1 / 7</span>
+      <button class="btn" id="fs" type="button">ملء الشاشة</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage" aria-live="polite"></main>
+
+  <nav class="nav" aria-label="التنقل بين الشرائح">
+    <button class="btn" id="prev" type="button">→ السابقة</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn primary" id="next" type="button">التالية ←</button>
+  </nav>
+</div>
+
+<template id="t1">
+  <section class="slide">
+    <div class="hero">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <span class="eyebrow">عرض تفاعلي · التوعية بالتصيّد الإلكتروني</span>
+        <h1>الطُعم يصلك<br>في <em>رسالة عاجلة</em></h1>
+        <p class="lede">سبع شرائح تجرّبها بنفسك: تكشف رسالة مزيّفة، تفحص رابطاً، تشاهد هجوماً يكتمل في أربع دقائق، وتختبر قرارك.</p>
+        <div class="hint"><span>التنقل:</span><span class="kbd">←</span><span class="kbd">→</span><span>أو الأزرار بالأسفل</span></div>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <svg class="hook" viewBox="0 0 40 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="color:var(--danger)"><path d="M20 0v52a10 10 0 1 1-10-10"/><path d="M10 42l-5 5"/></svg>
+        <div class="notch"></div>
+        <div class="notif"><b>مصرف الوطن</b>تمت عملية شراء بقيمة 42 ر.س</div>
+        <div class="notif bad"><b>تنبيه أمني ⚠</b>سيتم إيقاف حسابك خلال 24 ساعة. حدّث بياناتك الآن</div>
+        <div class="notif"><b>الشحن</b>طردك في الطريق</div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<template id="t2">
+  <section class="slide">
+    <span class="eyebrow">تشريح رسالة · اضغط على كل جزء يثير الشك</span>
+    <h2>في هذه الرسالة خمس علامات خطر. كم تجد منها؟</h2>
+    <div class="cols grow">
+      <div class="panel mail" id="mail">
+        <div class="row"><span class="k">من:</span><span>مصرف الوطن <button type="button" class="flag" data-f="0" style="direction:ltr;unicode-bidi:isolate">&lt;alerts@watan-bank-secure.co&gt;</button></span></div>
+        <div class="row"><span class="k">الموضوع:</span><button type="button" class="flag" data-f="1">عاجل: سيتم إيقاف حسابك خلال 24 ساعة</button></div>
+        <div class="body">
+          <button type="button" class="flag" data-f="2" style="align-self:flex-start">عزيزي العميل،</button>
+          <p style="margin:0">رصدنا نشاطاً غير معتاد على حسابك. لحماية أموالك، يرجى تحديث بياناتك فوراً.
+            <button type="button" class="flag" data-f="4">ستحتاج إلى إدخال كلمة المرور ورمز التحقق المرسل إلى جوالك.</button></p>
+          <button type="button" class="cta flag" data-f="3">تحديث البيانات</button>
+          <p style="margin:0;color:var(--muted);font-size:.85rem">فريق أمن الحسابات</p>
+        </div>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between"><b>العلامات المكتشفة</b><span class="score" id="flagCount">0 / 5</span></div>
+        <div class="meter"><i id="flagMeter"></i></div>
+        <ul class="found-list" id="foundList"><li class="placeholder" style="border:0;padding:0">ابدأ بالعنوان الذي أُرسلت منه الرسالة.</li></ul>
+      </div>
+    </div>
+  </section>
+</template>
+
+<template id="t3">
+  <section class="slide">
+    <span class="eyebrow">فاحص الروابط · النطاق الحقيقي هو ما قبل أول «/» مباشرة</span>
+    <h2>الموقع الرسمي هو <span style="direction:ltr;unicode-bidi:isolate;font-family:var(--f-mono)">watanbank.com.sa</span>. أيّ هذه الروابط يقودك إليه؟</h2>
+    <div class="cols grow">
+      <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+        <div class="urls" id="urls"></div>
+        <div class="url-in">
+          <input id="urlInput" type="text" placeholder="الصق أي رابط هنا" aria-label="رابط للفحص" autocomplete="off" spellcheck="false">
+          <button class="btn primary" id="urlCheck" type="button">افحص</button>
+        </div>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:12px">
+        <div class="anatomy" id="anatomy"></div>
+        <div class="verdict" id="verdict"></div>
+        <p id="why" style="margin:0"></p>
+        <p class="legend" style="margin:0">الجزء الملوّن هو النطاق المسجَّل، وهو الذي يحدد صاحب الموقع. الكلمات قبله وبعده يكتبها المحتال كما يشاء.</p>
+      </div>
+    </div>
+  </section>
+</template>
+
+<template id="t4">
+  <section class="slide">
+    <span class="eyebrow">محاكاة · أربع دقائق من الرسالة إلى الحساب الفارغ</span>
+    <h2>شغّل الهجوم، وأوقفه في أي لحظة لترى إن كنت ستنجو</h2>
+    <div class="sim-controls">
+      <button class="btn primary" id="play" type="button">▶ تشغيل</button>
+      <button class="btn" id="reset" type="button">إعادة</button>
+      <label for="speed">السرعة <input id="speed" type="range" min="1" max="4" step="1" value="3"><span class="count" id="speedLbl">×10</span></label>
+      <button class="btn danger" id="stop" type="button">توقّف وتحقّق</button>
+    </div>
+    <div class="readouts">
+      <div class="readout"><small>الوقت المنقضي</small><b id="clock">0:00</b></div>
+      <div class="readout money" id="moneyBox"><small>رصيد الحساب</small><b id="money">8,450 ر.س</b></div>
+      <div class="readout"><small>المرحلة</small><b id="stage-lbl" style="font-family:var(--f-body);font-size:1rem">في الانتظار</b></div>
+    </div>
+    <div class="track" id="track"><div class="fill" id="fill"></div></div>
+    <div id="stopMsg" hidden></div>
+    <div class="lanes grow">
+      <div class="lane"><h3>الضحية</h3><ol id="laneV"></ol></div>
+      <div class="lane attacker"><h3>المحتال</h3><ol id="laneA"></ol></div>
+    </div>
+  </section>
+</template>
+
+<template id="t5">
+  <section class="slide">
+    <span class="eyebrow">اختبر قرارك · <span class="score" id="qPos">1 / 4</span></span>
+    <h2>احتيال أم رسالة سليمة؟</h2>
+    <div class="grow" style="display:flex;flex-direction:column;gap:14px;max-width:720px">
+      <div class="msg" id="qMsg"></div>
+      <div class="choices" id="qChoices">
+        <button class="btn danger" type="button" data-a="phish">احتيال</button>
+        <button class="btn" type="button" data-a="safe" style="border-color:var(--safe);color:var(--safe)">سليمة</button>
+      </div>
+      <div class="feedback" id="qFb" hidden></div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <button class="btn primary" id="qNext" type="button" hidden>الرسالة التالية</button>
+        <span class="score" id="qScore">النتيجة: 0</span>
+      </div>
+    </div>
+  </section>
+</template>
+
+<template id="t6">
+  <section class="slide">
+    <span class="eyebrow">ضغطت على الرابط؟ · الترتيب مهم</span>
+    <h2>ما تفعله في الدقائق الأولى يحدد حجم الخسارة</h2>
+    <div class="cols grow">
+      <ol class="steps" id="steps">
+        <li><button class="step" type="button" aria-pressed="false"><div><b>توقّف عن الإدخال</b><span>أغلق الصفحة فوراً، ولا تُكمل أي خانة أو رمز.</span></div></button></li>
+        <li><button class="step" type="button" aria-pressed="false"><div><b>اتصل بالبنك</b><span>على الرقم المطبوع خلف بطاقتك، واطلب إيقاف العمليات والمستفيدين الجدد.</span></div></button></li>
+        <li><button class="step" type="button" aria-pressed="false"><div><b>غيّر كلمة المرور</b><span>من التطبيق الرسمي مباشرة، لا من أي رابط وصلك.</span></div></button></li>
+        <li><button class="step" type="button" aria-pressed="false"><div><b>أبلغ فريق الأمن السيبراني</b><span>أرسل لهم الرسالة كما هي، فقد تكون وصلت لزملائك أيضاً.</span></div></button></li>
+        <li><button class="step" type="button" aria-pressed="false"><div><b>راجع حساباتك</b><span>فعّل التحقق الثنائي، وراجع العمليات خلال الأيام القادمة.</span></div></button></li>
+      </ol>
+      <div class="panel" style="display:flex;flex-direction:column;gap:12px;align-self:start">
+        <b>خطة الاستجابة</b>
+        <div class="meter safe"><i id="stepMeter"></i></div>
+        <p id="stepMsg" style="margin:0" class="placeholder">علّم كل خطوة بعد تنفيذها.</p>
+      </div>
+    </div>
+  </section>
+</template>
+
+<template id="t7">
+  <section class="slide" style="justify-content:center;gap:28px">
+    <span class="eyebrow">الخلاصة</span>
+    <div class="rules">
+      <div class="rule"><b>العجلة إنذار</b><span>كل رسالة تضغط عليك بمهلة أو تهديد تستحق أن تبطئ أمامها.</span></div>
+      <div class="rule"><b>افتح التطبيق بنفسك</b><span>لا تصل إلى حسابك من رابط في رسالة. اكتب العنوان أو افتح التطبيق الرسمي.</span></div>
+      <div class="rule"><b>الرمز لك وحدك</b><span>البنك لا يطلب رمز التحقق ولا كلمة المرور، لا برسالة ولا باتصال.</span></div>
+    </div>
+    <div class="closing">فكّر قبل أن تضغط.</div>
+    <p class="lede">شاهدت رسالة مشبوهة؟ أرسلها لفريق الأمن السيبراني ولا تحذفها قبل الإبلاغ.</p>
+  </section>
+</template>
+
+<script>
+(() => {
+  const N = 7;
+  const stage = document.getElementById('stage');
+  const dots = document.getElementById('dots');
+  const count = document.getElementById('count');
+  let cur = 1, simTimer = null;
+
+  for (let i = 1; i <= N; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot'; d.type = 'button'; d.setAttribute('aria-label', 'الشريحة ' + i);
+    d.onclick = () => go(i);
+    dots.appendChild(d);
+  }
+
+  function go(n) {
+    n = Math.max(1, Math.min(N, n));
+    cur = n;
+    if (simTimer) { clearInterval(simTimer); simTimer = null; }
+    stage.replaceChildren(document.getElementById('t' + n).content.cloneNode(true));
+    [...dots.children].forEach((d, i) => d.setAttribute('aria-current', i + 1 === n ? 'true' : 'false'));
+    count.textContent = n + ' / ' + N;
+    document.getElementById('prev').disabled = n === 1;
+    document.getElementById('next').disabled = n === N;
+    if (location.hash !== '#s' + n) history.replaceState(null, '', '#s' + n);
+    (inits[n] || (() => {}))();
+  }
+
+  document.getElementById('prev').onclick = () => go(cur - 1);
+  document.getElementById('next').onclick = () => go(cur + 1);
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.key === 'ArrowLeft' || e.key === 'PageDown') { go(cur + 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight' || e.key === 'PageUp') { go(cur - 1); e.preventDefault(); }
+  });
+  window.addEventListener('hashchange', () => { const m = /^#s(\d)$/.exec(location.hash); if (m && +m[1] !== cur) go(+m[1]); });
+  document.getElementById('fs').onclick = () => {
+    const el = document.documentElement;
+    try {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      else if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    } catch (e) {}
+  };
+
+  /* ---------- Slide 2 ---------- */
+  const FLAGS = [
+    ['عنوان المرسل', 'النطاق watan-bank-secure.co ليس نطاق البنك. الاسم الظاهر «مصرف الوطن» يكتبه أي أحد.'],
+    ['مهلة وتهديد', '«عاجل» و«خلال 24 ساعة» تدفعك للتصرف قبل أن تفكر.'],
+    ['تحية عامة', 'البنك يعرف اسمك. «عزيزي العميل» تعني رسالة جماعية.'],
+    ['زر لا تعرف وجهته', 'الزر يقود إلى watan-bank.verify-login.xyz. لا تحكم على الزر بنصه.'],
+    ['طلب رمز التحقق', 'لا جهة موثوقة تطلب كلمة المرور ورمز التحقق معاً. هذا هدف الرسالة كلها.']
+  ];
+  function init2() {
+    const found = new Set();
+    const list = document.getElementById('foundList');
+    document.querySelectorAll('#mail .flag').forEach(b => b.addEventListener('click', () => {
+      const f = +b.dataset.f;
+      if (found.has(f)) return;
+      found.add(f); b.classList.add('found');
+      if (found.size === 1) list.innerHTML = '';
+      const li = document.createElement('li');
+      li.innerHTML = '<b></b><span></span>';
+      li.querySelector('b').textContent = FLAGS[f][0];
+      li.querySelector('span').textContent = FLAGS[f][1];
+      list.appendChild(li);
+      document.getElementById('flagCount').textContent = found.size + ' / 5';
+      document.getElementById('flagMeter').style.width = (found.size * 20) + '%';
+      if (found.size === 5) {
+        const done = document.createElement('li');
+        done.style.borderColor = 'var(--safe)';
+        done.innerHTML = '<b style="color:var(--safe)">وجدتها كلها.</b><span>رسالة واحدة تكفي فيها علامة واحدة لتتوقف.</span>';
+        list.appendChild(done);
+      }
+    }));
+  }
+
+  /* ---------- Slide 3 ---------- */
+  const OFFICIAL = 'watanbank.com.sa';
+  const SAMPLES = [
+    ['https://online.watanbank.com.sa/cards', 'الجزء online قبل النطاق مجرد قسم داخل الموقع الرسمي.'],
+    ['https://watanbank.com.sa.login-verify.xyz/update', 'اسم البنك هنا في البداية للتمويه فقط. النطاق الحقيقي login-verify.xyz.'],
+    ['https://watanbnak.com.sa/login', 'حرفان مقلوبان: watanbnak. خطأ إملائي مقصود يصعب ملاحظته على الجوال.'],
+    ['https://secure-watanbank.com/otp', 'كلمة secure وشرطة قبل الاسم تصنعان نطاقاً جديداً تماماً لا علاقة له بالبنك.'],
+    ['https://www.watanbank.com.sa/login', 'هذا هو النطاق الرسمي. ومع ذلك، الأفضل أن تفتح التطبيق بنفسك بدل الضغط على رابط.']
+  ];
+  const SLD = ['com.sa', 'gov.sa', 'edu.sa', 'org.sa', 'net.sa', 'med.sa', 'co.uk', 'com.au'];
+  function registered(host) {
+    const parts = host.split('.');
+    const two = parts.slice(-2).join('.');
+    const n = SLD.includes(two) ? 3 : 2;
+    return parts.slice(-n).join('.');
+  }
+  function esc(s) { return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+  function inspect(raw, note) {
+    const an = document.getElementById('anatomy'), vd = document.getElementById('verdict'), why = document.getElementById('why');
+    let u;
+    try { u = new URL(/^[a-z]+:\/\//i.test(raw) ? raw : 'https://' + raw); } catch (e) { u = null; }
+    if (!u || !u.hostname.includes('.')) {
+      an.className = 'anatomy'; an.textContent = raw || '—';
+      vd.className = 'verdict'; vd.textContent = 'تعذّرت قراءة الرابط';
+      why.textContent = 'تأكد أنه رابط كامل مثل example.com/page.';
+      return;
+    }
+    const host = u.hostname.toLowerCase();
+    const reg = registered(host);
+    const sub = host.slice(0, host.length - reg.length);
+    const ok = reg === OFFICIAL;
+    an.className = 'anatomy ' + (ok ? 'ok' : 'bad');
+    an.innerHTML = '<span class="sch">' + esc(u.protocol) + '//</span><span class="sub">' + esc(sub) + '</span><span class="reg">' + esc(reg) + '</span><span class="path">' + esc(u.pathname + u.search) + '</span>';
+    vd.className = 'verdict ' + (ok ? 'ok' : 'bad');
+    vd.textContent = ok ? 'يقودك إلى موقع البنك الرسمي' : 'يقودك إلى ' + reg + '، وليس إلى البنك';
+    let t = note || (ok ? 'النطاق المسجَّل يطابق الموقع الرسمي.' : 'النطاق المسجَّل لا يطابق ' + OFFICIAL + '، مهما بدت بقية الكلمات مألوفة.');
+    if (host.startsWith('xn--') || host.includes('.xn--')) t += ' يحتوي النطاق على أحرف من لغة أخرى تشبه الحروف اللاتينية.';
+    if (u.protocol === 'http:') t += ' الرابط غير مشفّر أيضاً، مع أن القفل وحده لا يثبت أن الموقع آمن.';
+    why.textContent = t;
+  }
+  function init3() {
+    const box = document.getElementById('urls');
+    SAMPLES.forEach(([url, note], i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'url-btn'; b.textContent = url;
+      b.setAttribute('aria-pressed', 'false');
+      b.onclick = () => {
+        box.querySelectorAll('.url-btn').forEach(x => x.setAttribute('aria-pressed', 'false'));
+        b.setAttribute('aria-pressed', 'true');
+        inspect(url, note);
+      };
+      box.appendChild(b);
+      if (i === 1) { b.setAttribute('aria-pressed', 'true'); inspect(url, note); }
+    });
+    const inp = document.getElementById('urlInput');
+    const run = () => {
+      box.querySelectorAll('.url-btn').forEach(x => x.setAttribute('aria-pressed', 'false'));
+      inspect(inp.value.trim());
+    };
+    document.getElementById('urlCheck').onclick = run;
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+  }
+
+  /* ---------- Slide 4 ---------- */
+  const TOTAL = 240, START = 8450;
+  const EV = [
+    { t: 0,   who: 'v', txt: 'تصل رسالة «سيتم إيقاف حسابك»', stage: 'وصلت الرسالة' },
+    { t: 35,  who: 'v', txt: 'يضغط على الرابط', stage: 'ضغط الرابط' },
+    { t: 70,  who: 'v', txt: 'يُدخل اسم المستخدم وكلمة المرور', stage: 'سُرقت كلمة المرور' },
+    { t: 95,  who: 'a', txt: 'يدخل إلى الحساب الحقيقي بالبيانات المسروقة' },
+    { t: 120, who: 'a', txt: 'يطلب إضافة مستفيد جديد، فيُرسَل رمز للضحية' },
+    { t: 150, who: 'v', txt: 'يُدخل رمز التحقق في الصفحة المزيفة', stage: 'سُرق رمز التحقق' },
+    { t: 175, who: 'a', txt: 'يضيف المستفيد ويحوّل 4,000 ر.س', loss: 4000 },
+    { t: 210, who: 'a', txt: 'يحوّل 4,000 ر.س أخرى', loss: 4000 },
+    { t: 240, who: 'a', txt: 'يسحب الرصيد المتبقي ويختفي', loss: 450, stage: 'الحساب فارغ' }
+  ];
+  const SPEEDS = [1, 4, 10, 30];
+  function fmt(s) { s = Math.floor(s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+  function init4() {
+    let t = 0, playing = false;
+    const lv = document.getElementById('laneV'), la = document.getElementById('laneA'), track = document.getElementById('track');
+    const items = EV.map(e => {
+      const li = document.createElement('li');
+      li.innerHTML = '<time>' + fmt(e.t) + '</time><span></span>';
+      li.querySelector('span').textContent = e.txt;
+      (e.who === 'v' ? lv : la).appendChild(li);
+      const tk = document.createElement('div');
+      tk.className = 'tick'; tk.style.insetInlineStart = (e.t / TOTAL * 100) + '%';
+      track.appendChild(tk);
+      return li;
+    });
+    const play = document.getElementById('play'), speed = document.getElementById('speed'), stopMsg = document.getElementById('stopMsg');
+    const speedLbl = document.getElementById('speedLbl');
+    const showSpeed = () => speedLbl.textContent = '×' + SPEEDS[speed.value - 1];
+    speed.oninput = showSpeed; showSpeed();
+
+    function render() {
+      document.getElementById('clock').textContent = fmt(t);
+      document.getElementById('fill').style.width = (t / TOTAL * 100) + '%';
+      let lost = 0, stg = 'في الانتظار';
+      EV.forEach((e, i) => {
+        const on = t >= e.t && (t > 0 || playing || i === 0 && t > 0);
+        items[i].classList.toggle('on', t >= e.t && (t > 0 || playing));
+        if (t >= e.t && (t > 0 || playing)) { lost += e.loss || 0; if (e.stage) stg = e.stage; }
+      });
+      document.getElementById('money').textContent = (START - lost).toLocaleString('en-US') + ' ر.س';
+      document.getElementById('moneyBox').classList.toggle('hit', lost > 0);
+      document.getElementById('stage-lbl').textContent = stg;
+    }
+    function stopTimer() { if (simTimer) { clearInterval(simTimer); simTimer = null; } playing = false; play.textContent = '▶ تشغيل'; }
+    function tick() {
+      t = Math.min(TOTAL, t + SPEEDS[speed.value - 1] * 0.1);
+      render();
+      if (t >= TOTAL) {
+        stopTimer();
+        stopMsg.hidden = false; stopMsg.className = 'stopbox bad';
+        stopMsg.textContent = 'اكتمل الهجوم في أربع دقائق. ارجع وجرّب أن توقفه قبل أن يُدخل الضحية أي بيانات.';
+      }
+    }
+    play.onclick = () => {
+      if (playing) { stopTimer(); return; }
+      if (t >= TOTAL) { t = 0; }
+      stopMsg.hidden = true;
+      playing = true; play.textContent = '❚❚ إيقاف مؤقت';
+      render();
+      simTimer = setInterval(tick, 100);
+    };
+    document.getElementById('reset').onclick = () => { stopTimer(); t = 0; stopMsg.hidden = true; render(); };
+    document.getElementById('stop').onclick = () => {
+      if (t === 0 && !playing) {
+        stopMsg.hidden = false; stopMsg.className = 'stopbox ok';
+        stopMsg.textContent = 'شغّل المحاكاة أولاً، ثم اضغط «توقّف وتحقّق» في اللحظة التي تختارها.';
+        return;
+      }
+      stopTimer();
+      stopMsg.hidden = false;
+      let m, ok = true;
+      if (t < 35) m = 'نجوت بالكامل. توقفت قبل الضغط على الرابط، فلم يحصل المحتال على أي شيء.';
+      else if (t < 70) m = 'نجوت. ضغطت الرابط لكنك لم تُدخل بيانات. أغلق الصفحة وأبلغ فريق الأمن.';
+      else if (t < 150) m = 'كلمة المرور مسروقة، لكن المال ما زال في حسابك. غيّر كلمة المرور من التطبيق واتصل بالبنك الآن.';
+      else if (t < 175) { ok = false; m = 'المحتال يملك كلمة المرور والرمز. اتصل بالبنك فوراً لإيقاف المستفيد الجديد قبل التحويل.'; }
+      else { ok = false; m = 'خسرت ' + (START - parseInt(document.getElementById('money').textContent.replace(/[^0-9]/g, ''), 10)).toLocaleString('en-US') + ' ر.س. اتصل بالبنك فوراً لمحاولة تجميد التحويلات، وقدّم بلاغاً رسمياً.'; }
+      stopMsg.className = 'stopbox ' + (ok ? 'ok' : 'bad');
+      stopMsg.textContent = 'توقفت عند ' + fmt(t) + '. ' + m;
+    };
+    render();
+  }
+
+  /* ---------- Slide 5 ---------- */
+  const Q = [
+    { from: 'SMS · رقم دولي +44 7700 900 123', when: 'الآن', text: 'طردك متوقف في المستودع بسبب نقص رسوم 2.75 ر.س. ادفعها خلال 12 ساعة وإلا يُعاد الطرد:', link: 'https://saudi-post.delivery-fee.top/pay', a: 'phish',
+      why: 'رقم دولي، مبلغ صغير ليبدو تافهاً، مهلة قصيرة، ورابط لنطاق لا علاقة له بالبريد. الهدف بيانات بطاقتك وليس الرسوم.' },
+    { from: 'SMS · WatanBank', when: 'قبل دقيقة', text: 'رمز التحقق لعملية الدخول التي طلبتها: 482913. لا تشارك هذا الرمز مع أحد، ولن يطلبه منك موظفو البنك.', link: '', a: 'safe',
+      why: 'وصلت بعد طلب قمت به أنت، ولا تحتوي رابطاً، وتحذرك من مشاركة الرمز. إن وصلتك دون أن تطلبها فهذه علامة أن أحداً يحاول الدخول لحسابك.' },
+    { from: 'البريد · it-support@company-helpdesk.net', when: '8:02 ص', text: 'تنتهي صلاحية كلمة مرور حسابك الوظيفي اليوم. للحفاظ على الوصول إلى بريدك، حدّثها عبر الرابط التالي:', link: 'https://company-helpdesk.net/reset', a: 'phish',
+      why: 'الدعم الفني الحقيقي يرسل من نطاق الشركة نفسه ولا يطلب كلمة المرور عبر رابط. نطاق company-helpdesk.net مسجل خارج الشركة.' },
+    { from: 'البريد · hr@company.com.sa', when: 'أمس', text: 'نُشر جدول الإجازات للربع القادم على البوابة الداخلية. يمكنكم الاطلاع عليه من الصفحة الرئيسية كالمعتاد.', link: '', a: 'safe',
+      why: 'من نطاق الشركة الرسمي، بلا رابط ولا مهلة ولا طلب بيانات، ويحيلك إلى مكان تعرفه وتصل إليه بنفسك.' }
+  ];
+  function init5() {
+    let i = 0, score = 0, answered = false;
+    const msg = document.getElementById('qMsg'), fb = document.getElementById('qFb'), nx = document.getElementById('qNext');
+    function show() {
+      const q = Q[i]; answered = false;
+      msg.innerHTML = '<div class="from"><span></span><span></span></div><div class="text"></div>' + (q.link ? '<div class="lnk"></div>' : '');
+      msg.querySelector('.from span').textContent = q.from;
+      msg.querySelectorAll('.from span')[1].textContent = q.when;
+      msg.querySelector('.text').textContent = q.text;
+      if (q.link) msg.querySelector('.lnk').textContent = q.link;
+      fb.hidden = true; nx.hidden = true;
+      document.getElementById('qPos').textContent = (i + 1) + ' / ' + Q.length;
+      document.querySelectorAll('#qChoices button').forEach(b => b.disabled = false);
+    }
+    document.querySelectorAll('#qChoices button').forEach(b => b.onclick = () => {
+      if (answered) return; answered = true;
+      const q = Q[i], right = b.dataset.a === q.a;
+      if (right) score++;
+      fb.hidden = false; fb.className = 'feedback ' + (right ? 'ok' : 'bad');
+      fb.innerHTML = '<b></b><span></span>';
+      fb.querySelector('b').textContent = (right ? 'إجابة صحيحة. ' : 'ليست هذه. ') + (q.a === 'phish' ? 'هذه رسالة احتيال.' : 'هذه رسالة سليمة.');
+      fb.querySelector('span').textContent = q.why;
+      document.getElementById('qScore').textContent = 'النتيجة: ' + score + ' من ' + (i + 1);
+      document.querySelectorAll('#qChoices button').forEach(x => x.disabled = true);
+      if (i < Q.length - 1) { nx.hidden = false; nx.textContent = 'الرسالة التالية'; }
+      else { nx.hidden = false; nx.textContent = 'أعد الاختبار'; }
+    });
+    nx.onclick = () => {
+      if (i < Q.length - 1) i++; else { i = 0; score = 0; document.getElementById('qScore').textContent = 'النتيجة: 0'; }
+      show();
+    };
+    show();
+  }
+
+  /* ---------- Slide 6 ---------- */
+  function init6() {
+    const steps = [...document.querySelectorAll('#steps .step')];
+    const upd = () => {
+      const n = steps.filter(s => s.getAttribute('aria-pressed') === 'true').length;
+      document.getElementById('stepMeter').style.width = (n / steps.length * 100) + '%';
+      const m = document.getElementById('stepMsg');
+      m.className = n === steps.length ? '' : 'placeholder';
+      m.textContent = n === 0 ? 'علّم كل خطوة بعد تنفيذها.' : n < steps.length ? 'نفّذت ' + n + ' من ' + steps.length + ' خطوات.' : 'أنهيت الخطة. كلما بدأت أسرع، زادت فرصة إيقاف التحويلات.';
+    };
+    steps.forEach(s => s.onclick = () => { s.setAttribute('aria-pressed', s.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); upd(); });
+    upd();
+  }
+
+  const inits = { 2: init2, 3: init3, 4: init4, 5: init5, 6: init6 };
+  const m = /^#s(\d)$/.exec(location.hash);
+  go(m ? +m[1] : 1);
+})();
+</script>
+
+</body>
+</html>
