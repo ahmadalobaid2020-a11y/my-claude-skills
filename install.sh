@@ -22,6 +22,8 @@ if command -v npx >/dev/null; then
   skills add hypit-ai/hypit -g -y          # official Hypit skill install
   # AutoAE motion-graphics templates (needs Node 24+ at use time; sign in with `npx @autoae/cli auth login`)
   NODE_USE_ENV_PROXY=1 skills add https://autoae.online -g -y || echo "AutoAE skill install failed: skipping"
+  # video-director only, from imMamdouhaboammar/designly (AI video directing and multi-model prompting)
+  skills add imMamdouhaboammar/designly --skill video-director -g -y || echo "video-director install failed: skipping"
   npm install -g --silent @hypit/hypit     # Hypit CLI
 else
   echo "npx not found: skipping skills CLI and hypit"
