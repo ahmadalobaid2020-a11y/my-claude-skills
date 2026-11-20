@@ -5,6 +5,17 @@ cd "$(dirname "$0")"
 mkdir -p ~/.claude/skills
 cp -r skills/* ~/.claude/skills/
 pip install -q --break-system-packages faster-whisper yt-dlp
+# Anthropic's official skills (anthropics/skills): docx, pdf, pptx, xlsx, skill-creator, ...
+tmp=$(mktemp -d)
+if git clone -q --depth 1 https://github.com/anthropics/skills.git "$tmp/anthropic-skills"; then
+  cp -r "$tmp"/anthropic-skills/skills/* ~/.claude/skills/
+  pip install -q --break-system-packages \
+    -r "$tmp/anthropic-skills/skills/slack-gif-creator/requirements.txt" \
+    -r "$tmp/anthropic-skills/skills/mcp-builder/scripts/requirements.txt" || true
+else
+  echo "could not clone anthropics/skills: skipping"
+fi
+rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
   skills add vercel-labs/skills -g -y      # find-skills skill
