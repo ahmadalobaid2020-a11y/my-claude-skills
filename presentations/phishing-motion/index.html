@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>التصيّد الإلكتروني — أربعة مشاهد</title>
 <!--
-  Explainer بأربعة مشاهد عن التصيّد الإلكتروني (16:9، 44 ثانية، بلا صوت، تشغيل تلقائي + تكرار).
+  Explainer بأربعة مشاهد عن التصيّد الإلكتروني (16:9، 48 ثانية، بتعليق صوتي، تشغيل تلقائي + تكرار).
   عالم واحد تتحرك فيه الكاميرا من اليمين إلى اليسار؛ الصنّارة هي الخيط البصري الذي يظهر في كل مشهد.
   ?debug=1 شريط تمرير · ?clean=1 للتصدير · R إعادة · Space إيقاف مؤقت.
 -->
@@ -143,10 +143,11 @@ html,body{margin:0;height:100%;background:#050A16;overflow:hidden}
   <div id="dbg"><button id="dPlay">Pause</button><input id="dScrub" type="range" min="0" max="1000" value="0"><span id="dClock">0.00s</span></div>
 </div>
 
+<audio id="vo" src="vo.mp3" preload="auto"></audio>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
-const W=1920,H=1080,DUR=44;
+const W=1920,H=1080,DUR=48;
 function fit(){const s=Math.min(innerWidth/W,innerHeight/H);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit);fit();
 
@@ -283,16 +284,17 @@ tl.to('#hook4',{y:1900,rotate:38,duration:.9,ease:'power2.in'},35.65);
 tl.set('#hook4',{opacity:0},36.6);
 tl.fromTo('#check',{strokeDasharray:300,strokeDashoffset:300},{strokeDashoffset:0,duration:.5,ease:'power2.out',immediateRender:false},35.3);
 home(36.0,Z4+960);
-say('#line4',37.2,{st:.28,dur:.6});
-pop('#b1',39.0);pop('#b2',39.4);pop('#b3',39.8);
-breath(37.1,43.3,1.035);
-tl.set('#flash',{backgroundColor:'#0B1730'},43.2);
-tl.to('#flash',{opacity:1,duration:.55,ease:'power1.in'},43.4);
+say('#line4',37.2,{st:.85,dur:.6});
+pop('#b1',40.9);pop('#b2',43.0);pop('#b3',45.1);
+breath(37.1,47.3,1.04);
+tl.set('#flash',{backgroundColor:'#0B1730'},47.2);
+tl.to('#flash',{opacity:1,duration:.55,ease:'power1.in'},47.4);
 tl.to({},{duration:.01},DUR);
 
 /* ---------- تشغيل تلقائي + تكرار بلا مشغّل؛ ?debug=1 شريط؛ ?clean=1 للتصدير ---------- */
-const q=new URLSearchParams(location.search);
-function start(){tl.play(0);}
+const q=new URLSearchParams(location.search),vo=$('#vo');let audioOn=false;
+function start(){tl.play(0);vo.currentTime=0;vo.play().then(()=>audioOn=true).catch(()=>{});}
+gsap.ticker.add(()=>{if(!audioOn)return;if(tl.paused()){if(!vo.paused)vo.pause();return;}if(vo.paused)vo.play().catch(()=>{});if(Math.abs(vo.currentTime-tl.time())>.15)vo.currentTime=tl.time();});
 tl.eventCallback('onComplete',()=>start());
 window.OPENER={W,H,DURATION:DUR,tl,ready:false,seek(t){tl.pause(t,false);applyCam();frame(t);if(gsap.ticker.tick)gsap.ticker.tick();},play:start};
 addEventListener('keydown',e=>{if(/^[rR]$/.test(e.key))start();if(e.code==='Space'){e.preventDefault();tl.paused()?tl.play():tl.pause();}});
@@ -300,7 +302,9 @@ if(q.has('debug')){const dbg=$('#dbg');dbg.style.display='flex';const sc=$('#dSc
   gsap.ticker.add(()=>{if(!drag)sc.value=String(tl.time()/DUR*1000);ck.textContent=tl.time().toFixed(2)+'s';$('#dPlay').textContent=tl.paused()?'Play':'Pause';});
   sc.addEventListener('pointerdown',()=>{drag=true;tl.pause();});addEventListener('pointerup',()=>drag=false);
   sc.addEventListener('input',()=>{tl.pause();tl.time(sc.value/1000*DUR);});$('#dPlay').onclick=()=>tl.paused()?tl.play():tl.pause();}
-document.fonts.ready.then(()=>{applyCam();frame(0);window.OPENER.ready=true;if(q.has('clean'))return;start();});
+document.fonts.ready.then(()=>{applyCam();frame(0);window.OPENER.ready=true;if(q.has('clean'))return;
+  /* الصوت: إن منع المتصفح التشغيل التلقائي نبقى على الإطار الأول ونبدأ مع أول نقرة أو مفتاح */
+  vo.play().then(()=>{audioOn=true;vo.currentTime=0;tl.play(0);}).catch(()=>{const go=()=>{removeEventListener('pointerdown',go);removeEventListener('keydown',go);start();};addEventListener('pointerdown',go);addEventListener('keydown',go);});});
 </script>
 </body>
 </html>
