@@ -63,6 +63,18 @@ if command -v uv >/dev/null && { command -v bun >/dev/null || [ -x ~/.bun/bin/bu
 else
   echo "uv or bun not found: skipping VoiceStudio"
 fi
+# bang-motion (bangtutorial/bang-motion): cinematic HTML + GSAP motion graphics (openers, promos, explainers).
+# puppeteer is for its snap.mjs / export-frames.mjs; an existing Playwright Chromium is reused instead of a download.
+if git clone -q --depth 1 https://github.com/bangtutorial/bang-motion.git "$tmp/bang-motion"; then
+  rm -rf ~/.claude/skills/bang-motion && mkdir -p ~/.claude/skills/bang-motion
+  (cd "$tmp/bang-motion" && cp -r SKILL.md LICENSE references assets scripts ~/.claude/skills/bang-motion/)
+  if command -v npm >/dev/null; then
+    (cd ~/.claude/skills/bang-motion && { [ ! -x /opt/pw-browsers/chromium ] || export PUPPETEER_SKIP_DOWNLOAD=1; } \
+      && npm install --silent --no-save puppeteer) || echo "bang-motion: puppeteer install failed (frame capture and MP4 export unavailable)"
+  fi
+else
+  echo "could not clone bangtutorial/bang-motion: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
