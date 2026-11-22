@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الكتاب الحيّ: التبرير الاستقرائي والمنطق</title>
+<style>
+:root{
+  --desk1:#d8c8ab; --desk2:#b9a583; --cover:#6b3f2a; --cover2:#51301f;
+  --paper:#fbf4e4; --paper2:#f1e6cf; --edge:#e2d5b8; --line:#d6c8ab;
+  --ink:#2f2a24; --muted:#7b6f5e; --pencil:#4b463f; --hatch:#8d857a;
+  --c-pat:#2b6cb0; --c-cx:#c0392b; --c-p:#16806a; --c-q:#cf7a1f; --c-neg:#7a4bb0;
+  --c-t:#2e9e5b; --c-f:#9b9082; --glow:#ffd95e; --chip:#efe3c8; --shadow:rgba(60,40,15,.35);
+  --font:"Noto Naskh Arabic","Geeza Pro","Segoe UI","Tahoma","Arial",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --desk1:#221c16; --desk2:#15110d; --cover:#3c2418; --cover2:#2a1810;
+  --paper:#2e2922; --paper2:#27221c; --edge:#3b342b; --line:#4b4337;
+  --ink:#f0e7d6; --muted:#ab9f8b; --pencil:#ddd4c3; --hatch:#958b7b;
+  --c-pat:#6fb0f0; --c-cx:#f08a7c; --c-p:#56c9ae; --c-q:#f0a85a; --c-neg:#b995ee;
+  --c-t:#63d08e; --c-f:#7d7466; --glow:#ffd95e; --chip:#3a332a; --shadow:rgba(0,0,0,.6);
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--ink);background:radial-gradient(120% 90% at 50% 20%,var(--desk1),var(--desk2));
+  overflow:hidden;display:grid;grid-template-rows:auto 1fr auto;-webkit-tap-highlight-color:transparent;user-select:none}
+button,input,select{font-family:inherit;color:inherit}
+bdi{unicode-bidi:isolate}
+header{padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink)}
+header b{font-size:15px}
+header span{color:var(--muted);font-size:12px;white-space:nowrap}
+body.teacher header{display:none}
+body.teacher{grid-template-rows:1fr auto}
+body.short #stage{overflow-y:auto;touch-action:auto}
+body.short #book{top:11px;margin-top:0}
+body.short header{display:none}
+body.short{grid-template-rows:1fr auto}
+@media (max-width:600px){header span{display:none}}
+
+/* ---------- stage and book ---------- */
+#stage{position:relative;overflow:hidden;perspective:2200px;perspective-origin:50% 30%;touch-action:pan-y}
+#book{position:absolute;left:50%;top:50%;width:calc(var(--pw)*2);height:var(--ph);margin:calc(var(--ph)/-2) 0 0 calc(var(--pw)*-1);
+  transform-style:preserve-3d;transform:translateX(var(--shift,0px)) rotateX(var(--tilt,13deg));transition:transform .7s cubic-bezier(.3,.7,.2,1);
+  font-size:var(--fs)}
+#cover{position:absolute;inset:-1.1% -1.2% -2.2% -1.2%;background:linear-gradient(var(--cover),var(--cover2));border-radius:1em;
+  box-shadow:0 2.4em 3em -1em var(--shadow),0 .5em 0 var(--cover2);transform:translateZ(-6px)}
+.block{position:absolute;top:0;width:50%;height:100%;background:var(--edge);transform:translateZ(-3px);
+  box-shadow:0 .25em 0 var(--line),0 .5em 0 var(--edge),0 .75em 0 var(--line)}
+.block.r{right:0;border-radius:0 .5em .5em 0}.block.l{left:0;border-radius:.5em 0 0 .5em}
+.sheet{position:absolute;top:0;width:50%;height:100%;transform-style:preserve-3d}
+.sheet.static{transform:translateZ(0)}
+.sheet.static.r{right:0}.sheet.static.l{left:0}
+.leaf{left:0;transform-origin:100% 50%;transform:rotateY(0deg) translateZ(var(--zu));pointer-events:none}
+.leaf.flipped{transform:rotateY(180deg) translateZ(var(--zf))}
+@keyframes flipF{0%{transform:rotateY(0deg) translateZ(var(--zu)) skewY(0deg)}50%{transform:rotateY(90deg) translateZ(4px) skewY(-5deg)}100%{transform:rotateY(180deg) translateZ(var(--zf)) skewY(0deg)}}
+@keyframes flipB{0%{transform:rotateY(180deg) translateZ(var(--zf)) skewY(0deg)}50%{transform:rotateY(90deg) translateZ(4px) skewY(-5deg)}100%{transform:rotateY(0deg) translateZ(var(--zu)) skewY(0deg)}}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;pointer-events:none;
+  background:linear-gradient(90deg,var(--paper2),var(--paper) 9%,var(--paper) 100%);padding:1.25em 1.3em 1.1em;display:flex;flex-direction:column;gap:.55em}
+.sheet.l .face.front,.leaf .face.front{border-radius:.45em 0 0 .45em;background:linear-gradient(270deg,var(--paper2),var(--paper) 9%,var(--paper) 100%)}
+.face.back{transform:rotateY(180deg);border-radius:0 .45em .45em 0}
+.sheet.static.r .face{border-radius:0 .45em .45em 0}
+.leaf.flipped .front,.leaf:not(.flipped) .back{visibility:hidden;transition:visibility 0s .45s}
+.leaf .front,.leaf .back{transition:visibility 0s .45s}
+.face::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(90deg,rgba(0,0,0,.16),transparent 30%,rgba(255,255,255,.12) 60%,rgba(0,0,0,.12));opacity:0}
+.leaf.turning .face::after{animation:sheen .9s ease-in-out}
+@keyframes sheen{50%{opacity:1}}
+.face.live{pointer-events:auto}
+.leaf.far{visibility:hidden}
+.pgno{position:absolute;bottom:.45em;font-size:.7em;color:var(--muted)}
+.back .pgno,.static.r .pgno{left:1.2em}.front .pgno{right:1.2em}
+
+/* ---------- text page ---------- */
+.scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:.6em;padding-inline-end:.2em;scrollbar-width:thin}
+.kick{font-size:.78em;color:var(--muted);letter-spacing:.02em}
+h2{font-size:1.55em;line-height:1.35;font-weight:700}
+.txt p{font-size:1em;line-height:1.85}
+.law{border:1.5px solid var(--pencil);border-radius:.5em;padding:.6em .8em;font-size:1.05em;line-height:1.8;font-weight:700;
+  background:repeating-linear-gradient(135deg,transparent 0 .5em,rgba(125,110,80,.07) .5em .55em)}
+.law small{display:block;font-weight:400;font-size:.8em;color:var(--muted)}
+.note{border-inline-start:3px solid var(--c-q);padding:.3em .7em;font-size:.84em;line-height:1.7;color:var(--muted);transform:rotate(-.6deg)}
+.ref{font-size:.74em;color:var(--muted);margin-top:auto}
+.k-pat{color:var(--c-pat)}.k-cx{color:var(--c-cx)}.k-p{color:var(--c-p)}.k-q{color:var(--c-q)}.k-neg{color:var(--c-neg)}
+ul.plain{list-style:none;display:flex;flex-direction:column;gap:.35em;font-size:.92em;line-height:1.7}
+ul.plain li::before{content:"✎ ";color:var(--muted)}
+
+/* ---------- lab page ---------- */
+.labh{display:flex;align-items:baseline;justify-content:space-between;gap:.6em}
+.labh h3{font-size:1.15em}.labh small{color:var(--muted);font-size:.72em}
+.predict{position:relative;border:1.5px dashed var(--pencil);border-radius:.5em;padding:.45em .7em .5em;font-size:.86em;line-height:1.65;transform-style:preserve-3d}
+.predict .q b,.predict .a b{font-weight:700}
+.slot{position:relative;margin-top:.35em;min-height:2.5em;transform-style:preserve-3d}
+.slot .a{padding:.35em .6em;border-radius:.4em;background:var(--chip);min-height:2.5em}
+.flap{position:absolute;inset:0;border:1.5px solid var(--pencil);border-radius:.4em;background:var(--paper2);cursor:pointer;font-size:1em;font-weight:700;
+  transform-origin:50% 0;transition:transform .6s cubic-bezier(.3,.8,.3,1.2),box-shadow .6s;box-shadow:0 .15em .3em var(--shadow);
+  background-image:repeating-linear-gradient(135deg,transparent 0 .45em,rgba(125,110,80,.12) .45em .5em)}
+.predict.open .flap{transform:rotateX(-128deg);box-shadow:0 -1em 1em -0.8em var(--shadow)}
+.tabs{display:flex;gap:.35em;flex-wrap:wrap}
+.tabs button{border:1.5px solid var(--pencil);background:transparent;border-radius:.5em .5em 0 0;padding:.2em .7em;font-size:.82em;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--pencil);color:var(--paper)}
+.popwrap{flex:1;min-height:6.5em;position:relative;transform-style:preserve-3d}
+.pshadow{position:absolute;left:3%;right:3%;bottom:0;height:70%;background:radial-gradient(60% 60% at 50% 100%,var(--shadow),transparent 70%);
+  transform-origin:50% 100%;transform:scaleY(.1);opacity:0;transition:all .9s ease .3s;filter:blur(6px)}
+.hinge{position:absolute;left:0;right:0;bottom:-.25em;height:.5em;border-top:1.5px dashed var(--hatch)}
+.pop{position:absolute;inset:0;transform-origin:50% 100%;transform:rotateX(0deg);transition:transform .95s cubic-bezier(.25,.9,.3,1.25) .3s,box-shadow .9s .3s;
+  background:var(--paper);border:1.5px solid var(--pencil);border-radius:.5em .5em .15em .15em;padding:.3em;display:flex;backface-visibility:hidden}
+.pop svg{flex:1;min-width:0;min-height:0;width:100%;height:100%;display:block}
+.active .pop{transform:rotateX(-21deg);box-shadow:0 1.6em 1.6em -1.2em var(--shadow)}
+.active .pshadow{opacity:.75;transform:scaleY(.55) skewX(-10deg)}
+.ctl{display:flex;flex-direction:column;gap:.3em;font-size:.84em}
+.row{display:flex;align-items:center;gap:.6em}
+.row label{flex:0 0 auto;min-width:6.2em}
+.row input[type=range]{flex:1;min-width:0;accent-color:var(--c-pat);height:1.6em;touch-action:none}
+.row output{flex:0 0 3.2em;text-align:center;font-weight:700;direction:ltr}
+.chips{display:flex;gap:.35em;flex-wrap:wrap}
+.chips button,.btn{border:1.5px solid var(--pencil);background:var(--chip);border-radius:1em;padding:.22em .75em;font-size:.95em;cursor:pointer;line-height:1.5}
+.chips button[aria-pressed=true]{background:var(--pencil);color:var(--paper)}
+.sw{border-radius:.5em!important;min-width:4.6em;font-weight:700;direction:ltr}
+.sw.T{background:var(--c-t)!important;color:#fff;border-color:var(--c-t)!important}
+.sw.F{background:var(--c-f)!important;color:#fff;border-color:var(--c-f)!important}
+select{border:1.5px solid var(--pencil);background:var(--chip);border-radius:.5em;padding:.2em .4em;font-size:.95em;direction:ltr}
+.out{border-top:1.5px solid var(--line);padding-top:.35em;font-size:.86em;line-height:1.7;min-height:4.9em}
+.out b{font-weight:700}.ok{color:var(--c-t);font-weight:700}.no{color:var(--c-cx);font-weight:700}
+.quiz{flex:1;display:flex;flex-direction:column;gap:.4em;padding:.4em .6em;font-size:.9em;min-height:0;overflow:auto}
+.quiz .qq{font-weight:700;line-height:1.7}
+.quiz .opts{display:grid;grid-template-columns:1fr 1fr;gap:.4em}
+.quiz .opts button{border:1.5px solid var(--pencil);background:var(--chip);border-radius:.5em;padding:.35em .4em;font-size:1em;cursor:pointer;line-height:1.5}
+.quiz .opts button.right{background:var(--c-t);color:#fff;border-color:var(--c-t)}
+.quiz .opts button.wrong{background:var(--c-cx);color:#fff;border-color:var(--c-cx)}
+.quiz .why{font-size:.9em;line-height:1.6;color:var(--muted);min-height:1.6em}
+.stars{font-size:2.6em;letter-spacing:.15em;text-align:center;color:var(--glow);text-shadow:0 0 .2em rgba(255,200,60,.6),0 .05em 0 var(--pencil);direction:ltr}
+.stars i{font-style:normal;color:var(--line);text-shadow:none}
+
+/* ---------- svg pencil style ---------- */
+svg text{font-family:var(--font);fill:var(--ink);direction:ltr}
+.pc{fill:none;stroke:var(--pencil);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.pd{stroke-dasharray:4 4}
+.lt{stroke-width:.8;stroke:var(--hatch)}
+.sm{font-size:9px}.md{font-size:11px}.lg{font-size:14px;font-weight:700}
+.mu{fill:var(--muted)}
+
+/* ---------- bottom bar ---------- */
+#bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}
+#bar button{border:1.5px solid var(--ink);background:var(--paper);border-radius:999px;min-width:44px;height:40px;padding:0 14px;font-size:14px;cursor:pointer}
+#bar button:disabled{opacity:.35;cursor:default}
+#bar button:focus-visible,.chips button:focus-visible,.tabs button:focus-visible,.flap:focus-visible,.quiz button:focus-visible{outline:3px solid var(--c-pat);outline-offset:2px}
+#dots{display:flex;gap:6px;direction:rtl}
+#dots i{width:8px;height:8px;border-radius:50%;background:var(--ink);opacity:.25}
+#dots i.on{opacity:1}
+#teach[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation-duration:.01s!important}}
+</style>
+</head>
+<body>
+<header><b>الكتاب الحيّ · الرياضيات <bdi dir="ltr">1-1</bdi></b><span>التبرير الاستقرائي والتخمين · المنطق</span></header>
+<div id="stage"><div id="book"><div id="cover"></div><div class="block r"></div><div class="block l"></div></div></div>
+<div id="bar">
+  <button id="prev" aria-label="الصفحة السابقة">▶ السابق</button>
+  <div id="dots" aria-hidden="true"></div>
+  <button id="next" aria-label="الصفحة التالية">التالي ◀</button>
+  <button id="teach" aria-pressed="false">وضع المعلم</button>
+  <button id="mute" aria-pressed="false" aria-label="كتم الصوت">🔊</button>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+    </filter>
+    <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--hatch)" stroke-width="1"/>
+    </pattern>
+    <pattern id="hatchP" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--c-p)" stroke-width="1.6"/>
+    </pattern>
+    <pattern id="hatchQ" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--c-q)" stroke-width="1.6"/>
+    </pattern>
+    <pattern id="hatchB" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--c-pat)" stroke-width="1.6"/>
+    </pattern>
+    <pattern id="hatchR" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="var(--c-cx)" stroke-width="1.6"/>
+    </pattern>
+  </defs>
+</svg>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const B=s=>`<bdi dir="ltr">${s}</bdi>`;
+const SVG=(inner,w=340,h=200)=>`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" role="img"><g filter="url(#rough)">${inner}</g></svg>`;
+const T=(x,y,s,cls="md",extra="")=>`<text x="${x}" y="${y}" text-anchor="middle" class="${cls}" ${extra}>${s}</text>`;
+
+/* ================= content: text pages ================= */
+const TEXT=[
+{k:"الفصل ١ · الدرس "+B("1-1"),h:"هل تستطيع أن تتنبأ؟",ref:"كتاب الطالب ص "+B("12"),
+ body:`<p>أنت في محطة الحافلات. مرّت أربع حافلات في مواعيد منتظمة. من دون جدول، هل تعرف متى تأتي الخامسة؟</p>
+ <p>حين تلاحظ أمثلة محددة ثم تصل منها إلى نتيجة، فأنت تستعمل <b class="k-pat">التبرير الاستقرائي</b>. والعبارة التي تصل إليها تسمى <b class="k-pat">تخميناً</b>.</p>
+ <div class="law">ابحث عن نمط ← ضع تخميناً ← جد الحد التالي<small>الخطوات الثلاث في مثال ${B("1")}</small></div>
+ <div class="note">المتتابعة: مجموعة من الأعداد أو الأشياء المنظمة بترتيب معين.</div>
+ <div class="note">من تاريخ الرياضيات: ابن الهيثم اعتمد في بحوثه على الاستقراء والاستنباط، مع التجربة والملاحظة.</div>`},
+{k:"الفصل ٢ · الدرس "+B("1-1"),h:"تخمينات من أعداد وأشكال وبيانات",ref:"كتاب الطالب ص "+B("13")+" و "+B("14"),
+ body:`<p>لتضع تخميناً جبرياً أو هندسياً: اكتب أمثلة، ثم ابحث عن نمط.</p>
+ <p>وفي الحياة تعتمد التخمينات على بيانات تُجمع حول الموضوع، والتمثيل البياني يساعدك على رؤية النمط.</p>
+ <div class="law">ناتج جمع عددين فرديين هو عدد زوجي.<br>القطعتان الواصلتان بين كل رأسين متقابلين في المستطيل متطابقتان.<small>تخمينا مثال ${B("2")}</small></div>
+ <div class="note">الأمثلة المؤيدة للتخمين ليست كافية لإثبات صحته. الإثبات يحتاج إلى برهان، وستتعلمه في الدرس ${B("1-5")}.</div>`},
+{k:"الفصل ٣ · الدرس "+B("1-1"),h:"مثال واحد يكفي للهدم",ref:"كتاب الطالب ص "+B("15"),
+ body:`<p>لإثبات صحة تخمين في كل الحالات تحتاج إلى برهان. أما لإثبات أنه خاطئ فيكفي مثال واحد معاكس له.</p>
+ <p>هذا المثال يسمى <b class="k-cx">المثال المضاد</b>، وقد يكون عدداً أو رسماً أو عبارة.</p>
+ <div class="law">التخمين: إذا كان ${B("n")} عدداً حقيقياً فإن ${B("n² &gt; n")}<br><span class="k-cx">مثال مضاد: ${B("n = 1")} لأن ${B("1² ≯ 1")}</span><small>مثال ${B("4")}</small></div>
+ <div class="note">المعنى اللغوي: المضاد هو المخالف. المعنى الرياضي: مثال معاكس لمثال معطى.</div>`},
+{k:"الفصل ٤ · الدرس "+B("1-2"),h:"صائبة أم خاطئة؟",ref:"كتاب الطالب ص "+B("19")+" إلى "+B("21"),
+ body:`<p><b>العبارة</b> جملة خبرية إما صائبة ${B("(T)")} وإما خاطئة ${B("(F)")}، ولا تحتمل حالة أخرى. وهذه هي <b>قيمة الصواب</b> لها.</p>
+ <p><b class="k-neg">نفي العبارة</b> ${B("~p")} له عكس قيمة صوابها. و<b>عبارة الوصل</b> ${B("p ∧ q")} تربط بـ(و)، و<b>عبارة الفصل</b> ${B("p ∨ q")} تربط بـ(أو).</p>
+ <div class="law">${B("p ∧ q")} صائبة فقط إذا كانت جميع العبارات المكونة لها صائبة.<br>${B("p ∨ q")} خاطئة فقط إذا كانت جميع العبارات المكونة لها خاطئة.</div>
+ <div class="note">جدول الصواب ينظّم كل حالات قيم الصواب للعبارات.</div>`},
+{k:"الفصل ٥ · الدرس "+B("1-2"),h:"المنطق بالدوائر: أشكال فن",ref:"كتاب الطالب ص "+B("21")+" و "+B("22"),
+ body:`<p>تُمثَّل عبارة الوصل بـ<b>تقاطع</b> المجموعتين: العناصر المشتركة بينهما.</p>
+ <p>وتُمثَّل عبارة الفصل بـ<b>اتحاد</b> المجموعتين: عناصرهما كلها.</p>
+ <div class="law">${B("p ∧ q")} ← التقاطع<br>${B("p ∨ q")} ← الاتحاد</div>
+ <div class="note">المستطيل المحيط بأشكال فن يمثل المجموعة الكلية. والدائرتان تقسمانها إلى ${B("4")} مناطق على الأكثر.</div>`},
+{k:"الفصل ٦ · التحدي",h:"صيّاد الأنماط والعبارات",ref:"أسئلة من «تأكد» و«تدرب وحل المسائل» ص "+B("15")+" إلى "+B("17")+" و "+B("23"),
+ body:`<p>ثمانية أسئلة من تمارين الدرسين. أجب عن كل سؤال مرة واحدة، ثم اقرأ السبب.</p>
+ <ul class="plain">
+  <li><b class="k-pat">التخمين</b>: عبارة تصل إليها من أمثلة محددة.</li>
+  <li><b class="k-cx">المثال المضاد</b>: مثال واحد يكفي لإثبات خطأ التخمين.</li>
+  <li><b class="k-neg">النفي</b> ${B("~p")}: عكس قيمة الصواب.</li>
+  <li>الوصل ${B("p ∧ q")}: صائبة فقط إذا صحّت العبارتان.</li>
+  <li>الفصل ${B("p ∨ q")}: خاطئة فقط إذا أخطأت العبارتان.</li>
+ </ul>
+ <div class="note">النجوم: ${B("7")} إجابات أو أكثر = ثلاث نجوم، ${B("5")} = نجمتان، ${B("3")} = نجمة.</div>`}
+];
+const END=`<div class="scroll txt"><div class="kick">نهاية الكتاب</div><h2>أحسنت!</h2>
+<p>تعلمت أن تضع تخميناً من نمط، وأن تهدمه بمثال مضاد، وأن تحكم على العبارات المركبة بجدول الصواب وأشكال فن.</p>
+<div class="law">الدرس اللاحق في الكتاب: ${B("1-3")} العبارات الشرطية</div>
+<div class="note">لم يغطِّ هذا الكتاب الحيّ: مسائل مهارات التفكير العليا، والتدريب على اختبار، والمراجعة التراكمية.</div>
+<div class="ref">المحتوى من كتاب الرياضيات ${B("1-1")}، التعليم الثانوي، نظام المسارات، السنة الأولى المشتركة.</div></div>`;
+
+/* ================= labs ================= */
+const fmtT=m=>`${Math.floor(m/60)}:${String(m%60).padStart(2,"0")}`;
+const LABS=[];
+
+/* ---- Lab 1: patterns ---- */
+LABS.push({title:"مختبر الأنماط",
+ pq:`وصلت الحافلات ${B("8:30")}، ${B("9:10")}، ${B("9:50")}، ${B("10:30")} صباحاً. متى تتوقع الحافلة التالية؟`,
+ pa:`${B("11:10")} صباحاً، لأن كل حافلة تتأخر ${B("40")} دقيقة عن سابقتها.`,
+ tabs:[["bus","مواعيد الحافلات"],["seg","القطع المستقيمة"]],
+ init(el){
+  const st={tab:"bus",d:30,n:4};
+  const times=[510,550,590,630],xs=[36,100,164,228];
+  const seg=[4];for(let inc=6;seg.length<8;inc+=2)seg.push(seg[seg.length-1]+inc);
+  const draw=()=>{
+   if(st.tab==="bus"){
+    el.ctl.innerHTML=`<div class="row"><label for="l1d">الفرق الذي تخمّنه</label><input id="l1d" type="range" min="10" max="60" step="5" value="${st.d}"><output>${st.d}</output></div>`;
+    const ok=times.every((t,i)=>i===0||t-times[i-1]===st.d),col=ok?"var(--c-t)":"var(--c-cx)";
+    let s=`<path class="pc" d="M8 158H332"/><path class="pc lt" d="M8 164H332"/>`;
+    times.forEach((t,i)=>{const x=xs[i];
+     s+=`<path class="pc" d="M${x} 158V104"/><rect class="pc" x="${x-24}" y="80" width="48" height="24" rx="4" fill="url(#hatch)" fill-opacity=".25"/>`+T(x,97,fmtT(t),"md");
+     if(i)s+=`<path class="pc" style="stroke:${col}" d="M${xs[i-1]} 76Q${(xs[i-1]+x)/2} ${44} ${x} 76"/>`+T((xs[i-1]+x)/2,50,(ok?"✓ ":"✗ ")+"+"+st.d,"sm",`style="fill:${col}"`);});
+    const nx=300,nt=630+st.d;
+    s+=`<path class="pc" style="stroke:var(--c-pat)" d="M${xs[3]} 76Q${(xs[3]+nx)/2} 44 ${nx} 76"/>`+T((xs[3]+nx)/2,50,"+"+st.d,"sm",`style="fill:var(--c-pat)"`);
+    s+=`<path class="pc pd" d="M${nx} 158V104"/><rect class="pc pd" x="${nx-26}" y="80" width="52" height="24" rx="4" style="stroke:var(--c-pat)"/>`+T(nx,97,fmtT(nt),"md",`style="fill:var(--c-pat);font-weight:700"`);
+    s+=`<g transform="translate(${nx-30},128)"><rect class="pc" x="0" y="0" width="56" height="24" rx="5" fill="url(#hatchB)" fill-opacity=".35"/><path class="pc" d="M6 6h12v8H6zM22 6h12v8H22zM38 6h12v8H38z"/><circle class="pc" cx="13" cy="26" r="5" fill="var(--paper)"/><circle class="pc" cx="43" cy="26" r="5" fill="var(--paper)"/></g>`;
+    s+=T(170,188,"المواعيد صباحاً","sm mu");
+    el.pop.innerHTML=SVG(s);
+    el.out.innerHTML=`تخمينك: يزيد موعد كل حافلة ${B(st.d)} دقيقة عن سابقتها.<br>${ok?`<span class="ok">✓ يطابق المواعيد الأربعة.</span>`:`<span class="no">✗ لا يطابق المواعيد المعطاة. غيّر الفرق.</span>`}<br>الحد التالي حسب تخمينك: <b>${B(fmtT(nt))}</b> صباحاً.`;
+    $("#l1d",el.ctl).oninput=e=>{st.d=+e.target.value;draw();};
+   }else{
+    el.ctl.innerHTML=`<div class="row"><label for="l1n">رقم الشكل</label><input id="l1n" type="range" min="1" max="8" step="1" value="${st.n}"><output>${st.n}</output></div>`;
+    let s=`<path class="pc" d="M14 170H330"/>`;
+    for(let i=0;i<st.n;i++){const x=24+i*38,h=seg[i]*1.5,cur=i===st.n-1;
+     s+=`<rect class="pc" x="${x}" y="${170-h}" width="24" height="${h}" fill="url(#${cur?"hatchB":"hatch"})" fill-opacity="${cur?.6:.3}" ${cur?'style="stroke:var(--c-pat)"':""}/>`+T(x+12,165-h,seg[i],"md",cur?'style="fill:var(--c-pat);font-weight:700"':"")+T(x+12,184,i+1,"sm mu");
+     if(i)s+=T(x-7,150-h+(seg[i]-seg[i-1])*.2,"+"+(seg[i]-seg[i-1]),"sm",'style="fill:var(--c-q)"');}
+    if(st.n<8)s+=T(24+st.n*38+12,160,"؟","lg mu");
+    s+=T(170,197,"رقم الشكل","sm mu");
+    el.pop.innerHTML=SVG(s);
+    const i=st.n-1;
+    el.out.innerHTML=`الشكل رقم ${B(st.n)}: <b>${B(seg[i])}</b> قطعة مستقيمة.<br>${i?`الزيادة عن الشكل السابق: <b>${B("+"+(seg[i]-seg[i-1]))}</b>، وكل زيادة = الزيادة السابقة ${B("+ 2")}.`:`أعداد القطع في الكتاب: ${B("4, 10, 18, 28, 40")}`}<br>${st.n===6?`<span class="ok">هذا هو الحد التالي في الكتاب: ${B("40 + 14 = 54")}</span>`:st.n>6?"امتداد للنمط نفسه بعد أشكال الكتاب.":"حرّك المنزلق لتصل إلى الشكل السادس."}`;
+    $("#l1n",el.ctl).oninput=e=>{st.n=+e.target.value;draw();};
+   }};
+  el.onTab=t=>{st.tab=t;draw();};draw();
+ }});
+
+/* ---- Lab 2: conjectures ---- */
+LABS.push({title:"مختبر التخمينات",
+ pq:`ناتج جمع عددين فرديين: فردي أم زوجي؟`,
+ pa:`زوجي دائماً في كل ما تجرّبه. لكنه يبقى تخميناً حتى يُبرهَن.`,
+ tabs:[["odd","فردي + فردي"],["rect","المستطيل"],["shop","زبائن الصالون"]],
+ init(el){
+  const st={tab:"odd",a:3,b:5,w:8,h:5,m:6,on:{thu:1,fri:1,sat:1,tot:1}};
+  const D={thu:[225,255,321,406,540,450],fri:[552,635,642,692,685,705],sat:[603,658,652,712,746,832]};
+  D.tot=D.thu.map((v,i)=>v+D.fri[i]+D.sat[i]);
+  const NM={thu:"الخميس",fri:"الجمعة",sat:"السبت",tot:"المجموع"},CL={thu:"var(--c-p)",fri:"var(--c-q)",sat:"var(--c-neg)",tot:"var(--c-pat)"};
+  const draw=()=>{
+   if(st.tab==="odd"){
+    el.ctl.innerHTML=`<div class="row"><label for="l2a">العدد الأول</label><input id="l2a" type="range" min="1" max="15" step="2" value="${st.a}"><output>${st.a}</output></div>
+    <div class="row"><label for="l2b">العدد الثاني</label><input id="l2b" type="range" min="1" max="15" step="2" value="${st.b}"><output>${st.b}</output></div>`;
+    let s="";const rowDots=(n,y,col)=>{let o="";const pr=(n-1)/2;for(let i=0;i<pr;i++){const x=40+i*30;o+=`<circle class="pc" cx="${x}" cy="${y}" r="6" style="stroke:${col}"/><circle class="pc" cx="${x}" cy="${y+18}" r="6" style="stroke:${col}"/><path class="pc lt" d="M${x} ${y+6}V${y+12}"/>`;}return o;};
+    s+=rowDots(st.a,34,"var(--c-p)")+rowDots(st.b,134,"var(--c-q)");
+    s+=`<circle class="pc" cx="292" cy="80" r="7" fill="url(#hatchP)" style="stroke:var(--c-p)"/><circle class="pc" cx="292" cy="112" r="7" fill="url(#hatchQ)" style="stroke:var(--c-q)"/><ellipse class="pc pd" cx="292" cy="96" rx="17" ry="32" style="stroke:var(--c-pat)"/>`;
+    s+=T(292,146,"زوج جديد","sm",'style="fill:var(--c-pat)"')+T(292,26,st.a,"lg",'style="fill:var(--c-p)"')+T(292,186,st.b,"lg",'style="fill:var(--c-q)"');
+    s+=`<path class="pc lt pd" d="M20 96H262"/>`;
+    el.pop.innerHTML=SVG(s);
+    const sum=st.a+st.b;
+    el.out.innerHTML=`${B(`${st.a} + ${st.b} = ${sum}`)} ← <b class="ok">${sum%2===0?"عدد زوجي":"عدد فردي"}</b><br>كل عدد فردي = أزواج وواحد منفرد. المنفردان يكوّنان زوجاً جديداً.<br>التخمين: ناتج جمع عددين فرديين هو عدد زوجي.`;
+    $("#l2a",el.ctl).oninput=e=>{st.a=+e.target.value;draw();};$("#l2b",el.ctl).oninput=e=>{st.b=+e.target.value;draw();};
+   }else if(st.tab==="rect"){
+    el.ctl.innerHTML=`<div class="row"><label for="l2w">الطول</label><input id="l2w" type="range" min="2" max="12" step="1" value="${st.w}"><output>${st.w}</output></div>
+    <div class="row"><label for="l2h">العرض</label><input id="l2h" type="range" min="2" max="7" step="1" value="${st.h}"><output>${st.h}</output></div>`;
+    const u=22,w=st.w*u,h=st.h*u,x=170-w/2,y=100-h/2;
+    let s=`<rect class="pc" x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#hatch)" fill-opacity=".18"/>
+    <path class="pc" style="stroke:var(--c-p);stroke-width:2.2" d="M${x} ${y}L${x+w} ${y+h}"/><path class="pc" style="stroke:var(--c-q);stroke-width:2.2" d="M${x+w} ${y}L${x} ${y+h}"/>`;
+    s+=T(x-9,y-3,"A","md")+T(x+w+9,y-3,"B","md")+T(x+w+9,y+h+12,"C","md")+T(x-9,y+h+12,"D","md");
+    el.pop.innerHTML=SVG(s);
+    const d=Math.hypot(st.w,st.h).toFixed(2);
+    el.out.innerHTML=`<span class="k-p"><b>${B("AC = "+d)}</b></span> ، <span class="k-q"><b>${B("BD = "+d)}</b></span> <span class="ok">متساويتان</span><br>الطول ${B(st.w)} والعرض ${B(st.h)} (وحدات).<br>التخمين: القطعتان الواصلتان بين كل رأسين متقابلين في المستطيل متطابقتان.`;
+    $("#l2w",el.ctl).oninput=e=>{st.w=+e.target.value;draw();};$("#l2h",el.ctl).oninput=e=>{st.h=+e.target.value;draw();};
+   }else{
+    el.ctl.innerHTML=`<div class="row"><label for="l2m">حتى الشهر</label><input id="l2m" type="range" min="1" max="6" step="1" value="${st.m}"><output>${st.m}</output></div>
+    <div class="chips">${Object.keys(NM).map(k=>`<button data-k="${k}" aria-pressed="${!!st.on[k]}" style="border-color:${CL[k]}">${NM[k]}</button>`).join("")}</div>`;
+    const X=m=>52+(m-1)*52,Y=v=>172-v/2000*150;
+    let s=`<path class="pc" d="M40 22V172H326"/>`;
+    for(let v=400;v<=2000;v+=400)s+=`<path class="pc lt pd" d="M40 ${Y(v)}H326"/>`+T(22,Y(v)+3,v,"sm mu");
+    for(let m=1;m<=6;m++)s+=T(X(m),185,m,"sm mu");
+    s+=T(183,197,"الشهر","sm mu");
+    Object.keys(D).forEach(k=>{if(!st.on[k])return;let p="";for(let m=1;m<=st.m;m++){p+=(m>1?"L":"M")+X(m)+" "+Y(D[k][m-1]);s+=`<circle cx="${X(m)}" cy="${Y(D[k][m-1])}" r="4" fill="${CL[k]}"/>`;}
+     if(st.m>1)s+=`<path class="pc lt" style="stroke:${CL[k]}" d="${p}"/>`;});
+    el.pop.innerHTML=SVG(s);
+    const i=st.m-1,dn=i&&["thu","fri","sat"].filter(k=>D[k][i]<D[k][i-1]).map(k=>NM[k]);
+    el.out.innerHTML=`الشهر ${B(st.m)}: الخميس ${B(D.thu[i])}، الجمعة ${B(D.fri[i])}، السبت ${B(D.sat[i])}<br>المجموع ${B(`${D.thu[i]} + ${D.fri[i]} + ${D.sat[i]} = ${D.tot[i]}`)}${i?` ← <span class="${D.tot[i]>D.tot[i-1]?"ok":"no"}">${D.tot[i]>D.tot[i-1]?"أكبر من الشهر السابق":"أقل من الشهر السابق"}</span>`:""}<br>${dn&&dn.length?`انتبه: ${dn.join(" و")} أقل من الشهر السابق، لكن المجموع يزداد.`:"التخمين: العمل في الأيام الثلاثة الأخيرة من الأسبوع يزداد."}`;
+    $("#l2m",el.ctl).oninput=e=>{st.m=+e.target.value;draw();};
+    $$(".chips button",el.ctl).forEach(b=>b.onclick=()=>{st.on[b.dataset.k]=!st.on[b.dataset.k];draw();});
+   }};
+  el.onTab=t=>{st.tab=t;draw();};draw();
+ }});
+
+/* ---- Lab 3: counterexample ---- */
+LABS.push({title:"مختبر المثال المضاد",
+ pq:`جرّبنا ${B("n = 2, 3, 5, 10")} وكلها تحقق ${B("n² &gt; n")}. هل تكفي هذه الأمثلة لنقول إن التخمين صحيح دائماً؟`,
+ pa:`لا. الأمثلة المؤيدة مهما كثرت لا تثبت التخمين، ومثال مضاد واحد يهدمه: ${B("n = 1")} لأن ${B("1² ≯ 1")}.`,
+ tabs:[["sq",B("n² &gt; n")],["mid","منتصف القطعة"]],
+ init(el){
+  const st={tab:"sq",n:2,t:0,sup:new Set(),cx:new Set()};
+  const draw=()=>{
+   if(st.tab==="sq"){
+    el.ctl.innerHTML=`<div class="row"><label for="l3n">قيمة ${B("n")}</label><input id="l3n" type="range" min="-3" max="3" step="0.1" value="${st.n}"><output>${st.n}</output></div>`;
+    const n=st.n,q=+(n*n).toFixed(2),good=q>n;(good?st.sup:st.cx).add(n);
+    const X=v=>30+(v+3)/12*290;
+    let s=`<path class="pc" d="M20 120H326"/>`;
+    for(let v=-3;v<=9;v++)s+=`<path class="pc lt" d="M${X(v)} 115V125"/>`+T(X(v),140,v,"sm mu");
+    if(st.cx.size)s+=`<rect x="${X(0)}" y="112" width="${X(1)-X(0)}" height="16" fill="url(#hatchR)" opacity=".8"/>`+T(X(.5),160,"منطقة الأمثلة المضادة","sm",'style="fill:var(--c-cx)"');
+    s+=`<path class="pc" style="stroke:var(--c-pat);stroke-width:2" d="M${X(n)} 120V84"/><circle cx="${X(n)}" cy="78" r="9" fill="var(--paper)" class="pc" style="stroke:var(--c-pat)"/>`+T(X(n),82,"n","sm",'style="fill:var(--c-pat);font-weight:700"');
+    s+=`<path class="pc" style="stroke:var(--c-q);stroke-width:2" d="M${X(q)} 120V52"/><circle cx="${X(q)}" cy="44" r="10" fill="var(--paper)" class="pc" style="stroke:var(--c-q)"/>`+T(X(q),48,"n²","sm",'style="fill:var(--c-q);font-weight:700"');
+    s+=T(170,22,good?"n² > n":"n² ≯ n","lg",`style="fill:${good?"var(--c-t)":"var(--c-cx)"}"`);
+    el.pop.innerHTML=SVG(s);
+    el.out.innerHTML=`${B(`n = ${n}`)} ، ${B(`n² = ${q}`)} ← ${good?`<span class="ok">${B(`${q} &gt; ${n}`)} مثال مؤيد</span>`:`<span class="no">${B(`${q} ≯ ${n}`)} مثال مضاد!</span>`}<br>أمثلة مؤيدة جرّبتها: <b>${B(st.sup.size)}</b> · أمثلة مضادة وجدتها: <b>${B(st.cx.size)}</b><br>${st.cx.size?"مثال مضاد واحد كافٍ: التخمين خاطئ.":"ابحث عن قيمة تجعل التخمين خاطئاً. جرّب القيم الصغيرة."}`;
+    $("#l3n",el.ctl).oninput=e=>{st.n=Math.round(e.target.value*10)/10;draw();};
+   }else{
+    el.ctl.innerHTML=`<div class="row"><label for="l3t">ارفع النقطة ${B("K")}</label><input id="l3t" type="range" min="0" max="100" step="5" value="${st.t}"><output>${st.t}</output></div>`;
+    const J=[60,160],L=[280,160],K=[170,160-st.t],u=22,d=Math.hypot(110,st.t)/u;
+    const tick=(a,b)=>{const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy),nx=-dy/l*6,ny=dx/l*6;return `<path class="pc" style="stroke:var(--c-cx)" d="M${mx-nx} ${my-ny}L${mx+nx} ${my+ny}"/>`;};
+    let s=`<path class="pc pd lt" d="M${J[0]} ${J[1]}L${L[0]} ${L[1]}"/><path class="pc" style="stroke-width:2" d="M${J[0]} ${J[1]}L${K[0]} ${K[1]}L${L[0]} ${L[1]}"/>`+tick(J,K)+tick(K,L);
+    [[J,"J",-12,14],[L,"L",12,14],[K,"K",0,-10]].forEach(([p,n,dx,dy])=>s+=`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="var(--pencil)"/>`+T(p[0]+dx,p[1]+dy,n,"lg"));
+    s+=`<path class="pc lt pd" d="M170 30V190"/>`;
+    el.pop.innerHTML=SVG(s);
+    el.out.innerHTML=`${B("JK = "+d.toFixed(2))} ، ${B("KL = "+d.toFixed(2))} ← ${B("JK = KL")} دائماً.<br>هل ${B("K")} منتصف ${B("JL")}؟ ${st.t===0?`<span class="ok">نعم، النقاط على استقامة واحدة.</span>`:`<span class="no">لا! مثال مضاد.</span>`}<br>${st.t===0?"ارفع النقطة لتجد مثالاً مضاداً.":`التخمين «إذا كان ${B("JK = KL")} فإن ${B("K")} منتصف ${B("JL")}» خاطئ عندما لا تقع النقاط على استقامة واحدة.`}`;
+    $("#l3t",el.ctl).oninput=e=>{st.t=+e.target.value;draw();};
+   }};
+  el.onTab=t=>{st.tab=t;draw();};draw();
+ }});
+
+/* ---- Lab 4: logic ---- */
+LABS.push({title:"مختبر قيم الصواب",
+ pq:`${B("p")} خاطئة و ${B("q")} صائبة. هل عبارة الفصل ${B("p ∨ q")} صائبة؟`,
+ pa:`نعم. يكفي أن تكون إحدى العبارتين صائبة لتكون ${B("p ∨ q")} صائبة.`,
+ tabs:[["sw","آلة العبارات"],["jan","مثال يناير"]],
+ init(el){
+  const OPS={np:["~p",(p,q)=>!p],and:["p ∧ q",(p,q)=>p&&q],or:["p ∨ q",(p,q)=>p||q],npq:["~p ∨ q",(p,q)=>!p||q]};
+  const st={tab:"sw",p:true,q:false,op:"and",seen:{np:new Set(),and:new Set(),or:new Set(),npq:new Set()},A:"q",o:"or",Bv:"r"};
+  const JV={p:false,q:false,r:true};
+  const PH={p:"يناير من أشهر فصل الربيع","~p":"يناير ليس من أشهر فصل الربيع",q:"عدد أيام شهر يناير 30 يوماً فقط","~q":"عدد أيام شهر يناير ليس 30 يوماً فقط",r:"يناير هو أول أشهر السنة الميلادية","~r":"يناير ليس أول أشهر السنة الميلادية"};
+  const val=k=>k[0]==="~"?!JV[k[1]]:JV[k];
+  const tf=v=>v?"T":"F",col=v=>v?"var(--c-t)":"var(--c-f)";
+  const lamp=(x,y,v)=>`<circle cx="${x}" cy="${y}" r="17" fill="${v?"var(--glow)":"var(--paper)"}" class="pc"/>${v?`<path class="pc" style="stroke:var(--glow)" d="M${x} ${y-24}v-7M${x+20} ${y-14}l5-5M${x-20} ${y-14}l-5-5M${x+26} ${y}h7"/>`:""}`+T(x,y+5,tf(v),"lg");
+  const draw=()=>{
+   if(st.tab==="sw"){
+    el.ctl.innerHTML=`<div class="row"><button class="btn sw ${tf(st.p)}" id="l4p">p = ${tf(st.p)}</button><button class="btn sw ${tf(st.q)}" id="l4q">q = ${tf(st.q)}</button><span style="color:var(--muted)">اضغط لتغيّر القيمة</span></div>
+    <div class="chips" dir="ltr">${Object.keys(OPS).map(k=>`<button data-k="${k}" aria-pressed="${st.op===k}">${OPS[k][0]}</button>`).join("")}</div>`;
+    const f=OPS[st.op][1],res=f(st.p,st.q),rows=[[1,1],[1,0],[0,1],[0,0]],ri=rows.findIndex(r=>!!r[0]===st.p&&!!r[1]===st.q);
+    st.seen[st.op].add(ri);
+    let s=`<circle cx="26" cy="62" r="14" class="pc" fill="${col(st.p)}" fill-opacity=".35" style="stroke:var(--c-p)"/>`+T(26,58,"p","sm",'style="fill:var(--c-p);font-weight:700"')+T(26,70,tf(st.p),"sm");
+    s+=`<circle cx="26" cy="132" r="14" class="pc" fill="${col(st.q)}" fill-opacity="${st.op==="np"?.08:.35}" style="stroke:var(--c-q)"/>`+T(26,128,"q","sm",'style="fill:var(--c-q);font-weight:700"')+T(26,140,tf(st.q),"sm");
+    s+=`<path class="pc" style="stroke:${col(st.p)};stroke-width:2.5" d="M40 62H62L74 86"/><path class="pc ${st.op==="np"?"pd lt":""}" style="${st.op==="np"?"":`stroke:${col(st.q)};stroke-width:2.5`}" d="M40 132H62L74 108"/>`;
+    s+=`<rect class="pc" x="70" y="72" width="58" height="50" rx="8" fill="url(#hatch)" fill-opacity=".22"/>`+T(99,102,OPS[st.op][0],"md",'style="font-weight:700"');
+    s+=`<path class="pc" style="stroke:${col(res)};stroke-width:2.5" d="M128 97H142"/>`+lamp(160,97,res);
+    const x0=196,cw=[30,30,76],ry=30,y0=40;
+    s+=`<rect class="pc" x="${x0}" y="${y0-26}" width="136" height="${26+ry*4}" rx="4"/>`+T(x0+15,y0-8,"p","md",'style="fill:var(--c-p);font-weight:700"')+T(x0+45,y0-8,"q","md",'style="fill:var(--c-q);font-weight:700"')+T(x0+98,y0-8,OPS[st.op][0],"md",'style="font-weight:700"');
+    s+=`<path class="pc lt" d="M${x0+30} ${y0-26}V${y0+ry*4}M${x0+60} ${y0-26}V${y0+ry*4}"/>`;
+    rows.forEach((r,i)=>{const y=y0+i*ry;
+     s+=`<path class="pc lt" d="M${x0} ${y}H${x0+136}"/>`+(i===ri?`<rect x="${x0+2}" y="${y+2}" width="132" height="${ry-4}" fill="var(--glow)" opacity=".35" rx="3"/>`:"");
+     const seen=st.seen[st.op].has(i),v=f(!!r[0],!!r[1]);
+     s+=T(x0+15,y+20,tf(r[0]),"md")+T(x0+45,y+20,tf(r[1]),"md")+T(x0+98,y+20,seen?tf(v):"؟","md",seen?`style="fill:${v?"var(--c-t)":"var(--c-cx)"};font-weight:700"`:'class="md mu"');});
+    el.pop.innerHTML=SVG(s);
+    const why={np:"النفي يعكس قيمة صواب "+B("p")+".",and:"الوصل صائب فقط إذا كانت العبارتان صائبتين.",or:"الفصل خاطئ فقط إذا كانت العبارتان خاطئتين.",npq:"انفِ "+B("p")+" أولاً، ثم طبّق قاعدة الفصل."}[st.op];
+    el.out.innerHTML=`${B(OPS[st.op][0])} ← <b class="${res?"ok":"no"}">${res?"صائبة "+B("T"):"خاطئة "+B("F")}</b><br>${why}<br>أكملت ${B(st.seen[st.op].size+" / 4")} من صفوف جدول الصواب${st.seen[st.op].size===4?' <span class="ok">✓</span>':"، جرّب بقية الحالات."}`;
+    $("#l4p",el.ctl).onclick=()=>{st.p=!st.p;draw();};$("#l4q",el.ctl).onclick=()=>{st.q=!st.q;draw();};
+    $$(".chips button",el.ctl).forEach(b=>b.onclick=()=>{st.op=b.dataset.k;draw();});
+   }else{
+    const opt=s=>["p","~p","q","~q","r","~r"].map(k=>`<option ${k===s?"selected":""}>${k}</option>`).join("");
+    el.ctl.innerHTML=`<div class="row" dir="ltr" style="justify-content:center"><select id="l4a" aria-label="العبارة الأولى">${opt(st.A)}</select>
+    <select id="l4o" aria-label="أداة الربط"><option value="and" ${st.o==="and"?"selected":""}>∧ و</option><option value="or" ${st.o==="or"?"selected":""}>∨ أو</option></select>
+    <select id="l4b" aria-label="العبارة الثانية">${opt(st.Bv)}</select></div>`;
+    const a=val(st.A),b=val(st.Bv),res=st.o==="and"?a&&b:a||b;
+    let s="";[["p",28,"var(--c-p)"],["q",82,"var(--c-q)"],["r",136,"var(--c-neg)"]].forEach(([k,y,c])=>{
+     const used=st.A.replace("~","")===k||st.Bv.replace("~","")===k;
+     s+=`<rect class="pc ${used?"":"pd lt"}" x="12" y="${y}" width="150" height="42" rx="6" style="${used?`stroke:${c};stroke-width:2`:""}"/>`+T(30,y+27,k,"lg",`style="fill:${c}"`)+T(96,y+20,{p:"من أشهر الربيع",q:"أيامه 30 فقط",r:"أول أشهر السنة"}[k],"sm")+T(96,y+34,"يناير","sm mu");
+     s+=`<circle cx="148" cy="${y+21}" r="10" class="pc" fill="${col(JV[k])}" fill-opacity=".4"/>`+T(148,y+25,tf(JV[k]),"sm",'style="font-weight:700"');});
+    s+=`<path class="pc" d="M162 60H186L200 86M162 160H186L200 112"/><rect class="pc" x="196" y="74" width="62" height="50" rx="8" fill="url(#hatch)" fill-opacity=".22"/>`+T(227,104,`${st.A} ${st.o==="and"?"∧":"∨"} ${st.Bv}`,"md",'style="font-weight:700"');
+    s+=`<path class="pc" style="stroke:${col(res)};stroke-width:2.5" d="M258 99H276"/>`+lamp(298,99,res);
+    el.pop.innerHTML=SVG(s);
+    el.out.innerHTML=`«${PH[st.A]} ${st.o==="and"?"و":"أو"} ${PH[st.Bv]}»<br>${B(st.A+" = "+tf(a))} ، ${B(st.Bv+" = "+tf(b))} ← <b class="${res?"ok":"no"}">${res?"صائبة":"خاطئة"}</b><br>${st.o==="and"?(res?"العبارتان صائبتان، فالوصل صائب.":"إحدى العبارتين خاطئة، فالوصل خاطئ."):(res?"إحدى العبارتين صائبة على الأقل، فالفصل صائب.":"العبارتان خاطئتان، فالفصل خاطئ.")}`;
+    $("#l4a",el.ctl).onchange=e=>{st.A=e.target.value;draw();};$("#l4o",el.ctl).onchange=e=>{st.o=e.target.value;draw();};$("#l4b",el.ctl).onchange=e=>{st.Bv=e.target.value;draw();};
+   }};
+  el.onTab=t=>{st.tab=t;draw();};draw();
+ }});
+
+/* ---- Lab 5: Venn ---- */
+LABS.push({title:"مختبر أشكال فن",
+ pq:`شارك في حملة الورق ${B("5")} في رجب فقط، و${B("6")} في الشهرين، و${B("14")} في شعبان فقط. كم شخصاً شارك في رجب <b>أو</b> شعبان؟`,
+ pa:`${B("5 + 6 + 14 = 25")} شخصاً، لأن «أو» تعني اتحاد المجموعتين.`,
+ tabs:[["reg","العبارات"],["camp","حملة الورق"]],
+ init(el){
+  const PATH={L:"M170 47.55A70 70 0 1 0 170 162.45A70 70 0 0 1 170 47.55Z",M:"M170 47.55A70 70 0 0 1 170 162.45A70 70 0 0 1 170 47.55Z",R:"M170 47.55A70 70 0 1 1 170 162.45A70 70 0 0 0 170 47.55Z"};
+  const EXP={p:["p","LM","المضلعات السداسية كلها."],q:["q","MR","المضلعات المحدبة كلها."],np:["~p","RO","كل المضلعات غير السداسية."],and:["p ∧ q","M","التقاطع: المضلعات السداسية المحدبة."],or:["p ∨ q","LMR","الاتحاد: سداسية أو محدبة أو كلاهما. ثلاث مناطق."],pnq:["p ∧ ~q","L","المضلعات السداسية غير المحدبة."],npq:["~p ∧ q","R","المضلعات المحدبة غير السداسية."]};
+  const st={tab:"reg",e:"and",sel:{L:false,M:false,R:false}};
+  const NUM={L:5,M:6,R:14};
+  const venn=(on,labels,nums,click)=>{
+   let s=`<rect class="pc" x="14" y="12" width="312" height="180" rx="6" ${on.includes("O")?'fill="url(#hatch)" fill-opacity=".5"':'fill="none"'}/>`;
+   s+=`<path d="${PATH.L}${PATH.M}${PATH.R}" fill="var(--paper)"/>`;
+   ["L","M","R"].forEach(k=>{const f=on.includes(k)?(k==="L"?"url(#hatchP)":k==="R"?"url(#hatchQ)":"url(#hatchB)"):"transparent";
+    s+=`<path d="${PATH[k]}" fill="${f}" ${click?`data-r="${k}" style="cursor:pointer"`:""}/>`;});
+   s+=`<circle class="pc" cx="130" cy="105" r="70" style="stroke:var(--c-p);stroke-width:2;pointer-events:none"/><circle class="pc" cx="210" cy="105" r="70" style="stroke:var(--c-q);stroke-width:2;pointer-events:none"/>`;
+   s+=T(96,30,labels[0],"md",'style="fill:var(--c-p);font-weight:700"')+T(246,30,labels[1],"md",'style="fill:var(--c-q);font-weight:700"');
+   if(nums)s+=T(100,110,nums.L,"lg",'style="pointer-events:none"')+T(170,110,nums.M,"lg",'style="pointer-events:none"')+T(240,110,nums.R,"lg",'style="pointer-events:none"');
+   return s;};
+  const draw=()=>{
+   if(st.tab==="reg"){
+    el.ctl.innerHTML=`<div class="chips" dir="ltr">${Object.keys(EXP).map(k=>`<button data-k="${k}" aria-pressed="${st.e===k}">${EXP[k][0]}</button>`).join("")}</div>`;
+    const e=EXP[st.e];
+    el.pop.innerHTML=SVG(venn(e[1],["p سداسية","q محدبة"],null,false)+T(170,186,"جميع المضلعات","sm mu"));
+    el.out.innerHTML=`${B("p")}: الشكل سداسي · ${B("q")}: الشكل مضلّع محدّب<br><b>${B(e[0])}</b> ← ${e[2]}<br>عدد المناطق المظللة: ${B(e[1].length)} من ${B("4")}.`;
+    $$(".chips button",el.ctl).forEach(b=>b.onclick=()=>{st.e=b.dataset.k;draw();});
+   }else{
+    el.ctl.innerHTML=`<div class="chips"><button data-s="LMR">رجب أو شعبان</button><button data-s="M">رجب وشعبان</button><button data-s="R">شعبان فقط</button><button data-s="">مسح</button></div>`;
+    const on=Object.keys(st.sel).filter(k=>st.sel[k]).join("");
+    el.pop.innerHTML=SVG(venn(on,["رجب","شعبان"],NUM,true)+T(170,186,"حملة الاقتصاد في استعمال الورق","sm mu"));
+    const parts=["L","M","R"].filter(k=>st.sel[k]).map(k=>NUM[k]),sum=parts.reduce((a,b)=>a+b,0);
+    const nm={LMR:"شاركوا في رجب أو شعبان (الاتحاد).",M:"شاركوا في الشهرين معاً (التقاطع).",R:"شاركوا في شعبان ولم يشاركوا في رجب.",L:"شاركوا في رجب ولم يشاركوا في شعبان.",LM:"كل من شارك في رجب.",MR:"كل من شارك في شعبان.",LR:"شاركوا في شهر واحد فقط."}[on]||"";
+    el.out.innerHTML=parts.length?`المجموع: <b>${B(parts.join(" + ")+(parts.length>1?" = "+sum:""))}</b> شخصاً<br>${nm}<br>اضغط على أي منطقة لتضيفها أو تحذفها.`:`اضغط على مناطق الشكل، أو اختر عبارة من الأزرار.<br>الأعداد من مثال ${B("4")} في الكتاب.`;
+    $$(".chips button",el.ctl).forEach(b=>b.onclick=()=>{["L","M","R"].forEach(k=>st.sel[k]=b.dataset.s.includes(k));draw();});
+    $$("[data-r]",el.pop).forEach(p=>p.onclick=()=>{st.sel[p.dataset.r]=!st.sel[p.dataset.r];draw();});
+   }};
+  el.onTab=t=>{st.tab=t;draw();};draw();
+ }});
+
+/* ---- Lab 6: challenge ---- */
+LABS.push({title:"التحدي",quiz:true,
+ pq:`قبل أن تبدأ: كم مثالاً مضاداً تحتاج لتثبت أن تخميناً خاطئ؟`,
+ pa:`مثال واحد فقط.`,
+ tabs:[],
+ init(el){
+  const Q=[
+   {q:`ما الحد التالي في المتتابعة ${B("3, 3, 6, 9, 15, …")}؟`,o:["18","21","24","30"],a:2,w:`كل حد = مجموع الحدين السابقين: ${B("9 + 15 = 24")}`},
+   {q:`ما الحد التالي في المتتابعة ${B("2, 6, 14, 30, 62, …")}؟`,o:["94","124","126","128"],a:2,w:`الزيادات ${B("4, 8, 16, 32")} تتضاعف: ${B("62 + 64 = 126")}`},
+   {q:`ما الحد التالي في المتتابعة ${B("1, 4, 9, 16, …")}؟`,o:["20","23","25","32"],a:2,w:`مربعات الأعداد: ${B("5² = 25")}`},
+   {q:`أي قيمة هي مثال مضاد للتخمين: «إذا كان ${B("n")} عدداً أولياً فإن ${B("n + 1")} ليس أولياً»؟`,o:["n = 2","n = 3","n = 5","n = 7"],a:0,w:`${B("2")} أولي و ${B("2 + 1 = 3")} أولي أيضاً.`},
+   {q:`أي عدد هو مثال مضاد للتخمين: «يمكن كتابة أي عدد فردي أكبر من ${B("2")} على صورة مجموع عددين أوليين»؟`,o:["5","7","9","11"],a:3,w:`${B("5 = 2 + 3")}، ${B("7 = 2 + 5")}، ${B("9 = 2 + 7")}، أما ${B("11 = 2 + 9")} و ${B("9")} ليس أولياً.`},
+   {q:`${B("p")}: في الأسبوع الواحد سبعة أيام. ${B("r")}: في الساعة الواحدة ${B("60")} دقيقة. ما قيمة صواب ${B("p ∧ r")}؟`,o:["صائبة T","خاطئة F"],a:0,w:`العبارتان صائبتان، فعبارة الوصل صائبة.`},
+   {q:`${B("p")}: في الأسبوع الواحد سبعة أيام. ${B("q")}: في اليوم الواحد ${B("20")} ساعة. ما قيمة صواب ${B("p ∧ q")}؟`,o:["صائبة T","خاطئة F"],a:1,w:`${B("q")} خاطئة، فعبارة الوصل خاطئة.`},
+   {q:`${B("q")}: في اليوم الواحد ${B("20")} ساعة. ${B("r")}: في الساعة الواحدة ${B("60")} دقيقة. ما قيمة صواب ${B("q ∨ r")}؟`,o:["صائبة T","خاطئة F"],a:0,w:`${B("r")} صائبة، ويكفي ذلك لتكون عبارة الفصل صائبة.`}
+  ];
+  const st={i:0,score:0,done:false,ans:null};
+  const stars=n=>n>=7?3:n>=5?2:n>=3?1:0;
+  const draw=()=>{
+   if(st.done){const s=stars(st.score);
+    el.pop.innerHTML=`<div class="quiz" style="justify-content:center;text-align:center"><div class="stars">${"★".repeat(s)}<i>${"★".repeat(3-s)}</i></div><div class="qq">نتيجتك: ${B(st.score+" / "+Q.length)}</div><div class="why">${s===3?"ممتاز! أنت صيّاد أنماط ماهر.":s===2?"جيد جداً. راجع الأسئلة التي أخطأت فيها.":"راجع الفصول ثم أعد المحاولة."}</div></div>`;
+    el.ctl.innerHTML=`<div class="row" style="justify-content:center"><button class="btn" id="l6r">أعد التحدي</button></div>`;
+    el.out.innerHTML=`ثلاث نجوم لمن يجيب عن ${B("7")} أسئلة أو أكثر.`;
+    $("#l6r",el.ctl).onclick=()=>{st.i=0;st.score=0;st.done=false;st.ans=null;draw();};return;}
+   const q=Q[st.i];
+   el.pop.innerHTML=`<div class="quiz"><div class="why">السؤال ${B((st.i+1)+" / "+Q.length)}</div><div class="qq">${q.q}</div><div class="opts">${q.o.map((o,j)=>`<button data-j="${j}" ${st.ans!==null?"disabled":""} class="${st.ans!==null&&j===q.a?"right":st.ans===j?"wrong":""}">${/[a-zA-Z0-9]/.test(o)&&!/[؀-ۿ]/.test(o)?B(o):o.replace(/([TF])$/,B("$1"))}</button>`).join("")}</div><div class="why">${st.ans!==null?(st.ans===q.a?"✓ ":"✗ ")+q.w:""}</div></div>`;
+   el.ctl.innerHTML=`<div class="row" style="justify-content:center"><button class="btn" id="l6n" ${st.ans===null?"disabled":""}>${st.i===Q.length-1?"اعرض النتيجة":"السؤال التالي"}</button></div>`;
+   el.out.innerHTML=`إجاباتك الصحيحة حتى الآن: <b>${B(st.score)}</b>`;
+   $$(".opts button",el.pop).forEach(b=>b.onclick=()=>{if(st.ans!==null)return;st.ans=+b.dataset.j;if(st.ans===q.a)st.score++;draw();});
+   $("#l6n",el.ctl).onclick=()=>{if(st.ans===null)return;if(st.i===Q.length-1)st.done=true;else st.i++;st.ans=null;draw();};
+  };draw();
+ }});
+
+/* ================= build book ================= */
+const N=LABS.length,book=$("#book");
+const textFace=i=>`<div class="scroll txt"><div class="kick">${TEXT[i].k}</div><h2>${TEXT[i].h}</h2>${TEXT[i].body}<div class="ref">${TEXT[i].ref}</div></div><span class="pgno">${B(i*2+1)}</span>`;
+const labFace=i=>{const L=LABS[i];return `<div class="labh"><h3>${L.title}</h3><small>حرّك وجرّب</small></div>
+<div class="predict"><div class="q">${L.pq}</div><div class="slot"><div class="a">${L.pa}</div><button class="flap" aria-expanded="false">توقّع ثم ارفع اللسان ▲</button></div></div>
+${L.tabs.length?`<div class="tabs" role="tablist">${L.tabs.map((t,j)=>`<button role="tab" data-t="${t[0]}" aria-selected="${j===0}">${t[1]}</button>`).join("")}</div>`:""}
+<div class="popwrap"><div class="pshadow"></div><div class="hinge"></div><div class="pop"></div></div>
+<div class="ctl"></div><div class="out" aria-live="polite"></div><span class="pgno">${B(i*2+2)}</span>`;};
+book.insertAdjacentHTML("beforeend",`<div class="sheet static r"><div class="face">${textFace(0)}</div></div>
+<div class="sheet static l"><div class="face front" style="align-items:center;justify-content:center;color:var(--muted)">✎</div></div>`);
+const leaves=[];
+for(let i=0;i<N;i++){
+ const lf=document.createElement("div");lf.className="sheet leaf";
+ lf.style.setProperty("--zu",((N-i)*.7).toFixed(1)+"px");lf.style.setProperty("--zf",(-(i+1)*.7).toFixed(1)+"px");
+ lf.innerHTML=`<div class="face front">${labFace(i)}</div><div class="face back">${i<N-1?textFace(i+1):END}</div>`;
+ book.appendChild(lf);leaves.push(lf);
+ const f=$(".front",lf),el={pop:$(".pop",f),ctl:$(".ctl",f),out:$(".out",f)};
+ LABS[i].init(el);
+ $$(".tabs button",f).forEach(b=>b.onclick=()=>{$$(".tabs button",f).forEach(x=>x.setAttribute("aria-selected",x===b));el.onTab&&el.onTab(b.dataset.t);});
+ const pr=$(".predict",f),fl=$(".flap",f);
+ fl.onclick=()=>{const o=pr.classList.toggle("open");fl.setAttribute("aria-expanded",o);fl.textContent=o?"":"توقّع ثم ارفع اللسان ▲";};
+ $(".slot .a",f).onclick=()=>{pr.classList.remove("open");fl.setAttribute("aria-expanded",false);fl.textContent="توقّع ثم ارفع اللسان ▲";};
+}
+
+/* ================= navigation ================= */
+const S={s:0,side:"text",two:true,teacher:false,busy:false,muted:false};
+const dots=$("#dots");dots.innerHTML=Array.from({length:N+1},()=>"<i></i>").join("");
+let actx=null;
+function flipSound(){
+ if(S.muted)return;
+ try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const d=.28,sr=actx.sampleRate,buf=actx.createBuffer(1,sr*d,sr),ch=buf.getChannelData(0);
+  for(let i=0;i<ch.length;i++){const t=i/ch.length;ch[i]=(Math.random()*2-1)*Math.pow(Math.sin(Math.PI*t),2)*.5;}
+  const src=actx.createBufferSource(),bp=actx.createBiquadFilter(),g=actx.createGain();src.buffer=buf;bp.type="bandpass";bp.frequency.setValueAtTime(900,actx.currentTime);bp.frequency.linearRampToValueAtTime(2600,actx.currentTime+d);bp.Q.value=.8;g.gain.value=.12;
+  src.connect(bp).connect(g).connect(actx.destination);src.start();}catch(e){}
+}
+function layout(){
+ const st=$("#stage"),W=st.clientWidth,H=st.clientHeight;
+ S.two=!S.teacher&&W>=860;
+ let pw,ph;
+ if(S.teacher){pw=Math.min(W-20,1150);ph=H-14;}
+ else if(S.two){ph=Math.min(H*.86,720);pw=Math.min(W*.455,ph*.86,600);ph=Math.min(ph,pw*1.42);}
+ else{pw=W-20;ph=Math.min(H-22,pw*1.8);}
+ const short=H<470;document.body.classList.toggle("short",short);
+ if(short){S.two=false;pw=Math.min(W-20,560);ph=Math.max(H-22,S.teacher?560:540);}
+ const fs=Math.max(10.5,Math.min(pw/28,ph/37));
+ book.style.setProperty("--pw",pw+"px");book.style.setProperty("--ph",ph+"px");book.style.setProperty("--fs",fs+"px");
+ book.style.setProperty("--tilt",S.teacher?"0deg":S.two?"13deg":"5deg");
+ if(!S.two&&S.s>=N&&S.side==="lab")S.side="text";
+ update();
+}
+function update(){
+ const pw=parseFloat(book.style.getPropertyValue("--pw"));
+ book.style.setProperty("--shift",S.two?"0px":(S.side==="text"?-pw/2:pw/2)+"px");
+ leaves.forEach((lf,i)=>lf.classList.toggle("active",i===S.s&&(S.two||S.side==="lab")));
+ leaves.forEach((lf,i)=>{lf.classList.toggle("far",i<S.s-2||i>S.s+1);$(".front",lf).classList.toggle("live",i===S.s);$(".back",lf).classList.toggle("live",i===S.s-1);});
+ $(".static.r .face").classList.toggle("live",S.s===0);
+ $$("i",dots).forEach((d,i)=>d.classList.toggle("on",i===S.s));
+ $("#prev").disabled=S.s===0&&(S.two||S.side==="text"||S.teacher);
+ $("#next").disabled=S.teacher?S.s>=N-1:S.s>=N;
+}
+function turn(i,fwd,cb){
+ const lf=leaves[i];S.busy=true;flipSound();lf.classList.add("turning");
+ lf.style.animation=(fwd?"flipF":"flipB")+" .9s cubic-bezier(.45,.05,.4,1) both";
+ lf.classList.toggle("flipped",fwd);
+ let done=false;const fin=()=>{if(done)return;done=true;lf.style.animation="";lf.classList.remove("turning");S.busy=false;cb&&cb();};
+ lf.addEventListener("animationend",fin,{once:true});setTimeout(fin,1100);
+}
+function next(){
+ if(S.busy)return;
+ if(S.teacher){if(S.s<N-1){const i=S.s;S.s++;update();turn(i,true,update);}return;}
+ if(!S.two&&S.side==="text"&&S.s<N){S.side="lab";flipSoundSoft();update();return;}
+ if(S.s<N){const i=S.s;S.s++;S.side="text";update();turn(i,true,update);}
+}
+function prev(){
+ if(S.busy)return;
+ if(S.teacher){if(S.s>0){S.s--;update();turn(S.s,false,update);}return;}
+ if(!S.two&&S.side==="lab"){S.side="text";flipSoundSoft();update();return;}
+ if(S.s>0){S.s--;S.side="lab";update();turn(S.s,false,update);}
+}
+function flipSoundSoft(){flipSound();}
+$("#next").onclick=next;$("#prev").onclick=prev;
+$("#mute").onclick=e=>{S.muted=!S.muted;e.currentTarget.textContent=S.muted?"🔇":"🔊";e.currentTarget.setAttribute("aria-pressed",S.muted);};
+$("#teach").onclick=e=>{S.teacher=!S.teacher;document.body.classList.toggle("teacher",S.teacher);e.currentTarget.setAttribute("aria-pressed",S.teacher);e.currentTarget.textContent=S.teacher?"خروج من وضع المعلم":"وضع المعلم";
+ if(S.teacher){if(S.s>=N){S.s=N-1;leaves[N-1].classList.remove("flipped");}S.side="lab";}
+ layout();};
+addEventListener("keydown",e=>{if(/INPUT|SELECT/.test(e.target.tagName))return;if(e.key==="ArrowLeft")next();if(e.key==="ArrowRight")prev();});
+let sx=null,sy=0;
+$("#stage").addEventListener("pointerdown",e=>{sx=e.target.closest("input,button,select,.pop,.ctl")?null:e.clientX;sy=e.clientY;});
+addEventListener("pointerup",e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){dx>0?next():prev();}});
+addEventListener("resize",layout);
+layout();
+</script>
+</body>
+</html>
