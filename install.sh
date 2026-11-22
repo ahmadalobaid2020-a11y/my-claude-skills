@@ -108,6 +108,14 @@ if git clone -q --depth 1 https://github.com/alchaincyf/huashu-art-motion.git "$
 else
   echo "could not clone alchaincyf/huashu-art-motion: skipping"
 fi
+# solidworks-mcp skill (soheil-mp/solidworks-mcp): how to drive SOLIDWORKS through that MCP server.
+# The servers themselves are Windows-only: install them there with scripts/install-solidworks-mcp.ps1.
+if git clone -q --depth 1 https://github.com/soheil-mp/solidworks-mcp.git "$tmp/solidworks-mcp"; then
+  rm -rf ~/.claude/skills/solidworks-mcp
+  cp -r "$tmp/solidworks-mcp/skills/solidworks-mcp" ~/.claude/skills/solidworks-mcp
+else
+  echo "could not clone soheil-mp/solidworks-mcp: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
