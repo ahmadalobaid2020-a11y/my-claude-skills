@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ar" dir="ltr">
+<!-- Made with the Bang Motion skill by Bang Tutorial (https://youtube.com/bangtutorial) - MIT - https://github.com/bangtutorial/bang-motion -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>صيّاد الأشكال</title>
+<!--
+  فيديو أطفال تفاعلي (9:16، 35 ثانية): روبو يسأل «وش هذا الشكل؟»، عدّ تنازلي، ثم الجواب.
+  لقطات مولّدة (Seedance) داخل إطارات على شكل الجواب، والكاميرا تتنقل يمين/فوق/قُطري/تحت مع دوران.
+  ?debug=1 شريط تمرير · ?clean=1 للتصدير · R إعادة · Space إيقاف مؤقت.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#22124A;--white:#fff;--pink:#FF4F9A;--yellow:#FFD23F;--red:#FF4B3E;--green:#27C46B;--purple:#8B4DFF;--blue:#2E8BFF;--orange:#FF8A1F}
+html,body{margin:0;height:100%;background:#120A2A;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#FFB3D9;font-family:"Baloo Bhaijaan 2",system-ui,sans-serif;color:var(--ink)}
+#world{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0;will-change:transform}
+.bg{position:absolute;left:-4200px;top:-4600px;width:9000px;height:8200px;
+  background:
+   radial-gradient(1500px 1700px at 4200px 4600px,#FFC2E2 0%,rgba(255,194,226,0) 70%),
+   radial-gradient(1500px 1700px at 5900px 4300px,#FFE89A 0%,rgba(255,232,154,0) 70%),
+   radial-gradient(1500px 1700px at 5900px 2000px,#B5F2C8 0%,rgba(181,242,200,0) 70%),
+   radial-gradient(1500px 1700px at 2700px 3100px,#D9C4FF 0%,rgba(217,196,255,0) 70%),
+   radial-gradient(1700px 1900px at 2700px 5300px,#2A2F8F 0%,rgba(42,47,143,0) 72%),
+   linear-gradient(160deg,#FFB3D9,#BFE3FF 45%,#C9B8FF)}
+.fl{position:absolute;left:0;top:0;will-change:transform}
+.st{position:absolute;left:0;top:0;width:0;height:0}
+.frame{position:absolute;will-change:transform;filter:drop-shadow(0 34px 0 rgba(34,18,74,.18))}
+.frame .edge,.frame .vid{position:absolute;inset:0}
+.frame .edge{background:#fff;transform:scale(1.06)}
+.frame video{position:absolute;left:50%;top:50%;height:100%;width:auto;min-width:100%;transform:translate(-50%,-50%);object-fit:cover;background:#ddd}
+.rr .edge,.rr .vid{border-radius:90px;overflow:hidden}
+.ci .edge,.ci .vid{clip-path:circle(50% at 50% 50%)}
+.tr .edge,.tr .vid{clip-path:polygon(50% 0,100% 100%,0 100%)}
+.tr .edge{transform:scale(1.09) translateY(1.5%)}
+.sq .edge,.sq .vid{border-radius:46px;overflow:hidden}
+.ci video{object-position:50% 78%}.sq video{object-position:50% 72%}
+.t{opacity:0}
+.bubble{position:absolute;direction:rtl;white-space:nowrap;background:#fff;color:var(--ink);font-weight:800;font-size:92px;line-height:1.5;padding:6px 64px;border-radius:90px;box-shadow:0 16px 0 rgba(34,18,74,.16);opacity:0;transform-origin:50% 100%}
+.qm{position:absolute;font-weight:800;font-size:330px;line-height:1;color:var(--yellow);-webkit-text-stroke:14px var(--ink);paint-order:stroke fill;opacity:0}
+.cnt{position:absolute;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;background:var(--ink);color:#fff;font-weight:800;font-size:210px;line-height:300px;text-align:center;opacity:0;box-shadow:0 0 0 18px #fff,0 26px 0 12px rgba(34,18,74,.2)}
+.ans{position:absolute;direction:rtl;white-space:nowrap;font-weight:800;font-size:230px;line-height:1.35;color:#fff;padding:0 80px;border-radius:120px;opacity:0;box-shadow:0 0 0 16px #fff,0 30px 0 14px rgba(34,18,74,.22)}
+.like{position:absolute;direction:rtl;white-space:nowrap;font-weight:700;font-size:84px;line-height:1.4;color:var(--ink);background:var(--yellow);padding:0 50px;border-radius:70px;opacity:0;box-shadow:0 12px 0 rgba(34,18,74,.18)}
+.title{position:absolute;direction:rtl;white-space:nowrap;font-weight:800;font-size:170px;line-height:1.2;color:#fff;-webkit-text-stroke:20px var(--ink);paint-order:stroke fill}
+.title span{display:inline-block;opacity:0;margin:0 .1em}
+.burst{position:absolute;left:0;top:0;opacity:0;will-change:transform}
+.end{position:absolute;direction:rtl;white-space:nowrap;font-weight:800;font-size:200px;line-height:1.2;color:var(--yellow);-webkit-text-stroke:20px var(--ink);paint-order:stroke fill;opacity:0}
+#flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:#fff}
+#dbg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:none;gap:12px;align-items:center;padding:10px 16px;border-radius:14px;background:rgba(14,16,22,.9);color:#cfd5e3;font:13px system-ui;z-index:50}
+#dbg input{width:300px}#dbg span{font-variant-numeric:tabular-nums;min-width:6ch}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div class="bg"></div>
+    <div id="floaters"></div>
+
+    <!-- 0 · الافتتاح -->
+    <div class="st" id="s0" style="left:0;top:0">
+      <div class="frame rr" id="fr0" style="left:-430px;top:-560px;width:860px;height:1390px"><div class="edge"></div><div class="vid"><video id="v0" src="assets/a.webm" muted playsinline preload="auto"></video></div></div>
+      <div class="title" id="title" style="left:-520px;width:1040px;top:-880px;text-align:center"><span>صيّاد</span><span>الأشكال</span></div>
+    </div>
+
+    <!-- 1 · دائرة (يمين) -->
+    <div class="st" id="s1" style="left:1700px;top:-300px">
+      <div class="frame ci" id="fr1" style="left:-450px;top:-560px;width:900px;height:900px"><div class="edge"></div><div class="vid"><video id="v1" src="assets/b.webm" muted playsinline preload="auto"></video></div></div>
+      <div class="bubble" id="q1" style="left:-330px;top:-860px">وش هذا الشكل؟</div>
+      <div class="qm" id="m1" style="left:290px;top:-760px;rotate:14deg">؟</div>
+      <div class="cnt" id="c1" style="left:0;top:560px"></div>
+      <div class="ans" id="a1" style="left:-330px;top:400px;background:var(--red)">دائرة</div>
+      <div class="like" id="l1" style="left:-215px;top:740px">زي الكورة</div>
+    </div>
+
+    <!-- 2 · مثلث (فوق) -->
+    <div class="st" id="s2" style="left:1700px;top:-2600px">
+      <div class="frame tr" id="fr2" style="left:-480px;top:-600px;width:960px;height:900px"><div class="edge"></div><div class="vid"><video id="v2" src="assets/c.webm" muted playsinline preload="auto"></video></div></div>
+      <div class="bubble" id="q2" style="left:-250px;top:-880px">طيب، وهذا؟</div>
+      <div class="qm" id="m2" style="left:-470px;top:-700px;rotate:-16deg">؟</div>
+      <div class="cnt" id="c2" style="left:0;top:560px"></div>
+      <div class="ans" id="a2" style="left:-320px;top:400px;background:var(--green)">مثلث</div>
+      <div class="like" id="l2" style="left:-215px;top:740px">زي الخيمة</div>
+    </div>
+
+    <!-- 3 · مربع (قُطري يسار-تحت) -->
+    <div class="st" id="s3" style="left:-1500px;top:-1500px">
+      <div class="frame sq" id="fr3" style="left:-440px;top:-570px;width:880px;height:880px"><div class="edge"></div><div class="vid"><video id="v3" src="assets/d.webm" muted playsinline preload="auto"></video></div></div>
+      <div class="bubble" id="q3" style="left:-330px;top:-870px">وهذا وش يكون؟</div>
+      <div class="qm" id="m3" style="left:300px;top:-770px;rotate:12deg">؟</div>
+      <div class="cnt" id="c3" style="left:0;top:560px"></div>
+      <div class="ans" id="a3" style="left:-320px;top:400px;background:var(--purple)">مربع</div>
+      <div class="like" id="l3" style="left:-215px;top:740px">زي الهدية</div>
+    </div>
+
+    <!-- 4 · الختام (تحت) -->
+    <div class="st" id="s4" style="left:-1500px;top:700px">
+      <div class="frame rr" id="fr4" style="left:-430px;top:-640px;width:860px;height:1300px"><div class="edge"></div><div class="vid"><video id="v4" src="assets/e.webm" muted playsinline preload="auto"></video></div></div>
+      <div class="end" id="end" style="left:-520px;width:1040px;top:-930px;text-align:center">شاطرين!</div>
+      <div class="like" id="l4" style="left:-300px;top:700px;font-size:92px;background:#fff">نجمة لكل بطل</div>
+    </div>
+    <div id="bursts"></div>
+  </div>
+  <div id="flash"></div>
+  <div id="dbg"><button id="dPlay">Pause</button><input id="dScrub" type="range" min="0" max="1000" value="0"><span id="dClock">0.00s</span></div>
+</div>
+<audio id="vo" src="assets/audio.mp3" preload="auto"></audio>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const W=1080,H=1920,DUR=35;
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+
+/* ---------- أشكال SVG ---------- */
+const COL=['#FF4F9A','#FFD23F','#FF4B3E','#27C46B','#8B4DFF','#2E8BFF','#FF8A1F'];
+const STAR='M50 4l13.5 29.5 32 3.8-23.8 21.8 6.6 31.6L50 74.6 21.7 90.7l6.6-31.6L4.5 37.3l32-3.8z';
+function shape(kind,c,s){const inner=kind==='ci'?`<circle cx="50" cy="50" r="42"/>`:kind==='tr'?`<path d="M50 8l44 80H6z"/>`:kind==='sq'?`<rect x="10" y="10" width="80" height="80" rx="10"/>`:`<path d="${STAR}"/>`;
+  return `<svg width="${s}" height="${s}" viewBox="0 0 100 100" style="display:block;overflow:visible"><g fill="${c}" stroke="#22124A" stroke-width="7" stroke-linejoin="round">${inner}</g></svg>`;}
+const KINDS=['ci','tr','sq','star'];
+/* عوّامات الخلفية: موزعة على العالم كله، تتحرك وتدور دائماً (دالة في الزمن) */
+function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x);}
+const FL=[];for(let i=0;i<70;i++){const d=document.createElement('div');d.className='fl';const s=70+rnd(i)*150;
+  d.innerHTML=shape(KINDS[i%4],COL[i%7],s);d.style.opacity=(.35+rnd(i+50)*.4).toFixed(2);$('#floaters').appendChild(d);
+  FL.push({d,x:-3600+rnd(i+1)*7200,y:-4000+rnd(i+2)*6400,p:3+rnd(i+3)*4,ph:rnd(i+4)*6.28,a:60+rnd(i+5)*120,rs:(rnd(i+6)-.5)*70});}
+const CNT=[];
+function frame(t){CNT.forEach(([el,at,n])=>{if(t>=at-.02&&t<at+1&&el.textContent!==n)el.textContent=n;});FL.forEach(f=>{const k=t*6.283/f.p+f.ph;f.d.style.transform=`translate(${(f.x+Math.sin(k)*f.a).toFixed(1)}px,${(f.y+Math.cos(k*.8)*f.a).toFixed(1)}px) rotate(${(t*f.rs).toFixed(1)}deg)`;});}
+
+const tl=gsap.timeline({paused:true,onUpdate(){frame(tl.time());}});const rig=$('#world');
+/* ---------- الكاميرا: موضع + تكبير + دوران ---------- */
+const C={x:0,y:0,z:1,r:0};
+function applyCam(){rig.style.transform=`translate(540px,960px) rotate(${C.r}deg) scale(${C.z}) translate(${-C.x}px,${-C.y}px)`;}
+const cam=(at,p,dur=1,ease='sine.inOut')=>tl.to(C,{...p,duration:dur,ease,onUpdate:applyCam},at);
+const P=[[0,0],[1700,-300],[1700,-2600],[-1500,-1500],[-1500,700]];
+
+const pop=(sel,at,{dur=.5,from=.2,rot=0,ease='back.out(2.2)'}={})=>tl.fromTo(sel,{opacity:0,scale:from,rotate:rot},{opacity:1,scale:1,rotate:0,duration:dur,ease,immediateRender:false},at);
+const out=(sel,at,{dur=.25,to={scale:.4}}={})=>tl.to(sel,{opacity:0,...to,duration:dur,ease:'power2.in'},at);
+const wob=(sel,a,b,{amp=5,per=.9}={})=>tl.fromTo(sel,{rotate:-amp},{rotate:amp,duration:per,ease:'sine.inOut',yoyo:true,repeat:Math.max(1,Math.round((b-a)/per)-1),immediateRender:false},a);
+
+/* انفجار أشكال صغيرة حول نقطة */
+function burst(at,cx,cy,kind,n=16){for(let i=0;i<n;i++){const d=document.createElement('div');d.className='burst';d.innerHTML=shape(kind,COL[(i*3)%7],70+rnd(i+at)*70);$('#bursts').appendChild(d);
+  const ang=i/n*6.283+rnd(i+9)*.5,R=520+rnd(i+at*3)*380;
+  tl.fromTo(d,{opacity:1,x:cx-50,y:cy-50,scale:.2,rotate:0},{x:cx-50+Math.cos(ang)*R,y:cy-50+Math.sin(ang)*R,scale:1.2,rotate:(rnd(i)-.5)*540,duration:1.0,ease:'power3.out',immediateRender:false},at);
+  tl.to(d,{opacity:0,duration:.35},at+.95);}}
+
+/* سؤال → عدّ تنازلي → جواب */
+function quiz(i,T,{kind}){const [sx,sy]=P[i];
+  pop('#fr'+i,T+.05,{from:.5,rot:i%2?-10:10,dur:.7,ease:'back.out(1.5)'});
+  tl.to('#fr'+i,{y:-26,duration:1.3,ease:'sine.inOut',yoyo:true,repeat:3},T+.8);
+  pop('#q'+i,T+.75,{rot:-8});pop('#m'+i,T+1.0,{from:0,rot:40});wob('#m'+i,T+1.5,T+5.3,{amp:9,per:.5});
+  cam(T+.9,{z:1.07,r:C.r0+(i%2?2:-2)},4.2);
+  ['٣','٢','١'].forEach((n,k)=>{const at=T+2.4+k;CNT.push([$('#c'+i),at,n]);
+    tl.fromTo('#c'+i,{opacity:0,scale:2.2,rotate:(k-1)*18},{opacity:1,scale:1,rotate:0,duration:.32,ease:'back.out(2.5)',immediateRender:false},at);
+    tl.to('#c'+i,{scale:.82,duration:.5,ease:'power1.in'},at+.4);
+    tl.to('#fr'+i,{scale:1.05,duration:.12,yoyo:true,repeat:1,ease:'power2.out'},at);});
+  const R=T+5.4;
+  out('#c'+i,R-.05,{dur:.15});out('#q'+i,R,{to:{y:-120,scale:.6}});out('#m'+i,R,{to:{scale:2,rotate:60}});
+  tl.fromTo('#flash',{opacity:.75},{opacity:0,duration:.45,ease:'power2.out',immediateRender:false},R);
+  cam(R,{z:1.16},.14,'power2.out');cam(R+.14,{z:1,r:C.r0},.7,'elastic.out(1,.5)');
+  tl.to('#fr'+i,{scale:1.1,duration:.14,ease:'power2.out'},R);tl.to('#fr'+i,{scale:1,duration:.7,ease:'elastic.out(1,.45)'},R+.14);
+  burst(R,sx,sy-110,kind);
+  tl.fromTo('#a'+i,{opacity:0,scale:.2,y:160,rotate:-12},{opacity:1,scale:1,y:0,rotate:-3,duration:.6,ease:'back.out(2)',immediateRender:false},R+.05);
+  wob('#a'+i,R+.7,R+2.6,{amp:3,per:.6});
+  pop('#l'+i,R+.9,{rot:8});}
+
+/* ================= 0 · الافتتاح (0 → 4.6) ================= */
+tl.set(C,{x:0,y:120,z:1.5,r:-8,onUpdate:applyCam},0);
+tl.fromTo('#flash',{opacity:1},{opacity:0,duration:.4},0);
+tl.fromTo('#fr0',{scale:.6,rotate:-14},{scale:1,rotate:-3,duration:1.1,ease:'back.out(1.4)'},0);
+cam(0,{x:0,y:-40,z:1,r:0},1.5,'power3.out');
+tl.fromTo('#title span',{opacity:0,scale:.2,y:120,rotate:-20},{opacity:1,scale:1,y:0,rotate:0,duration:.6,ease:'back.out(2.2)',stagger:.28,immediateRender:false},2.3);
+tl.to('#fr0',{rotate:3,y:-20,duration:1.4,ease:'sine.inOut',yoyo:true,repeat:1},1.2);
+cam(1.6,{z:1.06,r:3},2.4);
+
+/* ================= 1 · دائرة: الكاميرا تنطلق يميناً (4.6 → 13) ================= */
+C.r0=0;cam(4.15,{x:P[1][0],y:P[1][1],z:1,r:0},.95,'power3.inOut');
+tl.to(C,{z:.72,duration:.47,ease:'power2.in',yoyo:true,repeat:1,onUpdate:applyCam},4.15);
+quiz(1,4.6,{kind:'ci'});
+/* ================= 2 · مثلث: إلى الأعلى (13 → 21.2) ================= */
+cam(12.5,{x:P[2][0],y:P[2][1],r:0},.95,'power3.inOut');
+tl.to(C,{z:.72,duration:.47,ease:'power2.in',yoyo:true,repeat:1,onUpdate:applyCam},12.5);
+quiz(2,13.0,{kind:'tr'});
+/* ================= 3 · مربع: قُطرياً مع لفّة كاملة (21.2 → 29.4) ================= */
+cam(20.6,{x:P[3][0],y:P[3][1],r:360},1.1,'power3.inOut');
+tl.to(C,{z:.6,duration:.55,ease:'power2.in',yoyo:true,repeat:1,onUpdate:applyCam},20.6);
+C.r0=360;quiz(3,21.2,{kind:'sq'});
+/* ================= 4 · الختام: هبوط للأسفل (29.4 → 35) ================= */
+cam(28.85,{x:P[4][0],y:P[4][1]-40,r:360},1.0,'power3.inOut');
+tl.to(C,{z:.7,duration:.5,ease:'power2.in',yoyo:true,repeat:1,onUpdate:applyCam},28.85);
+pop('#fr4',29.4,{from:.5,rot:12,dur:.7,ease:'back.out(1.5)'});
+tl.to('#fr4',{rotate:-2.5,y:-22,duration:1.3,ease:'sine.inOut',yoyo:true,repeat:3},30.1);
+tl.fromTo('#end',{opacity:0,scale:.2,rotate:-16},{opacity:1,scale:1,rotate:-4,duration:.6,ease:'back.out(2.4)',immediateRender:false},29.9);
+wob('#end',30.5,34.4,{amp:4,per:.55});
+burst(30.0,P[4][0],P[4][1]-100,'star',18);
+burst(31.6,P[4][0],P[4][1]-100,'ci',10);burst(32.2,P[4][0],P[4][1]-100,'tr',10);burst(32.8,P[4][0],P[4][1]-100,'sq',10);
+pop('#l4',32.9,{rot:-8});
+cam(30,{z:1.08,r:364},4.4);
+tl.fromTo('#flash',{opacity:0},{opacity:1,duration:.4,ease:'power1.in',immediateRender:false},34.6);
+tl.to({},{duration:.01},DUR);
+
+/* ---------- لقطات الفيديو مربوطة بالخط الزمني ---------- */
+var CLIPS=[];
+function clip(el,o){o=o||{};el.muted=true;el.playsInline=true;el.preload='auto';el.loop=false;try{el.pause();}catch(e){}
+  var c={el:el,at:o.at||0,inT:o.in||0,out:(o.out==null?null:o.out),rate:o.rate||1,hold:!!o.hold};CLIPS.push(c);return c;}
+function clipTime(c,t){var end=c.out!=null?c.out:(isFinite(c.el.duration)?c.el.duration:1e9);var lt=(t-c.at)*c.rate;if(lt<0)return c.hold?c.inT:null;var vt=c.inT+lt;
+  if(vt>end-1/30){if(!c.hold)return null;vt=end-1/24;}return vt;}
+function syncClips(t,playing){for(var i=0;i<CLIPS.length;i++){var c=CLIPS[i],v=c.el,vt=clipTime(c,t);if(vt===null){if(!v.paused)v.pause();continue;}
+  var moving=playing&&t>=c.at&&vt<(c.out!=null?c.out:v.duration)-.1;
+  if(moving){if(v.playbackRate!==c.rate)v.playbackRate=c.rate;if(v.paused)v.play().catch(function(){});if(Math.abs(v.currentTime-vt)>.25)v.currentTime=vt;}
+  else{if(!v.paused)v.pause();if(Math.abs(v.currentTime-vt)>1/60)v.currentTime=vt;}}}
+function seekClips(t){return Promise.all(CLIPS.map(function(c){return new Promise(function(res){var v=c.el,vt=clipTime(c,t);try{v.pause();}catch(e){}
+  if(vt===null)return res();var fin=function(){requestAnimationFrame(function(){requestAnimationFrame(res);});};
+  if(Math.abs(v.currentTime-vt)<1/240&&v.readyState>=2)return fin();var to=setTimeout(res,4000);
+  v.addEventListener('seeked',function h(){v.removeEventListener('seeked',h);clearTimeout(to);fin();});v.currentTime=vt;});}));}
+clip($('#v0'),{at:0,rate:1,hold:true});
+clip($('#v1'),{at:4.5,rate:.72,hold:true});
+clip($('#v2'),{at:12.9,rate:.72,hold:true});
+clip($('#v3'),{at:21.1,rate:.72,hold:true});
+clip($('#v4'),{at:29.3,rate:.9,hold:true});
+
+/* ---------- تشغيل تلقائي + تكرار ---------- */
+const q=new URLSearchParams(location.search),vo=$('#vo');let audioOn=false;
+function start(){tl.play(0);vo.currentTime=0;vo.play().then(()=>audioOn=true).catch(()=>{});}
+tl.eventCallback('onComplete',()=>start());
+gsap.ticker.add(()=>{syncClips(tl.time(),!tl.paused());if(!audioOn)return;if(tl.paused()){if(!vo.paused)vo.pause();return;}if(vo.paused)vo.play().catch(()=>{});if(Math.abs(vo.currentTime-tl.time())>.15)vo.currentTime=tl.time();});
+window.OPENER={W,H,DURATION:DUR,tl,ready:false,seek(t){tl.pause(t,false);applyCam();frame(t);if(gsap.ticker.tick)gsap.ticker.tick();},play:start,
+  clipsReady(){return CLIPS.every(c=>c.el.readyState>=2);},seekFrame(t){window.OPENER.seek(t);return seekClips(t);}};
+addEventListener('keydown',e=>{if(/^[rR]$/.test(e.key))start();if(e.code==='Space'){e.preventDefault();tl.paused()?tl.play():tl.pause();}});
+if(q.has('debug')){const dbg=$('#dbg');dbg.style.display='flex';const sc=$('#dScrub'),ck=$('#dClock');let drag=false;
+  gsap.ticker.add(()=>{if(!drag)sc.value=String(tl.time()/DUR*1000);ck.textContent=tl.time().toFixed(2)+'s';$('#dPlay').textContent=tl.paused()?'Play':'Pause';});
+  sc.addEventListener('pointerdown',()=>{drag=true;tl.pause();});addEventListener('pointerup',()=>drag=false);
+  sc.addEventListener('input',()=>{tl.pause();tl.time(sc.value/1000*DUR);});$('#dPlay').onclick=()=>tl.paused()?tl.play():tl.pause();}
+document.fonts.ready.then(()=>{applyCam();frame(0);window.OPENER.ready=true;if(q.has('clean'))return;
+  vo.play().then(()=>{audioOn=true;vo.currentTime=0;tl.play(0);}).catch(()=>{const go=()=>{removeEventListener('pointerdown',go);removeEventListener('keydown',go);start();};addEventListener('pointerdown',go);addEventListener('keydown',go);tl.play(0);});});
+</script>
+</body>
+</html>
