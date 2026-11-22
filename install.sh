@@ -96,6 +96,18 @@ if command -v npm >/dev/null && git clone -q --depth 1 https://github.com/ToBeWi
 else
   echo "npm missing or could not clone ToBeWin/HandDraw-Skill: skipping"
 fi
+# huashu-art-motion (alchaincyf/huashu-art-motion): art-style animation in code (36 painting styles, explainer grammars).
+# Renders with uv + Playwright Chromium + ffmpeg; skill text is in Chinese. Installed whole (~74 MB), minus git metadata.
+if git clone -q --depth 1 https://github.com/alchaincyf/huashu-art-motion.git "$tmp/huashu-art-motion"; then
+  rm -rf "$tmp/huashu-art-motion/.git" "$tmp/huashu-art-motion/.github" ~/.claude/skills/huashu-art-motion
+  cp -r "$tmp/huashu-art-motion" ~/.claude/skills/huashu-art-motion
+  # A Chromium already provided through PLAYWRIGHT_BROWSERS_PATH is reused (pin playwright to its version when rendering).
+  if command -v uv >/dev/null && ! ls "${PLAYWRIGHT_BROWSERS_PATH:-$HOME/.cache/ms-playwright}"/chromium-* >/dev/null 2>&1; then
+    uv run -q --with playwright playwright install chromium || echo "huashu-art-motion: Chromium install failed: run 'uv run --with playwright playwright install chromium'"
+  fi
+else
+  echo "could not clone alchaincyf/huashu-art-motion: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
