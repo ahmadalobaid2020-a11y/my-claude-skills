@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ar" dir="ltr">
+<!-- Made with the Bang Motion skill by Bang Tutorial (https://youtube.com/bangtutorial) - MIT - https://github.com/bangtutorial/bang-motion -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>التصيّد الإلكتروني — أربعة مشاهد</title>
+<!--
+  Explainer بأربعة مشاهد عن التصيّد الإلكتروني (16:9، 44 ثانية، بلا صوت، تشغيل تلقائي + تكرار).
+  عالم واحد تتحرك فيه الكاميرا من اليمين إلى اليسار؛ الصنّارة هي الخيط البصري الذي يظهر في كل مشهد.
+  ?debug=1 شريط تمرير · ?clean=1 للتصدير · R إعادة · Space إيقاف مؤقت.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Aref+Ruqaa:wght@700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B1730;--ink:#F3F6FC;--red:#FF5A3C;--mint:#3BE0A8;--amber:#FFC24B;--paper:#FBF7EF;--pink:#1B2233;--line:#C9D6EE}
+html,body{margin:0;height:100%;background:#050A16;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:"Reem Kufi",system-ui,sans-serif;color:var(--ink)}
+#world{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
+#filters{position:fixed;width:0;height:0;opacity:0;pointer-events:none}
+.bg{position:absolute;left:-10400px;top:-1600px;width:13400px;height:4300px;background:linear-gradient(100deg,#0A2A3A 0%,#0B1730 28%,#10214A 55%,#0B1730 78%,#1A1436 100%)}
+.blob{position:absolute;border-radius:50%;pointer-events:none}
+#tint{position:absolute;left:-10400px;top:-1600px;width:5400px;height:4300px;background:radial-gradient(1500px 1100px at 2540px 2120px,#0F6B62 0%,#0A4A4E 45%,#083640 100%);clip-path:circle(0px at 2540px 2120px)}
+.zone{position:absolute;top:0;width:1920px;height:1080px}
+.t{opacity:0}
+.w{display:inline-block;white-space:nowrap;margin:0 .12em;opacity:0;will-change:transform,opacity}
+.line{position:absolute;direction:rtl;font-weight:600;font-size:84px;line-height:1.25;color:var(--ink);opacity:0;text-shadow:0 4px 24px rgba(4,10,24,.55)}
+.hl{position:relative;display:inline-block;padding:0 .2em;border-radius:.16em;color:#fff}
+.hl i{position:absolute;inset:.08em 0;border-radius:inherit;transform:scaleX(0);transform-origin:100% 50%;z-index:-1;background:var(--red)}
+.hl.m{color:#062A22}.hl.m i{background:var(--mint)}
+.hand{position:absolute;direction:rtl;font-family:"Aref Ruqaa",serif;font-weight:700;font-size:58px;color:var(--amber);white-space:nowrap;opacity:0}
+.rig{position:absolute;will-change:transform}
+.rig svg{position:absolute;overflow:visible}
+.rope{stroke:var(--line);stroke-width:5;fill:none;stroke-linecap:round}
+.hookp{stroke:#E9EEF8;stroke-width:13;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.card{position:absolute;direction:rtl;background:var(--paper);color:var(--pink);border-radius:28px;box-shadow:0 40px 80px rgba(2,6,18,.55);font-family:"IBM Plex Sans Arabic",sans-serif;box-sizing:border-box}
+.ltr{direction:ltr;unicode-bidi:isolate;font-family:"IBM Plex Mono",monospace;font-weight:500}
+.btn{display:inline-block;background:var(--red);color:#fff;font-weight:700;border-radius:16px;text-align:center}
+.av{display:inline-grid;place-items:center;border-radius:50%;background:#1F4FD8;color:#fff;font-weight:700}
+.stamp{position:absolute;direction:rtl;font-family:"Reem Kufi";font-weight:700;font-size:60px;color:var(--red);border:7px solid var(--red);border-radius:16px;padding:0 28px;line-height:1.5;opacity:0;background:rgba(251,247,239,.82)}
+.fish{position:absolute;opacity:0;will-change:transform}
+.ann{position:absolute;pointer-events:none;opacity:0}
+.mark{position:relative;display:inline-block}
+.note{position:absolute;direction:rtl;font-family:"Aref Ruqaa",serif;font-weight:700;font-size:54px;color:var(--red);white-space:nowrap;opacity:0}
+.field{position:absolute;left:230px;width:620px;height:80px;border:3px solid #C9CFDC;border-radius:16px;box-sizing:border-box;padding:0 26px;font-size:34px;line-height:74px;background:#fff;color:var(--pink)}
+.field small{position:absolute;right:26px;top:0;font-size:30px;color:#8A93A6}
+.badge{position:absolute;direction:rtl;right:130px;width:780px;height:112px;border-radius:26px;background:rgba(243,246,252,.96);color:#0B2A2E;font-family:"IBM Plex Sans Arabic";font-weight:600;font-size:42px;line-height:112px;padding:0 128px 0 30px;box-sizing:border-box;opacity:0;box-shadow:0 24px 50px rgba(2,20,24,.4)}
+.badge b{position:absolute;right:22px;top:20px;width:72px;height:72px;border-radius:20px;background:var(--mint);display:grid;place-items:center}
+.badge svg{width:44px;height:44px;fill:none;stroke:#062A22;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+#grain{position:absolute;inset:-60px;opacity:.2;mix-blend-mode:overlay;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)'/%3E%3C/svg%3E")}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(75% 68% at 50% 50%,transparent 55%,rgba(2,6,16,.5) 100%)}
+#flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:var(--red)}
+#dbg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:none;gap:12px;align-items:center;padding:10px 16px;border-radius:14px;background:rgba(14,16,22,.9);color:#cfd5e3;font:13px system-ui;z-index:50}
+#dbg input{width:360px}#dbg span{font-variant-numeric:tabular-nums;min-width:6ch}
+</style>
+</head>
+<body>
+<svg id="filters"><defs></defs></svg>
+<div id="stage">
+  <div id="world">
+    <div class="bg" id="bg"></div>
+    <div id="tint"></div>
+
+    <!-- ===== 1 · ما هو التصيّد: رسالة-طُعم معلّقة على صنّارة ===== -->
+    <div class="zone" style="left:0">
+      <div class="fish" id="f1" style="left:1130px;top:250px;width:300px"></div>
+      <div class="fish" id="f2" style="left:1420px;top:430px;width:230px"></div>
+      <div class="fish" id="f3" style="left:1180px;top:520px;width:190px"></div>
+      <div class="rig" id="rig1" style="left:330px;top:0;width:580px;transform-origin:290px -1400px">
+        <svg style="left:290px;top:0" width="1" height="1"><path class="rope" d="M0 -1600V200"/><path class="hookp" d="M0 196v44c0 46-66 46-66 4m0 0l22 14"/></svg>
+        <div class="card" style="left:0;top:270px;width:580px;height:400px;padding:34px 36px">
+          <div style="display:flex;align-items:center;gap:18px"><span class="av" style="width:64px;height:64px;font-size:32px">ب</span><span style="font-size:36px;font-weight:600">بنك الأمان</span></div>
+          <div style="font-size:44px;font-weight:700;margin-top:22px">عاجل: تم تعليق حسابك</div>
+          <div style="font-size:32px;color:#4A5468;margin-top:6px">سجّل الدخول لاستعادته الآن</div>
+          <div class="btn" id="btn1" style="position:absolute;right:36px;bottom:34px;width:260px;height:76px;line-height:74px;font-size:34px">تحقّق الآن</div>
+        </div>
+        <div class="stamp" id="stamp" style="left:34px;top:548px;rotate:-11deg">طُعم</div>
+      </div>
+      <div class="hand" id="hand1" style="right:240px;top:668px;rotate:-3deg">الهدف: بياناتك وأموالك</div>
+      <div class="line" id="line1" style="right:120px;top:800px;width:1500px;text-align:right">التصيّد رسالة <span class="hl"><i></i>مزيّفة</span> تنتحل جهة تثق بها</div>
+    </div>
+
+    <!-- ===== 2 · كيف يعمل: صفحة دخول مزوّرة تسرق كلمة المرور ===== -->
+    <div class="zone" style="left:-2800px">
+      <div class="line" id="line2" style="left:160px;right:160px;top:84px;text-align:center">نقرة واحدة تسلّم كلمة مرورك <span class="hl"><i></i>للمحتال</span></div>
+      <div class="card" id="browser" style="left:420px;top:300px;width:1080px;height:640px;overflow:hidden">
+        <div style="height:84px;background:#E4E8F0;display:flex;align-items:center;gap:14px;padding:0 26px;direction:ltr">
+          <span style="width:20px;height:20px;border-radius:50%;background:#FF6B5E"></span><span style="width:20px;height:20px;border-radius:50%;background:#FFC24B"></span><span style="width:20px;height:20px;border-radius:50%;background:#42D07A"></span>
+          <span class="ltr" style="margin-left:22px;flex:1;height:56px;line-height:56px;border-radius:28px;background:#fff;padding:0 26px;font-size:32px;color:#1B2233"><span class="mark" id="url">amaan-bank.secure-login.xyz<span class="ann" id="annUrl" style="left:-6px;right:-6px;bottom:-2px;height:0;border-bottom:6px solid var(--red)"></span></span></span>
+        </div>
+        <div style="text-align:center;margin-top:34px;font-size:40px;font-weight:700"><span class="av" style="width:60px;height:60px;font-size:30px;vertical-align:middle;margin-left:14px">ب</span>بنك الأمان</div>
+        <div class="field" style="top:230px"><span class="ltr" id="user"></span><small id="userPh">اسم المستخدم</small></div>
+        <div class="field" style="top:340px"><span class="ltr" id="pass" style="letter-spacing:.12em"></span><small id="passPh">كلمة المرور</small></div>
+        <div class="btn" style="position:absolute;left:230px;top:455px;width:620px;height:80px;line-height:78px;font-size:36px;background:#1F4FD8">دخول</div>
+      </div>
+      <div class="hand" id="hand2" style="left:1165px;top:290px;rotate:3deg;color:var(--red)">رابط مزيّف!</div>
+      <div class="rig" id="hook2" style="left:960px;top:0;opacity:0">
+        <svg style="left:0;top:0" width="1" height="1"><path class="rope" d="M0 -2600V-96"/><path class="hookp" d="M0 -100v44c0 46-66 46-66 4m0 0l22 14"/></svg>
+        <div id="chip" class="ltr" style="position:absolute;left:-190px;top:-34px;width:300px;height:68px;line-height:68px;text-align:center;border-radius:34px;background:#fff;color:#1B2233;font-size:30px;letter-spacing:.12em;border:4px solid var(--red);box-sizing:border-box;opacity:0;rotate:-6deg">●●●●●●●●</div>
+      </div>
+    </div>
+
+    <!-- ===== 3 · علامات التحذير: نفحص الرسالة ===== -->
+    <div class="zone" style="left:-5600px">
+      <div class="rig" id="rig3" style="left:460px;top:0;width:1000px;transform-origin:500px -1400px">
+        <svg style="left:500px;top:0" width="1" height="1"><path class="rope" d="M0 -1600V120"/><path class="hookp" d="M0 116v44c0 46-66 46-66 4m0 0l22 14"/></svg>
+        <div class="card" style="left:0;top:190px;width:1000px;height:600px;padding:40px 44px">
+          <div style="display:flex;align-items:center;gap:20px"><span class="av" style="width:76px;height:76px;font-size:36px">ب</span>
+            <div><div style="font-size:36px;font-weight:700">دعم بنك الأمان</div>
+            <div class="ltr" style="font-size:32px;color:#4A5468;text-align:right"><span class="mark">support@amaan-bnk.co<span class="ann" id="annA" style="inset:-10px -22px;border:6px solid var(--red);border-radius:50%"></span></span></div></div></div>
+          <div style="font-size:42px;font-weight:700;margin-top:34px">حسابك سيُغلق <span class="mark">خلال 24 ساعة<span class="ann" id="annB" style="left:-4px;right:-4px;bottom:-4px;height:0;border-bottom:8px solid var(--red);border-radius:4px"></span></span></div>
+          <div style="font-size:34px;color:#4A5468;margin-top:10px">أكّد بياناتك فوراً عبر الرابط</div>
+          <div class="btn" id="btn3" style="margin-top:44px;width:300px;height:80px;line-height:78px;font-size:36px">تأكيد الحساب</div>
+          <div style="margin-top:22px;text-align:right"><span class="ltr mark t" id="tip" style="display:inline-block;background:#1B2233;color:#fff;font-size:30px;padding:8px 20px;border-radius:10px">http://amaan-bank.verify-id.xyz<span class="ann" id="annC" style="inset:-12px -14px;border:6px solid var(--red);border-radius:14px"></span></span></div>
+          <svg id="cursor" class="t" style="position:absolute;left:560px;top:520px" width="54" height="64" viewBox="0 0 54 64"><path d="M6 4l40 34-19 3 11 20-9 4-11-21-12 13z" fill="#1B2233" stroke="#fff" stroke-width="4" stroke-linejoin="round"/></svg>
+          <div class="note" id="nA" style="left:60px;top:44px;rotate:-4deg">مرسل غريب</div>
+          <div class="note" id="nB" style="left:60px;top:176px;rotate:3deg">استعجال وتهديد</div>
+          <div class="note" id="nC" style="left:60px;top:440px;rotate:-3deg">رابط لا يطابق</div>
+        </div>
+      </div>
+      <div class="line" id="line3" style="left:160px;right:160px;top:842px;text-align:center;font-size:92px">ثلاث علامات <span class="hl"><i></i>تفضح</span> الرسالة</div>
+    </div>
+
+    <!-- ===== 4 · الحماية: الدرع يردّ الصنّارة ===== -->
+    <div class="zone" style="left:-8400px">
+      <div id="ring" style="position:absolute;left:260px;top:240px;width:560px;height:560px;border-radius:50%;border:10px solid var(--mint);box-sizing:border-box;opacity:0"></div>
+      <svg id="shield" class="t" style="position:absolute;left:310px;top:250px;overflow:visible" width="460" height="540" viewBox="0 0 460 540">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7BF5CC"/><stop offset="1" stop-color="#1FB889"/></linearGradient></defs>
+        <path d="M230 12l196 70v170c0 130-84 226-196 276C118 478 34 382 34 252V82z" fill="url(#sg)" stroke="#EFFFF9" stroke-width="12" stroke-linejoin="round"/>
+        <path id="check" d="M140 270l66 66 118-134" stroke-dasharray="300" stroke-dashoffset="300" fill="none" stroke="#062A22" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="rig" id="hook4" style="left:1000px;top:-700px;transform-origin:0 0;opacity:0">
+        <svg style="left:0;top:0" width="1" height="1"><path class="rope" d="M0 -400V1104"/><path class="hookp" d="M0 1100v44c0 46-66 46-66 4m0 0l22 14"/></svg>
+      </div>
+      <div class="line" id="line4" style="right:130px;top:120px;width:900px;text-align:right;font-size:108px;font-weight:700;line-height:1.3">توقّف <span class="hl m"><i></i>تحقّق</span> ثم انقر</div>
+      <div class="badge" id="b1" style="top:500px"><b><svg viewBox="0 0 44 44"><circle cx="19" cy="19" r="12"/><path d="M28 28l11 11"/></svg></b>افحص الرابط قبل النقر</div>
+      <div class="badge" id="b2" style="top:636px"><b><svg viewBox="0 0 44 44"><rect x="9" y="19" width="26" height="19" rx="4"/><path d="M14 19v-6a8 8 0 0116 0v6"/></svg></b>فعّل التحقق بخطوتين</div>
+      <div class="badge" id="b3" style="top:772px"><b><svg viewBox="0 0 44 44"><path d="M10 40V6m0 2h24l-6 9 6 9H10"/></svg></b>بلّغ عن الرسالة واحذفها</div>
+    </div>
+  </div>
+  <div id="grain"></div>
+  <div class="vig"></div>
+  <div id="flash"></div>
+  <div id="dbg"><button id="dPlay">Pause</button><input id="dScrub" type="range" min="0" max="1000" value="0"><span id="dClock">0.00s</span></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const W=1920,H=1080,DUR=44;
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);$('#stage').style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+
+/* ---------- خلفية: بقع ضوء تسبح ببطء (دالة في الزمن فقط) ---------- */
+const BL=[[9700,1900,900,'43,91,255',.30],[10900,2500,700,'255,90,60',.16],[8300,2400,800,'120,70,255',.22],[7200,1700,900,'43,91,255',.26],[6000,2600,760,'255,90,60',.13],[4900,1800,880,'90,110,255',.26],[3600,2500,820,'120,70,255',.2],[2500,1700,900,'59,224,168',.18],[1200,2500,800,'43,91,255',.2]];
+const blobs=BL.map(([x,y,r,c,a],i)=>{const d=document.createElement('div');d.className='blob';d.style.cssText=`left:${x-r}px;top:${y-r}px;width:${2*r}px;height:${2*r}px;background:radial-gradient(closest-side,rgba(${c},${a}),rgba(${c},0))`;$('#bg').appendChild(d);return {d,i};});
+/* سمك: الضحايا */
+$$('.fish').forEach((f,i)=>{const c=['#9CC2FF','#7FA8F5','#B7D3FF'][i];f.innerHTML=`<svg viewBox="0 0 300 150" style="display:block;width:100%;overflow:visible"><path d="M300 20l-78 55 78 55z" fill="${c}"/><ellipse cx="128" cy="75" rx="118" ry="58" fill="${c}"/><path d="M120 20c30-22 60-18 78 4" fill="none" stroke="${c}" stroke-width="16" stroke-linecap="round"/><circle cx="58" cy="60" r="14" fill="#0B1730"/><circle cx="54" cy="56" r="5" fill="#fff"/></svg>`;});
+
+const FLOAT=[['#rig1',0,0,1.6,3.1,0],['#rig3',0,0,.5,3.7,1],['#f1',26,16,2.5,1.7,.3],['#f2',22,20,-3,1.4,1.4],['#f3',24,14,3,1.9,2.2],['#shield',0,14,1.2,2.6,.5],['#hand1',0,8,1,2.2,.8],['#hand2',0,8,-1.2,2.0,.2]].map(([s,ax,ay,rot,p,ph])=>({el:$(s),ax,ay,rot,p,ph,base:$(s).style.rotate||'0deg'}));
+function frame(t){
+  blobs.forEach(({d,i})=>{d.style.transform=`translate(${Math.sin(t*.21+i*1.7)*150}px,${Math.cos(t*.17+i*2.3)*110}px) scale(${1+Math.sin(t*.13+i)*.12})`;});
+  FLOAT.forEach(f=>{const k=t*2*Math.PI/f.p+f.ph;f.el.style.translate=`${Math.sin(k*.7)*f.ax}px ${Math.sin(k)*f.ay}px`;f.el.style.rotate=`calc(${f.base} + ${(Math.sin(k*.83)*f.rot).toFixed(3)}deg)`;});
+  const g=Math.floor(t*12);$('#grain').style.transform=`translate(${(g*37)%50}px,${(g*53)%50}px)`;
+}
+
+/* ---------- ضباب حركة باتجاه ---------- */
+const defs=$('#filters defs');let fc=0;
+function makeBlur(){const id='mb'+(fc++),NS='http://www.w3.org/2000/svg';const f=document.createElementNS(NS,'filter');f.id=id;
+  f.setAttribute('x','-70%');f.setAttribute('y','-70%');f.setAttribute('width','240%');f.setAttribute('height','240%');
+  const g=document.createElementNS(NS,'feGaussianBlur');g.setAttribute('stdDeviation','0 0');f.appendChild(g);defs.appendChild(f);return {url:`url(#${id})`,node:g};}
+function blurTween(tl,targets,at,from,to,dur,{ease='power3.out',ax=1,ay=.08}={}){const b=makeBlur(),o={v:from};tl.set(targets,{filter:b.url},at);
+  tl.to(o,{v:to,duration:dur,ease,onUpdate(){b.node.setAttribute('stdDeviation',`${(o.v*ax).toFixed(2)} ${(o.v*ay).toFixed(2)}`);}},at);tl.set(targets,{filter:'none'},at+dur);}
+const VERT={ax:.1,ay:1},HORZ={ax:1,ay:.1};
+
+/* ---------- تقسيم الجملة إلى كلمات (العربية لا تُقسّم حروفاً) ---------- */
+$$('.line').forEach(el=>{const out=[];el.childNodes.forEach(n=>{if(n.nodeType===3){n.textContent.split(/\s+/).filter(Boolean).forEach(w=>{const s=document.createElement('span');s.className='w';s.textContent=w;out.push(s);});}
+  else{const s=document.createElement('span');s.className='w';s.appendChild(n.cloneNode(true));out.push(s);}});el.textContent='';out.forEach(s=>el.appendChild(s));});
+
+const tl=gsap.timeline({paused:true,onUpdate(){frame(tl.time());}});const rig=$('#world');
+const words=el=>$$('.w',el);
+const say=(sel,at,{dur=.55,st=.1,mode='up'}={})=>{const el=$(sel),ws=words(el);tl.set(el,{opacity:1},at);
+  if(mode==='scale')tl.fromTo(ws,{opacity:0,scale:.6,rotate:4},{opacity:1,scale:1,rotate:0,duration:dur,ease:'back.out(1.7)',stagger:st,immediateRender:false},at);
+  else if(mode==='side')tl.fromTo(ws,{opacity:0,x:120},{opacity:1,x:0,duration:dur,ease:'power4.out',stagger:st,immediateRender:false},at);
+  else tl.fromTo(ws,{opacity:0,yPercent:60,scaleY:1.25},{opacity:1,yPercent:0,scaleY:1,duration:dur,ease:'power4.out',stagger:st,immediateRender:false},at);
+  blurTween(tl,el,at,22,0,dur+st*ws.length,mode==='side'?HORZ:VERT);
+  $$('.hl i',el).forEach((h,i)=>tl.fromTo(h,{scaleX:0},{scaleX:1,duration:.45,ease:'power3.out',immediateRender:false},at+st*ws.length+.25+i*.2));};
+const unsay=(sel,at,{dur=.3}={})=>{const el=$(sel),ws=words(el);tl.to(ws,{opacity:0,yPercent:-50,duration:dur,ease:'power2.in',stagger:.02},at);
+  blurTween(tl,el,at,0,30,dur+.1,{ease:'power2.in',...VERT});tl.set(el,{opacity:0},at+dur+.15);};
+const fly=(sel,at,{from={x:0,y:500,rotate:10,scale:.9},dur=.9,ease='power4.out'}={})=>{const el=$(sel);
+  tl.fromTo(el,{opacity:0,...from},{opacity:1,x:0,y:0,rotate:0,scale:1,duration:dur,ease,immediateRender:false},at);
+  blurTween(tl,el,at,34,0,dur*.7,Math.abs(from.x||0)>Math.abs(from.y||0)?HORZ:VERT);};
+const pop=(sel,at,{dur=.55,from=.4}={})=>tl.fromTo($(sel),{opacity:0,scale:from},{opacity:1,scale:1,duration:dur,ease:'back.out(1.8)',immediateRender:false},at);
+const label=(sel,at)=>tl.fromTo($(sel),{opacity:0,y:18},{opacity:1,y:0,duration:.45,ease:'power3.out',immediateRender:false},at);
+const hide=(sel,at,dur=.25)=>tl.to($(sel),{opacity:0,duration:dur},at);
+/* خط يُرسم من اليمين إلى اليسار */
+const draw=(sel,at,dur=.6)=>{const p=$(sel);tl.set(p,{opacity:1},at);const o={v:0};
+  tl.fromTo(o,{v:0},{v:1,duration:dur,ease:'power2.inOut',immediateRender:false,onUpdate(){p.style.clipPath=`inset(-40px -40px -40px ${((1-o.v)*100).toFixed(2)}%)`;}},at);};
+const type=(sel,at,str,dur=.9)=>{const el=$(sel),o={v:0};tl.fromTo(o,{v:0},{v:str.length,duration:dur,ease:'none',immediateRender:false,onUpdate(){el.textContent=str.slice(0,Math.round(o.v));}},at);};
+
+/* ---------- الكاميرا ---------- */
+const C={x:960,y:540,z:1};
+function applyCam(){rig.style.transform=`translate(${960-C.x*C.z}px,${540-C.y*C.z}px) scale(${C.z})`;}
+const look=(at,x,y,z,dur=1.4,ease='sine.inOut')=>tl.to(C,{x,y,z,duration:dur,ease,onUpdate:applyCam},at);
+const home=(at,x,dur=1.1)=>look(at,x,540,1,dur,'power2.inOut');
+const breath=(a,b,z)=>tl.to(C,{z,duration:b-a,ease:'sine.inOut',onUpdate:applyCam},a);
+const Z2=-2800,Z3=-5600,Z4=-8400;
+
+/* ================= 1 · ما هو التصيّد (0 → 10.6) ================= */
+tl.set(C,{x:620,y:470,z:1.6,onUpdate:applyCam},0);
+tl.fromTo('#flash',{opacity:1,backgroundColor:'#0B1730'},{opacity:0,duration:.5,ease:'power1.out'},0);
+tl.fromTo('#rig1',{y:-950},{y:0,duration:1.1,ease:'back.out(1.15)'},.15);
+look(2.0,1180,450,1.3,1.4);
+fly('#f1',2.3,{from:{x:900,y:40,rotate:-6,scale:.9}});
+fly('#f2',2.7,{from:{x:800,y:-30,rotate:5,scale:.9}});
+fly('#f3',3.1,{from:{x:900,y:60,rotate:-4,scale:.9}});
+tl.to(['#f1','#f2','#f3'],{x:-110,duration:6.5,ease:'none',stagger:.3},3.4);
+look(3.9,760,470,1.45,.9);
+tl.fromTo('#stamp',{opacity:0,scale:2.6},{opacity:1,scale:1,duration:.28,ease:'power4.in',immediateRender:false},4.5);
+tl.fromTo('#rig1',{x:0},{x:14,duration:.06,yoyo:true,repeat:3,immediateRender:false},4.78);
+home(5.2,960);
+say('#line1',6.4);
+label('#hand1',7.9);
+breath(6.3,9.6,1.03);
+unsay('#line1',9.3);hide('#hand1',9.3);
+/* النقر على الرابط: الكاميرا تدخل في الزر حتى يملأ الأحمر الإطار */
+tl.to('#btn1',{scale:.92,duration:.12,yoyo:true,repeat:1},9.95);
+tl.to(C,{x:744,y:598,z:11,duration:.85,ease:'power3.in',onUpdate:applyCam},9.75);
+tl.set('#flash',{backgroundColor:'#FF5A3C'},9.7);
+tl.to('#flash',{opacity:1,duration:.2,ease:'power1.in'},10.4);
+
+/* ================= 2 · كيف يعمل (10.6 → 21.6) ================= */
+tl.set(C,{x:Z2+990,y:372,z:2.1,onUpdate:applyCam},10.6);
+tl.to('#flash',{opacity:0,duration:.4,ease:'power2.out'},10.62);
+look(10.6,Z2+1000,400,1.62,1.1,'power3.out');
+draw('#annUrl',11.4,.6);
+label('#hand2',11.9);
+look(12.9,Z2+960,650,1.55,1.1);
+tl.set('#userPh',{opacity:0},13.3);type('#user',13.3,'sara.ahmed',.8);
+tl.set('#passPh',{opacity:0},14.3);type('#pass',14.3,'●●●●●●●●',.8);
+tl.set('#hook2',{opacity:1},15.2);
+tl.fromTo('#hook2',{y:-300},{y:684,duration:.75,ease:'power2.out',immediateRender:false},15.2);
+tl.set('#chip',{opacity:1},16.0);tl.set('#pass',{opacity:0},16.0);
+tl.fromTo('#chip',{scale:.8},{scale:1,duration:.25,ease:'back.out(3)',immediateRender:false},16.0);
+tl.to('#hook2',{y:-420,duration:1.1,ease:'power2.in'},16.25);
+tl.set('#hook2',{opacity:0},17.4);
+look(16.3,Z2+960,560,1.25,.9,'power2.inOut');
+home(17.2,Z2+960,1.0);
+say('#line2',18.3,{mode:'side',st:.09});
+breath(18.2,20.6,1.03);
+unsay('#line2',20.5);hide('#hand2',20.5);hide('#annUrl',20.5);
+/* انتقال: لفّة سريعة يساراً إلى الرسالة المعلّقة */
+tl.to(C,{x:Z3+2100,y:420,z:1.5,duration:.9,ease:'power2.in',onUpdate:applyCam},20.7);
+
+/* ================= 3 · علامات التحذير (21.6 → 33) ================= */
+look(21.6,Z3+960,300,1.7,1.1,'power3.out');
+draw('#annA',22.5,.6);label('#nA',23.0);
+look(24.3,Z3+960,430,1.7,1.0);
+draw('#annB',25.1,.5);label('#nB',25.6);
+look(26.9,Z3+960,640,1.7,1.0);
+tl.fromTo('#cursor',{opacity:0,x:-160,y:150},{opacity:1,x:0,y:0,duration:.7,ease:'power2.out',immediateRender:false},27.0);
+tl.to('#btn3',{scale:.96,duration:.12,yoyo:true,repeat:1},27.7);
+pop('#tip',27.85,{dur:.35,from:.7});
+draw('#annC',28.4,.6);label('#nC',28.9);
+home(29.8,Z3+960);
+say('#line3',31.0,{mode:'scale'});
+breath(30.9,32.3,1.03);
+unsay('#line3',32.0);
+tl.to(C,{x:Z4+2000,y:500,z:1.5,duration:.9,ease:'power2.in',onUpdate:applyCam},32.1);
+
+/* ================= 4 · الحماية (33 → 44) ================= */
+look(33.0,Z4+640,500,1.5,1.0,'power3.out');
+pop('#shield',33.1,{dur:.7,from:.3});
+look(34.1,Z4+800,470,1.22,.8);
+tl.set('#hook4',{opacity:1},34.2);
+tl.fromTo('#hook4',{rotate:-52},{rotate:11.6,duration:.75,ease:'power2.in',immediateRender:false},34.2);
+/* الاصطدام: الدرع ينبض، حلقة تتمدد، والخلفية تتحول إلى الأخضر من مركز الدرع */
+tl.to('#shield',{scale:1.14,duration:.1,ease:'power2.out'},34.95);tl.to('#shield',{scale:1,duration:.6,ease:'elastic.out(1,.4)'},35.05);
+tl.fromTo('#ring',{opacity:.9,scale:.7},{opacity:0,scale:2.4,duration:1.0,ease:'power2.out',immediateRender:false},34.95);
+{const o={v:0},tn=$('#tint');tl.fromTo(o,{v:0},{v:3600,duration:1.5,ease:'power2.out',immediateRender:false,onUpdate(){tn.style.clipPath=`circle(${o.v.toFixed(1)}px at 2540px 2120px)`;}},34.95);}
+tl.to('#hook4',{rotate:-16,duration:.4,ease:'power2.out'},34.95);
+tl.to('#hook4',{rotate:-6,duration:.3,ease:'sine.inOut'},35.35);
+tl.to('#hook4',{y:1900,rotate:38,duration:.9,ease:'power2.in'},35.65);
+tl.set('#hook4',{opacity:0},36.6);
+tl.fromTo('#check',{strokeDasharray:300,strokeDashoffset:300},{strokeDashoffset:0,duration:.5,ease:'power2.out',immediateRender:false},35.3);
+home(36.0,Z4+960);
+say('#line4',37.2,{st:.28,dur:.6});
+pop('#b1',39.0);pop('#b2',39.4);pop('#b3',39.8);
+breath(37.1,43.3,1.035);
+tl.set('#flash',{backgroundColor:'#0B1730'},43.2);
+tl.to('#flash',{opacity:1,duration:.55,ease:'power1.in'},43.4);
+tl.to({},{duration:.01},DUR);
+
+/* ---------- تشغيل تلقائي + تكرار بلا مشغّل؛ ?debug=1 شريط؛ ?clean=1 للتصدير ---------- */
+const q=new URLSearchParams(location.search);
+function start(){tl.play(0);}
+tl.eventCallback('onComplete',()=>start());
+window.OPENER={W,H,DURATION:DUR,tl,ready:false,seek(t){tl.pause(t,false);applyCam();frame(t);if(gsap.ticker.tick)gsap.ticker.tick();},play:start};
+addEventListener('keydown',e=>{if(/^[rR]$/.test(e.key))start();if(e.code==='Space'){e.preventDefault();tl.paused()?tl.play():tl.pause();}});
+if(q.has('debug')){const dbg=$('#dbg');dbg.style.display='flex';const sc=$('#dScrub'),ck=$('#dClock');let drag=false;
+  gsap.ticker.add(()=>{if(!drag)sc.value=String(tl.time()/DUR*1000);ck.textContent=tl.time().toFixed(2)+'s';$('#dPlay').textContent=tl.paused()?'Play':'Pause';});
+  sc.addEventListener('pointerdown',()=>{drag=true;tl.pause();});addEventListener('pointerup',()=>drag=false);
+  sc.addEventListener('input',()=>{tl.pause();tl.time(sc.value/1000*DUR);});$('#dPlay').onclick=()=>tl.paused()?tl.play():tl.pause();}
+document.fonts.ready.then(()=>{applyCam();frame(0);window.OPENER.ready=true;if(q.has('clean'))return;start();});
+</script>
+</body>
+</html>
