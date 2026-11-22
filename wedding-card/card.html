@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>دعوة زفاف فيصل وريم</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+/* Layout: one 540x960 stage; a painted seaside terrace behind an ivory gate that opens on its own,
+   then an arched paper card carries three text panels in sequence. Everything runs on one timeline. */
+:root{
+  --ivory:#f8f1e3; --paper:#fbf6ea; --gold:#b48d4e; --gold-deep:#8a6a34;
+  --ink:#5a3f22; --ink-soft:#7c6446; --sage:#7f9670; --sage-deep:#5f7a56;
+  --blush:#f3cdb9; --rose:#f9e6d6; --sea:#8fb4c4;
+  --f-display:"Aref Ruqaa","Amiri",serif; --f-body:"Amiri","Times New Roman",serif; --f-ui:"Tajawal","Arial",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:540px;height:960px;overflow:hidden;background:var(--ivory)}
+.stage{position:relative;width:540px;height:960px;overflow:hidden;background:var(--ivory);font-family:var(--f-body);color:var(--ink)}
+.abs{position:absolute;inset:0}
+
+/* ---------- timeline primitives ---------- */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+@keyframes drawLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.t{opacity:0;animation:riseIn .9s cubic-bezier(.2,.7,.2,1) var(--in) both, fadeOut .6s ease var(--out,999s) forwards}
+.t.pop{animation-name:popIn,fadeOut}
+.t.fade{animation-name:fadeIn,fadeOut}
+
+/* ---------- scene ---------- */
+.scene{transform-origin:50% 56%;animation:push 5s cubic-bezier(.45,0,.2,1) 3.4s both, drift 18s linear 8.4s forwards}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.16)}}
+@keyframes drift{from{transform:scale(1.16)}to{transform:scale(1.24)}}
+.shimmer{animation:shim 3.2s ease-in-out infinite alternate}
+@keyframes shim{from{opacity:.55}to{opacity:1}}
+.veil{transform-origin:310px 450px;animation:sway 4s ease-in-out infinite alternate}
+@keyframes sway{from{transform:skewX(-1.5deg)}to{transform:skewX(2.5deg)}}
+
+/* ---------- gate ---------- */
+.gatewrap{perspective:1500px;animation:fadeOut 1.2s ease 6.6s forwards}
+.leaf{position:absolute;top:210px;width:250px;height:750px}
+.leaf.l{left:20px;transform-origin:0 50%;animation:openL 2.9s cubic-bezier(.6,0,.25,1) 3.5s both}
+.leaf.r{left:270px;transform-origin:100% 50%;animation:openR 2.9s cubic-bezier(.6,0,.25,1) 3.5s both}
+.leaf.r svg{transform:scaleX(-1)}
+@keyframes openL{from{transform:rotateY(0)}to{transform:rotateY(-104deg)}}
+@keyframes openR{from{transform:rotateY(0)}to{transform:rotateY(104deg)}}
+.iron-under{fill:none;stroke:#b3915a;stroke-width:8.5;stroke-linecap:round;stroke-linejoin:round}
+.iron{fill:none;stroke:#fdf8ec;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.iron-thin-under{fill:none;stroke:#b3915a;stroke-width:6;stroke-linecap:round}
+.iron-thin{fill:none;stroke:#fdf8ec;stroke-width:3.2;stroke-linecap:round}
+
+/* intro card on the gate */
+.intro{position:absolute;left:150px;top:515px;width:240px;height:232px;border-radius:120px 120px 16px 16px;
+  background:linear-gradient(#fdf9ef,#f4ecdb);box-shadow:0 14px 34px rgba(90,63,34,.28),inset 0 0 0 1px #fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;direction:rtl;
+  opacity:0;animation:popIn 1s cubic-bezier(.2,.8,.2,1) .7s both, introOut .7s ease 3s forwards}
+.intro::before{content:"";position:absolute;inset:7px;border:1px solid rgba(180,141,78,.55);border-radius:113px 113px 11px 11px}
+@keyframes introOut{to{opacity:0;transform:scale(.9) translateY(14px)}}
+.intro small{font-size:17px;color:var(--ink-soft);margin-top:18px}
+.intro b{font-family:var(--f-display);font-size:46px;line-height:1.15;color:var(--gold-deep);font-weight:700}
+.intro i{font-style:normal;font-family:var(--f-display);font-size:19px;color:var(--gold)}
+
+/* ---------- petals ---------- */
+.petal{position:absolute;top:-30px;left:0;width:15px;height:11px;border-radius:85% 10% 85% 10%;opacity:0;
+  background:linear-gradient(135deg,#fff3ea,var(--blush));
+  animation:fall var(--d) linear var(--s) both}
+@keyframes fall{
+  0%{opacity:0;transform:translate(var(--x),-20px) rotate(0deg)}
+  8%{opacity:.95}
+  50%{transform:translate(calc(var(--x) + var(--w)),500px) rotate(calc(var(--r)*.5))}
+  92%{opacity:.9}
+  100%{opacity:0;transform:translate(calc(var(--x) + var(--dx)),1000px) rotate(var(--r))}
+}
+
+/* ---------- paper card ---------- */
+.paper{position:absolute;left:44px;top:132px;width:452px;height:770px;border-radius:226px 226px 26px 26px;
+  background:linear-gradient(rgba(253,249,240,.96),rgba(247,240,226,.95));
+  box-shadow:0 26px 60px rgba(70,48,24,.3),inset 0 0 0 1px rgba(255,255,255,.9);
+  opacity:0;animation:paperIn 1.4s cubic-bezier(.2,.7,.2,1) 6.6s both}
+@keyframes paperIn{from{opacity:0;transform:translateY(60px) scale(.94)}to{opacity:1;transform:none}}
+.paper::before{content:"";position:absolute;inset:11px;border:1.2px solid rgba(180,141,78,.6);border-radius:215px 215px 17px 17px}
+.paper::after{content:"";position:absolute;inset:17px;border:.6px solid rgba(180,141,78,.35);border-radius:209px 209px 12px 12px}
+.panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;direction:rtl;padding:120px 46px 54px;gap:12px}
+.eyebrow{font-family:var(--f-ui);font-size:15px;letter-spacing:.5px;color:var(--gold-deep);font-weight:500}
+.lead{font-size:23px;color:var(--ink-soft);line-height:1.5}
+.names{font-family:var(--f-display);font-weight:700;color:var(--gold-deep);line-height:1.12;display:flex;flex-direction:column;align-items:center}
+.names span{font-size:78px}
+.names em{font-style:normal;font-size:30px;color:var(--gold);margin:2px 0}
+.verse{font-size:21px;line-height:1.9;color:var(--ink);max-width:340px}
+.rule{width:150px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative;margin:6px 0}
+.rule::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;background:var(--gold);transform:translate(-50%,-50%) rotate(45deg)}
+.father{display:flex;flex-direction:column;gap:0;align-items:center}
+.father small{font-family:var(--f-ui);font-size:13.5px;color:var(--ink-soft)}
+.father b{font-family:var(--f-display);font-size:34px;color:var(--gold-deep);font-weight:700;line-height:1.3}
+.and{font-family:var(--f-display);font-size:22px;color:var(--gold)}
+.date{display:flex;align-items:center;gap:14px;font-family:var(--f-ui);color:var(--ink);direction:rtl}
+.date .d{font-size:50px;font-weight:700;color:var(--gold-deep);letter-spacing:1px;direction:ltr;font-family:var(--f-body)}
+.date .s{font-size:17px;line-height:1.35;padding:0 12px;border-inline:1px solid rgba(180,141,78,.6)}
+.date .s:first-child{border-inline-start:0}.date .s:last-child{border-inline-end:0}
+.time{font-family:var(--f-ui);font-size:18px;color:var(--ink-soft)}
+.venue{font-family:var(--f-body);font-size:38px;font-weight:700;color:var(--gold-deep);line-height:1.3}
+.addr{font-family:var(--f-ui);font-size:18px;color:var(--ink)}
+.pin{width:34px;height:34px}
+.qr{width:150px;height:150px;padding:11px;background:#fffdf7;border:1.2px solid var(--gold);border-radius:14px;box-shadow:0 6px 16px rgba(90,63,34,.14)}
+.qr img{display:block;width:100%;height:100%}
+.hint{font-family:var(--f-ui);font-size:14px;color:var(--ink-soft)}
+.closing{font-size:20px;color:var(--ink);line-height:1.6;max-width:330px}
+.sign{font-family:var(--f-display);font-size:28px;color:var(--gold-deep);font-weight:700}
+.topfade{background:linear-gradient(var(--ivory),transparent);animation:fadeOut 1.2s ease .1s forwards}
+.topfade.full{background:var(--ivory)}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- painted scene -->
+  <div class="abs scene">
+    <svg class="abs" viewBox="0 0 540 960" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#c9dbe6"/><stop offset=".45" stop-color="#f1e3d3"/>
+          <stop offset=".8" stop-color="#fbdcb9"/><stop offset="1" stop-color="#f8c9a2"/>
+        </linearGradient>
+        <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#fffaf0"/><stop offset=".25" stop-color="#ffe9c4" stop-opacity=".9"/>
+          <stop offset="1" stop-color="#ffd9a8" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3d7b8"/><stop offset=".25" stop-color="#b9cfd3"/><stop offset="1" stop-color="#7da6b8"/>
+        </linearGradient>
+        <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#efe3cf"/><stop offset="1" stop-color="#f8f1e3"/>
+        </linearGradient>
+        <linearGradient id="bisht" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#2f221a"/><stop offset=".5" stop-color="#4a372a"/><stop offset="1" stop-color="#2b1f18"/>
+        </linearGradient>
+        <linearGradient id="gown" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#eadfd0"/>
+        </linearGradient>
+        <filter id="wash" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+        <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter>
+        <filter id="paperGrain">
+          <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/>
+          <feColorMatrix values="0 0 0 0 .45  0 0 0 0 .34  0 0 0 0 .2  0 0 0 .09 0"/>
+        </filter>
+        <g id="rose">
+          <circle r="21" fill="#f4dcc8"/>
+          <circle cx="-9" cy="-7" r="13" fill="#fbeadb"/><circle cx="9" cy="-6" r="13" fill="#f9e3d0"/>
+          <circle cx="-7" cy="9" r="13" fill="#fdf1e4"/><circle cx="9" cy="9" r="12" fill="#f6dcc6"/>
+          <circle r="11" fill="#fff6ea"/>
+          <path d="M-6 0a6 6 0 0 1 12 0a4.5 4.5 0 0 1-9 0a3 3 0 0 1 6 0" fill="none" stroke="#e3bb9c" stroke-width="1.3" stroke-linecap="round"/>
+        </g>
+        <path id="lf" d="M0 0C10-12 30-12 42 0C30 12 10 12 0 0Z"/>
+        <g id="sprig">
+          <use href="#lf" fill="#7f9670" transform="rotate(-20)"/><use href="#lf" fill="#93a886" transform="rotate(25) scale(.85)"/>
+          <use href="#lf" fill="#6f8963" transform="rotate(70) scale(.8)"/><use href="#lf" fill="#a2b596" transform="rotate(-65) scale(.7)"/>
+        </g>
+        <g id="palm">
+          <path d="M0 0C-6-60 6-120 0-190" fill="none" stroke="#8a7355" stroke-width="9" stroke-linecap="round"/>
+          <g fill="none" stroke="#6f8963" stroke-width="5" stroke-linecap="round" transform="translate(0,-190)">
+            <path d="M0 0Q-40-50-92-22"/><path d="M0 0Q-50-20-88 26"/><path d="M0 0Q-26-66-56-78"/>
+            <path d="M0 0Q4-70 0-96"/><path d="M0 0Q30-64 60-74"/><path d="M0 0Q46-46 94-18"/><path d="M0 0Q52-16 86 30"/>
+          </g>
+        </g>
+      </defs>
+
+      <rect width="540" height="960" fill="url(#sky)"/>
+      <g filter="url(#wash)" opacity=".8">
+        <ellipse cx="120" cy="150" rx="150" ry="34" fill="#fff8ee"/><ellipse cx="420" cy="230" rx="170" ry="30" fill="#fff3e2"/>
+        <ellipse cx="300" cy="330" rx="200" ry="26" fill="#ffeeda"/>
+      </g>
+      <circle class="shimmer" cx="270" cy="462" r="150" fill="url(#sun)"/>
+      <circle cx="270" cy="462" r="30" fill="#fffaf0"/>
+      <!-- far shore -->
+      <g filter="url(#soft)">
+        <path d="M0 486C40 452 96 440 150 462C176 472 196 480 216 486Z" fill="#a9bdc4" opacity=".85"/>
+        <path d="M330 486C366 468 410 446 470 456C500 462 524 474 540 480V486Z" fill="#b3c3c4" opacity=".85"/>
+      </g>
+      <!-- sea -->
+      <rect y="484" width="540" height="140" fill="url(#sea)"/>
+      <g class="shimmer" fill="#fff6e6">
+        <rect x="236" y="492" width="68" height="3" rx="1.5" opacity=".9"/><rect x="222" y="504" width="96" height="3" rx="1.5" opacity=".8"/>
+        <rect x="244" y="517" width="52" height="3" rx="1.5" opacity=".75"/><rect x="212" y="531" width="116" height="3.5" rx="1.7" opacity=".65"/>
+        <rect x="238" y="547" width="64" height="3.5" rx="1.7" opacity=".6"/><rect x="204" y="565" width="132" height="4" rx="2" opacity=".5"/>
+      </g>
+      <!-- palms -->
+      <use href="#palm" transform="translate(58,640) scale(1.05)"/><use href="#palm" transform="translate(486,640) scale(-.95,.95)"/>
+      <!-- terrace -->
+      <rect y="640" width="540" height="320" fill="url(#floor)"/>
+      <g stroke="#dccdb3" stroke-width="1" opacity=".8">
+        <path d="M270 640L270 960M190 640L60 960M350 640L480 960M110 640L-140 960M430 640L680 960M0 700H540M0 780H540M0 880H540"/>
+      </g>
+      <!-- balustrade -->
+      <g id="bal">
+        <rect x="0" y="566" width="540" height="13" rx="4" fill="#f6eddc" stroke="#cdb893" stroke-width="1"/>
+        <rect x="0" y="634" width="540" height="14" rx="3" fill="#f1e6d2" stroke="#cdb893" stroke-width="1"/>
+        <g id="balusters" fill="#f8f0e0" stroke="#cdb893" stroke-width="1"></g>
+      </g>
+      <!-- couple, seen from behind -->
+      <ellipse cx="272" cy="704" rx="96" ry="12" fill="#b9a37f" opacity=".35" filter="url(#soft)"/>
+      <g>
+        <!-- groom: bisht, ghutra, agal -->
+        <path d="M196 706C196 620 198 548 206 512C214 494 262 494 270 512C278 548 280 620 280 706Z" fill="url(#bisht)"/>
+        <path d="M238 500V706" stroke="#c9a45c" stroke-width="2.4"/>
+        <path d="M206 512C214 500 262 500 270 512" fill="none" stroke="#c9a45c" stroke-width="3"/>
+        <path d="M196 706H280" stroke="#c9a45c" stroke-width="3"/>
+        <path d="M216 452C216 424 260 424 260 452C262 480 270 506 276 524C258 536 218 536 200 524C206 506 214 480 216 452Z" fill="#fbf7ef" stroke="#e2d8c6" stroke-width="1"/>
+        <path d="M238 450C236 480 236 506 238 530" stroke="#e7ddcb" stroke-width="1.4" fill="none"/>
+        <ellipse cx="238" cy="441" rx="21" ry="7.5" fill="none" stroke="#1f1a17" stroke-width="5"/>
+        <!-- bride: gown and veil -->
+        <path d="M296 520C298 500 324 500 326 520L330 566C352 610 372 660 378 708H250C256 660 276 610 294 566Z" fill="url(#gown)" stroke="#e2d6c4" stroke-width="1"/>
+        <ellipse cx="311" cy="462" rx="15" ry="17" fill="#4b3527"/>
+        <g class="veil">
+          <path d="M311 440C292 444 290 470 286 500C278 570 262 650 252 712C290 722 344 722 384 712C368 650 346 570 336 500C332 470 330 444 311 440Z" fill="#ffffff" opacity=".72"/>
+          <path d="M300 470C294 540 284 630 274 712M322 470C330 540 344 630 360 712M311 462V716" stroke="#efe6d8" stroke-width="1" fill="none" opacity=".9"/>
+        </g>
+        <circle cx="311" cy="446" r="4" fill="#fff"/><circle cx="303" cy="449" r="3" fill="#fbeadb"/><circle cx="319" cy="449" r="3" fill="#fbeadb"/>
+      </g>
+      <!-- planters -->
+      <g transform="translate(40,660)"><use href="#sprig" transform="scale(1.1)"/><use href="#rose" transform="translate(10,-6) scale(.8)"/></g>
+      <g transform="translate(500,660) scale(-1,1)"><use href="#sprig" transform="scale(1.1)"/><use href="#rose" transform="translate(10,-6) scale(.8)"/></g>
+      <rect width="540" height="960" filter="url(#paperGrain)" opacity=".9"/>
+    </svg>
+  </div>
+
+  <!-- gate -->
+  <div class="abs gatewrap">
+    <svg class="abs" viewBox="0 0 540 960" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect x="6" y="268" width="16" height="700" rx="5" fill="#fbf5e8" stroke="#b3915a" stroke-width="1.6"/>
+        <rect x="518" y="268" width="16" height="700" rx="5" fill="#fbf5e8" stroke="#b3915a" stroke-width="1.6"/>
+        <circle cx="14" cy="256" r="11" fill="#fbf5e8" stroke="#b3915a" stroke-width="1.6"/><path d="M14 245V228" stroke="#b3915a" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="526" cy="256" r="11" fill="#fbf5e8" stroke="#b3915a" stroke-width="1.6"/><path d="M526 245V228" stroke="#b3915a" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="leaf l"><svg id="leafL" width="250" height="750" viewBox="0 0 250 750" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="leaf r"><svg id="leafR" width="250" height="750" viewBox="0 0 250 750" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="intro">
+      <small>لقد تلقّيت دعوة من</small>
+      <b>فيصل</b><i>&amp;</i><b>ريم</b>
+    </div>
+  </div>
+
+  <!-- rose garland, always on top of the scene -->
+  <svg class="abs" viewBox="0 0 540 960" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none">
+    <g transform="translate(0,0)">
+      <g transform="translate(26,34) rotate(50)"><use href="#sprig" transform="scale(1.5)"/></g>
+      <g transform="translate(96,22) rotate(10)"><use href="#sprig" transform="scale(1.25)"/></g>
+      <g transform="translate(160,18) rotate(-6)"><use href="#sprig" transform="scale(.95)"/></g>
+      <g transform="translate(18,118) rotate(95)"><use href="#sprig" transform="scale(1.2)"/></g>
+      <use href="#rose" transform="translate(64,54) scale(1.5)"/><use href="#rose" transform="translate(22,96) scale(.8)"/><use href="#rose" transform="translate(126,30) scale(.75)"/>
+    </g>
+    <g transform="translate(540,0) scale(-1,1)">
+      <g transform="translate(26,34) rotate(50)"><use href="#sprig" transform="scale(1.5)"/></g>
+      <g transform="translate(96,22) rotate(10)"><use href="#sprig" transform="scale(1.25)"/></g>
+      <g transform="translate(160,18) rotate(-6)"><use href="#sprig" transform="scale(.95)"/></g>
+      <g transform="translate(18,118) rotate(95)"><use href="#sprig" transform="scale(1.2)"/></g>
+      <use href="#rose" transform="translate(64,54) scale(1.5)"/><use href="#rose" transform="translate(22,96) scale(.8)"/><use href="#rose" transform="translate(126,30) scale(.75)"/>
+    </g>
+  </svg>
+
+  <!-- paper card with three panels -->
+  <div class="paper">
+    <div class="panel">
+      <p class="lead t" style="--in:7.4s;--out:12.4s">بكل الحبّ ندعوكم لحفل زفاف</p>
+      <div class="names">
+        <span class="t" style="--in:7.9s;--out:12.4s">فيصل</span>
+        <em class="t fade" style="--in:8.4s;--out:12.4s">&amp;</em>
+        <span class="t" style="--in:8.7s;--out:12.4s">ريم</span>
+      </div>
+      <div class="rule t fade" style="--in:9.3s;--out:12.4s"></div>
+      <p class="verse t" style="--in:9.6s;--out:12.4s">﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾</p>
+    </div>
+
+    <div class="panel">
+      <p class="lead t" style="--in:13.1s;--out:18.6s">بكل الحب والسرور يتشرف</p>
+      <div class="father t" style="--in:13.5s;--out:18.6s"><small>والد العريس</small><b>ناصر الهاجري</b></div>
+      <span class="and t fade" style="--in:13.9s;--out:18.6s">و</span>
+      <div class="father t" style="--in:14.2s;--out:18.6s"><small>والد العروس</small><b>سعود القحطاني</b></div>
+      <p class="lead t" style="--in:14.7s;--out:18.6s;font-size:20px">بدعوتكم لمشاركتنا فرحة زفاف نجليهما</p>
+      <div class="rule t fade" style="--in:15.1s;--out:18.6s"></div>
+      <div class="date t pop" style="--in:15.4s;--out:18.6s">
+        <span class="s">يوم<br>الجمعة</span><span class="d">05 · 03</span><span class="s">عام<br>2027</span>
+      </div>
+      <p class="time t" style="--in:15.9s;--out:18.6s">السّاعة 8:00 مساءً</p>
+    </div>
+
+    <div class="panel">
+      <svg class="pin t pop" style="--in:19.3s" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Z" fill="#b48d4e"/><circle cx="12" cy="9" r="2.6" fill="#fbf6ea"/></svg>
+      <p class="eyebrow t" style="--in:19.5s">مكان الحفل</p>
+      <p class="venue t" style="--in:19.8s">قاعة بن سلطان للاحتفالات</p>
+      <p class="addr t" style="--in:20.2s">حي الفيصلية · الدمام</p>
+      <div class="qr t pop" style="--in:20.7s"><img src="qr.svg" alt=""></div>
+      <p class="hint t" style="--in:21.1s">امسح الرمز لفتح الموقع على الخريطة</p>
+      <div class="rule t fade" style="--in:21.6s"></div>
+      <p class="closing t" style="--in:21.9s">حضوركم يكتمل به فرحنا ويسعد قلوبنا</p>
+      <p class="sign t" style="--in:22.4s">فيصل &amp; ريم</p>
+    </div>
+  </div>
+
+  <div class="abs" id="petals" style="pointer-events:none"></div>
+  <div class="abs topfade full"></div>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+// balusters
+(function(){
+  const g=document.getElementById("balusters");let s="";
+  for(let x=14;x<540;x+=27){
+    s+=`<path d="M${x-4} 579h8l1 10c5 8 5 22 0 30l1 15h-12l1-15c-5-8-5-22 0-30z"/>`;
+  }
+  g.innerHTML=s;
+})();
+// wrought-iron leaf built from spirals
+function spiral(cx,cy,r0,r1,turns,a0,dir){
+  const n=Math.round(turns*36);let d="";
+  for(let i=0;i<=n;i++){const u=i/n,a=a0+dir*u*turns*2*Math.PI,r=r0+(r1-r0)*u;
+    d+=(i?"L":"M")+(cx+r*Math.cos(a)).toFixed(1)+" "+(cy+r*Math.sin(a)).toFixed(1);}
+  return d;
+}
+function leaf(svg){
+  const P=Math.PI;
+  const thick=[
+    "M10 748V178C10 112 120 58 240 40V748",
+    "M10 330H240","M10 620H240"
+  ];
+  const thin=[
+    spiral(152,214,5,54,2.1,0,1),
+    spiral(66,268,4,34,1.9,P,-1),
+    "M100 288C120 320 150 300 168 266",
+    "M30 326C30 250 60 180 120 130",
+    spiral(132,118,3,22,1.6,P/2,1),
+    spiral(70,684,4,36,1.9,0,-1),
+    spiral(180,684,4,36,1.9,P,1),
+    "M125 624V744","M106 684H144",
+    spiral(60,372,3,20,1.5,0,1), spiral(190,372,3,20,1.5,P,-1),
+    spiral(60,578,3,20,1.5,0,-1), spiral(190,578,3,20,1.5,P,1),
+  ];
+  for(let x=48;x<=202;x+=38.5) thin.push(`M${x} 332V618`);
+  thin.push("M48 475H202");
+  let s=`<g style="filter:drop-shadow(0 3px 3px rgba(80,56,28,.28))">`;
+  thick.forEach(d=>s+=`<path class="iron-under" d="${d}"/>`);
+  thin.forEach(d=>s+=`<path class="iron-thin-under" d="${d}"/>`);
+  thick.forEach(d=>s+=`<path class="iron" d="${d}"/>`);
+  thin.forEach(d=>s+=`<path class="iron-thin" d="${d}"/>`);
+  // gilded leaves and finial
+  s+=`<g fill="#d9b876" stroke="#a88346" stroke-width="1">
+    <path d="M240 40C232 26 236 12 240 2C244 12 248 26 240 40Z"/>
+    <path d="M118 150C128 128 150 122 164 128C156 146 138 154 118 150Z"/>
+    <path d="M196 262C212 250 228 252 236 262C224 274 208 274 196 262Z"/>
+    <circle cx="125" cy="475" r="7"/><circle cx="86.5" cy="475" r="4.5"/><circle cx="163.5" cy="475" r="4.5"/>
+    <rect x="2" y="300" width="14" height="26" rx="3"/><rect x="2" y="600" width="14" height="26" rx="3"/>
+  </g>`;
+  // climbing rose at the hinge
+  s+=`<g transform="translate(34,150)"><use href="#sprig" transform="rotate(100) scale(1.2)"/><use href="#sprig" transform="rotate(-30) scale(1)"/><use href="#rose" transform="translate(6,6) scale(1.05)"/><use href="#rose" transform="translate(-6,42) scale(.7)"/></g>`;
+  s+="</g>";
+  svg.innerHTML=s;
+}
+leaf(document.getElementById("leafL"));leaf(document.getElementById("leafR"));
+// petals (seeded so every render is identical)
+(function(){
+  let seed=20270305;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+  const box=document.getElementById("petals");let s="";
+  for(let i=0;i<64;i++){
+    const start=i<26?3.9+rnd()*2.4:6+rnd()*17;
+    const x=rnd()*520,dx=(rnd()-.5)*220,w=(rnd()-.5)*160,r=(rnd()>.5?1:-1)*(200+rnd()*500),d=5.5+rnd()*4,sc=.7+rnd()*.9;
+    s+=`<i class="petal" style="--s:${start.toFixed(2)}s;--d:${d.toFixed(2)}s;--x:${x.toFixed(0)}px;--dx:${dx.toFixed(0)}px;--w:${w.toFixed(0)}px;--r:${r.toFixed(0)}deg;width:${(15*sc).toFixed(1)}px;height:${(11*sc).toFixed(1)}px"></i>`;
+  }
+  box.innerHTML=s;
+})();
+// render hook: freeze every animation at time t (seconds)
+window.seek=t=>document.getAnimations().forEach(a=>{a.pause();a.currentTime=t*1000});
+</script>
+</body>
+</html>
