@@ -75,6 +75,27 @@ if git clone -q --depth 1 https://github.com/bangtutorial/bang-motion.git "$tmp/
 else
   echo "could not clone bangtutorial/bang-motion: skipping"
 fi
+# HandDraw-Skill (ToBeWin/HandDraw-Skill): hand-drawn / whiteboard explainer MP4s from a JSON DSL, rendered with Remotion.
+# Built in place (~310 MB with node_modules); .venv holds edge-tts for optional narration.
+if command -v npm >/dev/null && git clone -q --depth 1 https://github.com/ToBeWin/HandDraw-Skill.git "$tmp/handdraw"; then
+  rm -rf "$tmp/handdraw/.git" ~/.claude/skills/handdraw-skill
+  cp -r "$tmp/handdraw" ~/.claude/skills/handdraw-skill
+  (
+    cd ~/.claude/skills/handdraw-skill && npm install --silent && npm run build >/dev/null
+    if command -v uv >/dev/null; then uv venv -q .venv && uv pip install -q --python .venv/bin/python -r packages/audio/requirements.txt
+    else python3 -m venv .venv && .venv/bin/pip install -q -r packages/audio/requirements.txt; fi
+    # Remotion downloads Chrome Headless Shell from remotion.media on first render. Where a Playwright
+    # headless shell is already installed (Claude Code cloud containers), use that one instead.
+    pw=$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64 2>/dev/null | tail -1)
+    if [ -n "$pw" ]; then
+      d=node_modules/.remotion/chrome-headless-shell
+      mkdir -p $d/linux64 && ln -sfn "$pw" $d/linux64/chrome-headless-shell-linux64
+      sed -n "s/^exports.TESTED_VERSION = '\(.*\)';/\1/p" node_modules/@remotion/renderer/dist/browser/get-chrome-download-url.js > $d/VERSION
+    fi
+  ) || echo "handdraw-skill setup failed: run 'npm install && npm run build' in ~/.claude/skills/handdraw-skill"
+else
+  echo "npm missing or could not clone ToBeWin/HandDraw-Skill: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
