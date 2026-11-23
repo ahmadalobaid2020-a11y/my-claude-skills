@@ -1,0 +1,8 @@
+# we-viral-editing toolkit — also needs FFmpeg (with libass) on PATH
+numpy
+opencv-python<5
+requests
+faster-whisper
+# optional
+scenedetect[opencv]
+ffmpeg-normalize
