@@ -27,6 +27,33 @@ Personal Claude Code skills.
 | `papermorph` | Narrated, animated web books: lessons from textbook PDFs, paper-puppet picture books, documentaries, upright shorts, scroll stories and explorable maps, as static pages. Installed by `install.sh` from [DozenTwelve/Papermorph](https://github.com/DozenTwelve/Papermorph) (skill folder only, MIT). Needs `uv`, ffmpeg and Playwright Chromium + Firefox (`uv run --with playwright playwright install chromium firefox`); narration uses Edge TTS (online) or Kokoro; ElevenLabs/OpenRouter steps are optional and paid. |
 | Anthropic skills | `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `frontend-design`, `canvas-design`, `mcp-builder`, `webapp-testing` and the rest of [anthropics/skills](https://github.com/anthropics/skills). Cloned and copied by `install.sh`, not stored here. |
 
+## Video editing skills (from a shared Drive folder)
+
+18 skills copied into `skills/` from the public Google Drive folder "Claude editing skills" (owner hidden, files dated Oct 11). Installed by `install.sh` like the other local skills. Most need ffmpeg and Python 3; several need your own API keys (ElevenLabs, Gemini, Groq, fal) or the Higgsfield MCP, as each `SKILL.md` explains. The `majed-*` folders register under their own names without the prefix (`video-ad-editor`, `montage-video`, `motion-video`, `podcast-video`, `davinci-video`, `thumbnail-video`).
+
+| Skill | What it does |
+| --- | --- |
+| `we-viral-editing` | The We Viral agency editing playbook, with its community reel engine. |
+| `famous-reel-editor` | Talking head to a styled 9:16 reel with motion graphics and AI B-roll. |
+| `albert-reel` | Green-glass motion-graphics reel, accent colour themeable. |
+| `albert-reel-white` | White "popout" reel where the speaker's head breaks out of the frame. |
+| `albert-reel-white-screen` | Split-screen tutorial reel (camera + screen recording). |
+| `majed-video-ad-editor` | Talking head to reel or ad: silence cuts, word-timed Arabic captions. Its `00_setup.sh --update` replaces the skill with the latest GitHub release, and `--extras` downloads a DeepFilterNet binary; both only when run. |
+| `majed-montage-video` | No-speech clips cut to the beat of a song. |
+| `majed-motion-video` | 3D motion-graphics film from text only. |
+| `majed-podcast-video` | Multi-camera podcasts and interviews cut into reels. |
+| `majed-davinci-video` | Edits inside DaVinci Resolve Studio (needs Resolve on your own machine). |
+| `majed-thumbnail-video` | Reel cover / first-frame design. |
+| `famous-youtube-editor` | Long-form 16:9 edit with full-screen animations, picture-in-picture and B-roll. |
+| `youtube-clean` | Calm long-form edit with Apple-style UI recreations. |
+| `youtube-popup-graphic` | Premiere-style UI popup graphics. |
+| `youtube-broll-maker` | AI B-roll of yourself from one photo (Higgsfield MCP). |
+| `youtube-clipper` | Short clips from a YouTube video (Higgsfield clipper). |
+| `capcut-smartcut` | Removes silences and repeated takes from CapCut projects (needs CapCut on your own machine). |
+| `open-edit` | Runs edits through VEED's engine. |
+
+Four of them ship the same 11.6 MB `assets/bg-music.m4a` with no licence stated; check its rights before publishing a video that uses it.
+
 Install: `./install.sh` (copies skills to `~/.claude/skills`, adds the Anthropic skills, installs faster-whisper and yt-dlp).
 Needs ffmpeg; `thumbnail` needs Node + Playwright Chromium;
 `real-sfx` search/download needs a free `FREESOUND_API_KEY`;
