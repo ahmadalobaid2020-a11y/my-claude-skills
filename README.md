@@ -29,7 +29,7 @@ Personal Claude Code skills.
 
 ## Video editing skills (from a shared Drive folder)
 
-18 skills copied into `skills/` from the public Google Drive folder "Claude editing skills" (owner hidden, files dated Oct 11). Installed by `install.sh` like the other local skills. Most need ffmpeg and Python 3; several need your own API keys (ElevenLabs, Gemini, Groq, fal) or the Higgsfield MCP, as each `SKILL.md` explains. The `majed-*` folders register under their own names without the prefix (`video-ad-editor`, `montage-video`, `motion-video`, `podcast-video`, `davinci-video`, `thumbnail-video`).
+18 skills copied into `skills/` from the public Google Drive folder "Claude editing skills" (owner hidden, files dated Oct 11). Installed by `install.sh` like the other local skills. Most need ffmpeg and Python 3; several need your own API keys (ElevenLabs, Gemini, Groq, fal) or the Higgsfield MCP, as each `SKILL.md` explains. The `majed-*` folders register under their own names without the prefix (`montage-video`, `motion-video`, `podcast-video`, `davinci-video`, `thumbnail-video`).
 
 | Skill | What it does |
 | --- | --- |
@@ -38,7 +38,7 @@ Personal Claude Code skills.
 | `albert-reel` | Green-glass motion-graphics reel, accent colour themeable. |
 | `albert-reel-white` | White "popout" reel where the speaker's head breaks out of the frame. |
 | `albert-reel-white-screen` | Split-screen tutorial reel (camera + screen recording). |
-| `majed-video-ad-editor` | Talking head to reel or ad: silence cuts, word-timed Arabic captions. Its `00_setup.sh --update` replaces the skill with the latest GitHub release, and `--extras` downloads a DeepFilterNet binary; both only when run. |
+| `video-ad-editor` | Shared engine for the `majed-*` skills, which look for it under this exact folder name. Talking head to reel or ad: silence cuts, word-timed Arabic captions. Its `00_setup.sh --update` replaces the skill with the latest GitHub release, and `--extras` downloads a DeepFilterNet binary; both only when run. |
 | `majed-montage-video` | No-speech clips cut to the beat of a song. |
 | `majed-motion-video` | 3D motion-graphics film from text only. |
 | `majed-podcast-video` | Multi-camera podcasts and interviews cut into reels. |
