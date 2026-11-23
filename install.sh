@@ -116,6 +116,15 @@ if git clone -q --depth 1 https://github.com/soheil-mp/solidworks-mcp.git "$tmp/
 else
   echo "could not clone soheil-mp/solidworks-mcp: skipping"
 fi
+# Papermorph (DozenTwelve/Papermorph): narrated, animated web books, picture books, documentaries and shorts.
+# Only the skill folder (SKILL.md, references, scripts, templates) is installed, not the repo's site/ books.
+# Needs uv, ffmpeg and Playwright Chromium + Firefox at use time.
+if git clone -q --depth 1 https://github.com/DozenTwelve/Papermorph.git "$tmp/papermorph"; then
+  rm -rf ~/.claude/skills/papermorph
+  cp -r "$tmp/papermorph/.claude/skills/papermorph" ~/.claude/skills/papermorph
+else
+  echo "could not clone DozenTwelve/Papermorph: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
