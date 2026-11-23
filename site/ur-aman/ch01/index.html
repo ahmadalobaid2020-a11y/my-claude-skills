@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UR AMAN: extract, remediate, report</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f5f0e2'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='48' fill='%23b4472e'%3E∞%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../lib/engine.css">
+<link rel="expect" href="#bar" blocking="render"><!-- hold the first frame until the player exists, so the page transition can run -->
+</head>
+<body>
+<script src="../lib/engine.js"></script>
+<script src="audio/en/timings.js"></script>
+<script>
+'use strict';
+// UR AMAN, chapter 1: the compliance monitoring and remediation workflow. Beat ids match narration.en.json.
+// Every name, count and date drawn here is illustrative, as in the source explainer.
+const CHAPTER = { number: 1, title: 'UR AMAN: extract, remediate, report', minutes: 3, language: 'en' };
+
+/* ---------- the book's look ---------- */
+const HEAD = '"Oswald","Avenir Next",Arial,sans-serif', SERIF = '"EB Garamond",Georgia,serif';
+const INK = COL.chalk, PAPER = '#fffdf6';
+const C = { red: bookSetting('--overdue'), amber: bookSetting('--soon'), green: bookSetting('--ok'), aman: bookSetting('--aman') };
+const NB = ' ', thou = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, NB);   // 2 899
+
+/* ---------- chapter drawing helpers ---------- */
+const head = (p, str, x, y, size = 44, o = {}) => T(p, str, { x, y, size, font: HEAD, weight: 600, ...o });
+const serif = (p, str, x, y, size = 30, o = {}) => T(p, str, { x, y, size, font: SERIF, weight: 500, fill: COL.dim, ...o });
+// a sheet of paper: local coordinates start at its top left corner
+function sheet(p, x, y, w, hh, { stroke = INK, fill = PAPER, o = 1, s = 1 } = {}) {
+  const g = G(p, { x, y, o, s });
+  mk('rect', { x: 7, y: 8, width: w, height: hh, rx: 10, fill: INK, opacity: .13 }, g);
+  mk('rect', { width: w, height: hh, rx: 10, fill, stroke, 'stroke-width': 2.5 }, g);
+  return g;
+}
+// a coloured band along a sheet's top edge, with its title
+function band(g, w, str, fill, sub) {
+  mk('path', { d: `M1.5 64V11.5Q1.5 1.5 11.5 1.5H${w - 11.5}Q${w - 1.5} 1.5 ${w - 1.5} 11.5V64Z`, fill }, g);
+  head(g, str, 28, 44, 32, { fill: PAPER });
+  if (sub) T(g, sub, { x: w - 28, y: 42, size: 20, fill: PAPER, anchor: 'end', o: .85 });
+}
+// a status pill centred on (x, y); starts hidden, pop() brings it in
+function pill(p, str, x, y, colr, { size = 20, on = false } = {}) {
+  const w = str.length * size * .56 + 30, g = G(p, { x, y, s: on ? 1 : .4, o: on ? 1 : 0 });
+  mk('rect', { x: -w / 2, y: -size * .85, width: w, height: size * 1.7, rx: size * .85, fill: PAPER, stroke: colr, 'stroke-width': 2.5 }, g);
+  T(g, str, { x: 0, y: size * .34, size, fill: colr, weight: 700, anchor: 'middle' });
+  return g;
+}
+// the three steps along the top; k is the one this beat belongs to
+function stepper(p, k) {
+  const g = G(p, { o: 0 });
+  ['Extract', 'Remediate', 'Report'].forEach((s, i) => {
+    const on = i === k, x = 90 + i * 250;
+    mk('circle', { cx: x + 18, cy: 78, r: 18, fill: on ? COL.task : 'none', stroke: on ? COL.task : COL.faint, 'stroke-width': 2.5 }, g);
+    T(g, String(i + 1), { x: x + 18, y: 86, size: 22, weight: 700, anchor: 'middle', fill: on ? PAPER : COL.dim });
+    head(g, s.toUpperCase(), x + 48, 88, 26, { fill: on ? COL.task : COL.dim });
+    if (i < 2) mk('path', { d: `M${x + 196} 78h34`, stroke: COL.faint, 'stroke-width': 2.5 }, g);
+  });
+  show(g, .2);
+  return g;
+}
+function person(p, x, y, label, colr = INK) {
+  const g = G(p, { x, y, s: .4, o: 0 });
+  mk('path', { d: 'M-46 34Q-46 -16 0 -16Q46 -16 46 34Z', fill: PAPER, stroke: colr, 'stroke-width': 3 }, g);
+  mk('circle', { cx: 0, cy: -46, r: 26, fill: PAPER, stroke: colr, 'stroke-width': 3 }, g);
+  T(g, label, { x: 0, y: 72, size: 24, weight: 600, anchor: 'middle' });
+  return g;
+}
+function envelope(p, x, y, o = 0) {
+  const g = G(p, { x, y, o });
+  mk('rect', { x: -32, y: -21, width: 64, height: 42, rx: 4, fill: PAPER, stroke: INK, 'stroke-width': 2.5 }, g);
+  mk('path', { d: 'M-32 -21L0 5L32 -21', fill: 'none', stroke: INK, 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, g);
+  return g;
+}
+// a file exported from a system: a small sheet with its name
+function fileCard(p, x, y, name, w = 520, hh = 230) {
+  const g = sheet(p, x, y, w, hh, { o: 0 });
+  mk('rect', { x: 22, y: 20, width: 66, height: 34, rx: 6, fill: C.green }, g);
+  T(g, 'XLSX', { x: 55, y: 44, size: 18, weight: 700, fill: PAPER, anchor: 'middle' });
+  T(g, name, { x: 104, y: 46, size: 24, weight: 600 });
+  return g;
+}
+// bars of days open, to one scale; rows = [label, days]. Returns the bars and their day labels.
+function dayBars(g, rows, { x0, y0, step, px, hh = 30, size = 22, labelX = 30 }) {
+  return rows.map(([label, d], i) => {
+    const y = y0 + i * step;
+    T(g, label, { x: labelX, y: y + hh * .72, size });
+    const bar = mk('rect', { x: x0, y, width: 0, height: hh, rx: 4, fill: COL.dim }, g);
+    const str = d + (d === 1 ? ' day' : ' days'), n = G(g, { o: 0 });      // on a paper backing, so a limit line never cuts it
+    mk('rect', { x: x0 + d * px + 6, y, width: str.length * size * .56 + 12, height: hh, fill: PAPER }, n);
+    const nt = T(n, str, { x: x0 + d * px + 12, y: y + hh * .72, size, weight: 600 });
+    return { bar, n, nt, d, w: d * px };
+  });
+}
+const raise = (g, bars) => bars.forEach(b => g.appendChild(b.n));   // day labels above a line drawn after them
+const CASES = [['Email · Employee A', 7], ['USB & Print · Employee B', 3], ['Web · Employee C', 9],
+  ['Email · Employee D', 2], ['USB & Print · Employee E', 6], ['Web · Employee F', 1]];
+const QCASES = [['Email · Employee K', 4], ['Web · Employee L', 5], ['USB & Print · Employee M', 8], ['Email · Employee N', 2]];
+const DEPTS = [['UR Producing Dept', 96, 'ok'], ['UR Drilling 1 Dept', 71, 'over'], ['UR Completion Operations Dept', 88, 'soon'],
+  ['UR Data Mgmt & Digital Portfolio Div', 94, 'ok'], ['UR Exploration & Characterization Dept', 64, 'over'], ['UR Logistics & Svcs Div', 85, 'soon']];
+const STATUS = { ok: ['Compliant', C.green], over: ['Overdue', C.red], soon: ['Expiring soon', C.amber] };
+const TESTED = 2899, PASSED = 2163, NEUTRAL = 735, FAILED = 1;
+const pct = n => (n / TESTED * 100).toFixed(1) + NB + '%';
+
+/* ---------- beats: [id, title, run(m, D), { ask }?] ---------- */
+const BEATS = [
+  ['intro', 'UR AMAN', (m, D) => {
+    const g = G(scene, { o: 0, y: 24 });
+    T(g, 'UR ISA GROUP SUPPORT  ·  HOW IT WORKS', { x: 800, y: 215, size: 24, fill: COL.dim, anchor: 'middle', weight: 600 });
+    head(g, 'UR AMAN', 800, 370, 150, { anchor: 'middle' });
+    serif(g, 'UR Awareness Monitoring Alerts and Notification', 800, 440, 38, { anchor: 'middle' });
+    mk('path', { d: 'M700 478H900', stroke: COL.task, 'stroke-width': 4, 'stroke-linecap': 'round' }, g);
+    tw(g, { o: 1, y: 0 }, .2, 1.1, out);
+    const r = G(scene);
+    [['1', 'Extract', 'training, forms, open cases'], ['2', 'Remediate', 'automatic reminders'], ['3', 'Report', 'results and KPI status']].forEach(([n, s, sub], i) => {
+      const t0 = m('sub') + i * .75, c = sheet(r, 205 + i * 410, 560, 370, 150, { o: 0 });
+      put(c, { y: 580 });
+      mk('circle', { cx: 50, cy: 54, r: 24, fill: COL.task }, c);
+      T(c, n, { x: 50, y: 64, size: 28, weight: 700, fill: PAPER, anchor: 'middle' });
+      head(c, s, 92, 68, 40);
+      T(c, sub, { x: 30, y: 118, size: 21, fill: COL.dim });
+      tw(c, { o: 1, y: 560 }, t0, .6, out);
+      if (i < 2) draw(path(r, `M${585 + i * 410} 635h20`, { stroke: INK, 'stroke-width': 3 }, { d: 0 }), t0 + .5, .3);
+    });
+    tw(g, { o: 0, y: -24 }, D - .5, .5); hide(r, D - .5, .5);
+  }],
+
+  ['extract', 'Extract the records', (m) => {
+    const p = panel(0);
+    stepper(p, 0);
+    const dash = sheet(p, 90, 150, 700, 620, { o: 0 });
+    show(dash, .2);
+    band(dash, 700, 'ISA Dashboard', '#22324a');
+    T(dash, 'MANDATORY TRAINING', { x: 34, y: 116, size: 19, weight: 700, fill: COL.dim });
+    T(dash, 'POLICY ACKNOWLEDGEMENTS', { x: 34, y: 336, size: 19, weight: 700, fill: COL.dim });
+    const rows = [['Information Essentials', 'completion history', 160, 'c1', 0], ['Phishing Course', 'completion history', 222, 'c2', 0],
+      ['9595', 'Computer Use Policy', 380, 'f1', 1], ['9696', 'Computer Use Policy', 442, 'f2', 1]];
+    rows.forEach(([a, b, y]) => {
+      mk('path', { d: `M34 ${y + 22}H666`, stroke: COL.faint, 'stroke-width': 1.5 }, dash);
+      T(dash, a, { x: 34, y, size: 27, weight: 600 });
+      T(dash, b, { x: 666, y, size: 22, fill: COL.dim, anchor: 'end' });
+    });
+    for (let i = 0; i < 3; i++) mk('rect', { x: 34, y: 506 + i * 34, width: 420 - i * 70, height: 12, rx: 6, fill: COL.faint, opacity: .55 }, dash);
+    const files = [fileCard(p, 960, 190, 'completion_history.xlsx'), fileCard(p, 960, 500, 'policy_acknowledgements.xlsx')];
+    [['hist', 300], ['pol', 610]].forEach(([mark, y], i) => {
+      draw(path(p, `M800 ${y}H940M922 ${y - 14}L940 ${y}L922 ${y + 14}`, { stroke: COL.task, 'stroke-width': 4 }, { d: 0 }), m(mark), .5);
+      put(files[i], { x: 990 }); tw(files[i], { o: 1, x: 960 }, m(mark, .2), .5, out);
+    });
+    rows.forEach(([a, , y, mark, f], i) => {            // each record leaves its row and lands in the exported file
+      const t0 = m(mark), hi = mk('rect', { x: 100, y: 150 + y - 34, width: 680, height: 50, rx: 8, fill: COL.task }, p);
+      put(hi, { o: 0 }); tw(hi, { o: .16 }, t0, .25); hide(hi, t0 + 1.1, .5);
+      const copy = T(p, a, { x: 124, y: 150 + y, size: 27, weight: 600, fill: COL.task, o: 0 });
+      show(copy, t0, .2);
+      tw(copy, { x: 990, y: (f ? 500 : 190) + 118 + (i % 2) * 56 }, t0 + .25, .8, io);
+      const tick = path(p, 'M0 0l9 9l16 -19', { stroke: C.green, 'stroke-width': 4 }, { d: 0, x: 1420, y: (f ? 500 : 190) + 108 + (i % 2) * 56 });
+      draw(tick, t0 + 1.05, .3);
+    });
+  }],
+
+  ['verify', 'Verify the dates', (m, D) => {
+    const p = panel(0);
+    stepper(p, 0);
+    head(p, 'Verify every date against today', 90, 200, 46);
+    const X = d => 240 + (d + 30) * 10.5, Y = 560;           // one scale: 10.5 px a day, from 30 days ago to 90 ahead
+    const over = mk('rect', { x: X(-30), y: Y - 300, width: X(0) - X(-30), height: 300, fill: C.red }, p);
+    const soon = mk('rect', { x: X(0), y: Y - 300, width: X(30) - X(0), height: 300, fill: C.amber }, p);
+    put(over, { o: 0 }); put(soon, { o: 0 });
+    const axis = path(p, `M${X(-30)} ${Y}H${X(90)}`, { stroke: INK, 'stroke-width': 3 }, { d: 0 });
+    draw(axis, .2, .7);
+    [[-30, '30 days ago'], [0, 'today'], [30, 'in 30 days'], [60, 'in 60 days'], [90, 'in 90 days']].forEach(([d, s]) => {
+      const g = G(p, { o: 0 });
+      mk('path', { d: `M${X(d)} ${Y - (d ? 10 : 320)}V${Y + 10}`, stroke: INK, 'stroke-width': d ? 2.5 : 3.5 }, g);
+      T(g, s, { x: X(d), y: Y + 46, size: d ? 22 : 26, weight: d ? 500 : 700, anchor: 'middle', fill: d ? COL.dim : INK });
+      show(g, .5);
+    });
+    const recs = [[-18, 'Phishing Course'], [-6, '9696 form'], [9, 'Information Essentials'], [22, '9595 form'], [64, 'Phishing Course']];
+    const dots = recs.map(([d, s], i) => {
+      const yy = Y - 96 - [0, 1, 1, 0, 0][i] * 96, g = G(p, { o: 0, y: 14 });
+      mk('path', { d: `M${X(d)} ${Y}V${yy}`, stroke: COL.dim, 'stroke-width': 2, 'stroke-dasharray': '5 5' }, g);
+      const c = mk('circle', { cx: X(d), cy: yy, r: 13, fill: INK }, g);
+      T(g, s, { x: X(d) + (d < 0 ? -22 : 22), y: yy + 8, size: 23, weight: 600, anchor: d < 0 ? 'end' : 'start' });
+      tw(g, { o: 1, y: 0 }, m('exp') + i * .13, .4, out);
+      return { c, d };
+    });
+    const label = (str, x, colr, t0) => { const e = head(p, str, x, Y + 110, 34, { fill: colr, anchor: 'middle', o: 0 }); show(e, t0); };
+    tw(over, { o: .13 }, m('over'), .4); label('OVERDUE', (X(-30) + X(0)) / 2, C.red, m('over'));
+    tw(soon, { o: .16 }, m('soon'), .4); label('UPCOMING DEADLINE', (X(0) + X(30)) / 2 + 30, C.amber, m('soon'));
+    dots.forEach(({ c, d }) => {
+      if (d < 0) { tw(c, { c_fill: C.red }, m('over'), .4); }
+      else if (d <= 30) { tw(c, { c_fill: C.amber }, m('soon'), .4); }
+      else tw(c, { c_fill: C.green }, m('soon', .7), .4);
+    });
+    label('VALID', X(64), C.green, m('soon', .7));
+    serif(p, 'illustrative dates', 1510, 200, 24, { anchor: 'end' });
+  }],
+
+  ['dlp', 'Open DLP cases', (m) => {
+    const p = panel(0);
+    stepper(p, 0);
+    const con = sheet(p, 90, 150, 1010, 650, { o: 0 });
+    show(con, .2);
+    band(con, 1010, 'Antileak · DLP Console', '#7c2a24', 'open cases requiring closure');
+    T(con, 'DAYS SINCE THE FIRST NOTIFICATION EMAIL', { x: 380, y: 622, size: 19, weight: 700, fill: COL.dim });
+    const x0 = 380, px = 56, bars = dayBars(con, CASES, { x0, y0: 142, step: 66, px });
+    mk('path', { d: `M${x0} 132V552H${x0 + 570}`, fill: 'none', stroke: INK, 'stroke-width': 2.5 }, con);
+    for (let d = 0; d <= 10; d++) T(con, String(d), { x: x0 + d * px, y: 586, size: 20, fill: COL.dim, anchor: 'middle' });
+    bars.forEach(({ bar, n, w }, i) => { tw(bar, { a_width: w }, m('open') + i * .12, .6, out); show(n, m('open') + i * .12 + .45, .3); });
+    const lim = G(con, { o: 0 });
+    draw(path(con, `M${x0 + 5 * px} 552V96`, { stroke: C.red, 'stroke-width': 4, 'stroke-dasharray': '.03 .02' }, { d: 0 }), m('five'), .6);
+    head(lim, '5-DAY LIMIT', x0 + 5 * px + 14, 112, 26, { fill: C.red });
+    show(lim, m('five', .3)); raise(con, bars);
+    bars.forEach(({ bar, nt, d }) => { if (d > 5) { tw(bar, { c_fill: C.red }, m('five', .7), .4); tw(nt, { c_fill: C.red }, m('five', .7), .4); } });
+    const note = G(p, { o: 0, x: 20 });
+    head(note, 'Resolve every case', 1150, 300, 40);
+    head(note, 'within 5 days', 1150, 356, 40, { fill: C.red });
+    ['of the first notification', 'email sent to the user.'].forEach((s, i) => serif(note, s, 1150, 410 + i * 40, 31));
+    const env = envelope(note, 1190, 520, 1);
+    T(note, 'day 0', { x: 1190, y: 580, size: 22, weight: 600, anchor: 'middle', fill: COL.dim });
+    mk('path', { d: 'M1236 520H1396M1380 508L1396 520L1380 532', fill: 'none', stroke: INK, 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, note);
+    mk('path', { d: 'M1436 548V492M1436 494h44l-12 14l12 14h-44', fill: PAPER, stroke: C.red, 'stroke-width': 3, 'stroke-linejoin': 'round' }, note);
+    T(note, 'day 5', { x: 1452, y: 580, size: 22, weight: 600, anchor: 'middle', fill: C.red });
+    tw(note, { o: 1, x: 0 }, m('five', .3), .6, out);
+    serif(p, 'illustrative data', 1090, 138, 22, { anchor: 'end' });
+  }],
+
+  ['q1', 'Quick check', () => {
+    const p = panel(0);
+    stepper(p, 0);
+    const con = sheet(p, 200, 130, 1200, 470, { o: 0 });
+    show(con, .2);
+    band(con, 1200, 'Antileak · DLP Console', '#7c2a24', 'days since the first notification email');
+    const x0 = 440, px = 80, bars = dayBars(con, QCASES, { x0, y0: 110, step: 74, px, hh: 38, size: 25 });
+    mk('path', { d: `M${x0} 96V402H${x0 + 720}`, fill: 'none', stroke: INK, 'stroke-width': 2.5 }, con);
+    for (let d = 0; d <= 9; d++) T(con, String(d), { x: x0 + d * px, y: 436, size: 21, fill: COL.dim, anchor: 'middle' });
+    mk('path', { d: `M${x0 + 5 * px} 402V84`, stroke: C.red, 'stroke-width': 4, 'stroke-dasharray': '12 8' }, con);
+    head(con, '5-DAY LIMIT', x0 + 5 * px + 14, 100, 24, { fill: C.red });
+    raise(con, bars);
+    bars.forEach(({ bar, n, w }) => { put(bar, { a_width: w }); put(n, { o: 1 }); });
+    S.q1 = bars.map(({ bar }, i) => ({ el: bar, box: [214, 130 + 100 + i * 74, 1172, 58], label: QCASES[i][0] + ', ' + QCASES[i][1] + ' days' }));
+  }, { ask: done => quiz(BAND, [{
+    id: 'c-limit', prompt: ['Click the case that is past the five-day limit.'],
+    build: pickEls(S.q1, 2, 'Eight days is more than five: this case should already be closed.',
+      i => i === 1 ? 'Five days is exactly on the limit, so this case is still within it.' : 'This bar ends before the red line: the case is still within five days.',
+      () => fx(S.q1[2].el, { c_fill: C.red }, 0, .4)),
+  }], done) }],
+
+  ['upload', 'Upload to UR AMAN', (m) => {
+    const p = panel(0);
+    stepper(p, 1);
+    const tool = sheet(p, 480, 160, 330, 500, { stroke: C.aman, o: 0 });
+    show(tool, .2);
+    band(tool, 330, 'UR AMAN', C.aman);
+    T(tool, 'UPLOAD COMPLIANCE DATA', { x: 26, y: 112, size: 18, weight: 700, fill: COL.dim });
+    mk('rect', { x: 26, y: 132, width: 278, height: 250, rx: 10, fill: 'none', stroke: C.aman, 'stroke-width': 2.5, 'stroke-dasharray': '10 8' }, tool);
+    const loaded = G(tool, { o: 0 });
+    draw(path(tool, 'M135 250l22 22l38 -46', { stroke: C.green, 'stroke-width': 7 }, { d: 0 }), m('up', 1.5), .4);
+    T(loaded, '3 reports loaded', { x: 165, y: 330, size: 24, weight: 600, anchor: 'middle' });
+    show(loaded, m('up', 1.5));
+    ['completion_history', 'policy_acknowledgements', 'dlp_open_cases'].forEach((s, i) => {      // the three reports go into the tool
+      const f = sheet(p, 90, 200 + i * 130, 320, 96, { o: 0 });
+      mk('rect', { x: 16, y: 16, width: 58, height: 30, rx: 6, fill: C.green }, f);
+      T(f, 'XLSX', { x: 45, y: 38, size: 16, weight: 700, fill: PAPER, anchor: 'middle' });
+      T(f, s, { x: 16, y: 76, size: 22, weight: 600 });
+      show(f, .2 + i * .1);
+      tw(f, { x: 566, y: 380 + i * 8, s: .5 }, m('up') + i * .28, .8, io); hide(f, m('up') + i * .28 + .55, .3);
+    });
+    const tab = sheet(p, 880, 160, 630, 600, { o: 0 });
+    band(tab, 630, 'Training status by department', '#22324a');
+    draw(path(p, 'M818 410H866M850 396L866 410L850 424', { stroke: C.aman, 'stroke-width': 4 }, { d: 0 }), m('calc', -.1), .4);
+    put(tab, { x: 910 }); tw(tab, { o: 1, x: 880 }, m('calc'), .5, out);
+    DEPTS.forEach(([name, v, sk], i) => {
+      const y = 112 + i * 80, t0 = m('calc') + .35 + i * .14, [word, colr] = STATUS[sk];
+      T(tab, name, { x: 28, y, size: 22, weight: 600 });
+      mk('rect', { x: 28, y: y + 14, width: 320, height: 14, rx: 7, fill: COL.faint, opacity: .5 }, tab);
+      const bar = mk('rect', { x: 28, y: y + 14, width: 0, height: 14, rx: 7, fill: COL.dim }, tab);
+      const n = T(tab, '0 %', { x: 420, y: y + 28, size: 22, weight: 600, anchor: 'end' });
+      tw(bar, { a_width: 3.2 * v }, t0, .8, out);
+      prog(q => { n.textContent = Math.round(q * v) + NB + '%'; }, t0, .8, out);
+      const pl = pill(tab, word, 522, y + 12, colr, { size: 19 });
+      pop(pl, m('flag') + i * .12); tw(bar, { c_fill: colr }, m('flag') + i * .12, .4);
+    });
+    serif(p, 'illustrative data', 1510, 148, 22, { anchor: 'end' });
+  }],
+
+  ['filter', 'Filter and highlight', (m) => {
+    const p = panel(0);
+    stepper(p, 1);
+    const tab = sheet(p, 90, 150, 860, 630, { stroke: C.aman, o: 0 });
+    show(tab, .2);
+    band(tab, 860, 'UR AMAN · compliance by requirement', C.aman);
+    const chips = ['IS Essentials', 'Phishing Course', '9595 / 9696'].map((s, i) => {
+      const g = G(tab, { x: 34 + i * 220, y: 88 });
+      const r = mk('rect', { width: 200, height: 44, rx: 22, fill: PAPER, stroke: C.aman, 'stroke-width': 2.5 }, g);
+      const t = T(g, s, { x: 100, y: 30, size: 21, weight: 700, anchor: 'middle', fill: C.aman });
+      return { g, r, t };
+    });
+    chips.slice(0, 2).forEach(c => tw(c.g, { o: .35 }, m('filt'), .4));
+    tw(chips[2].r, { c_fill: C.aman }, m('filt'), .3); tw(chips[2].t, { c_fill: PAPER }, m('filt'), .3); pulse(chips[2].g, m('filt'), 1.06);
+    const rows = [['Employee A', 'Phishing Course', 'Overdue', C.red], ['Employee B', '9595', 'Missing', C.red], ['Employee C', 'IS Essentials', 'Expiring soon', C.amber],
+      ['Employee D', '9696', 'Missing', C.red], ['Employee E', 'Phishing Course', 'Compliant', C.green], ['Employee F', '9595', 'Missing', C.red]];
+    let k = 0;
+    const missing = [];
+    rows.forEach(([who, req, word, colr], i) => {
+      const g = G(tab, { y: 196 + i * 62 }), policy = /^9/.test(req);
+      mk('path', { d: 'M34 22H826', stroke: COL.faint, 'stroke-width': 1.5 }, g);
+      T(g, who, { x: 34, y: 0, size: 25, weight: 600 });
+      T(g, req, { x: 330, y: 0, size: 24, fill: COL.dim });
+      const pl = pill(g, word, 720, -8, colr, { size: 19, on: true });
+      if (!policy) hide(g, m('filt', .25), .35);
+      else { tw(g, { y: 196 + k++ * 62 }, m('filt', .55), .6, io); missing.push(pl); }    // the rows that remain close ranks
+    });
+    missing.forEach((pl, i) => pulse(pl, m('miss') + i * .15, 1.25));
+    const count = G(tab, { o: 0 });
+    head(count, '3', 34, 480, 110, { fill: C.red });
+    head(count, 'MISSING POLICY', 120, 436, 30);
+    head(count, 'ACKNOWLEDGEMENTS', 120, 474, 30);
+    show(count, m('miss', .1));
+    const con = sheet(p, 1000, 150, 510, 630, { stroke: C.aman, o: 0 });
+    band(con, 510, 'UR AMAN · DLP', C.aman);
+    put(con, { x: 1030 }); tw(con, { o: 1, x: 1000 }, m('dlp', -.2), .5, out);
+    const x0 = 150, px = 30, bars = dayBars(con, CASES.map(([s, d]) => [s.split('· ')[1].replace('Employee ', 'Case '), d]), { x0, y0: 124, step: 62, px, hh: 26, size: 21 });
+    mk('path', { d: `M${x0} 112V500H${x0 + 300}`, fill: 'none', stroke: INK, 'stroke-width': 2.5 }, con);
+    T(con, 'days open', { x: x0 + 300, y: 532, size: 20, fill: COL.dim, anchor: 'end' });
+    bars.forEach(({ bar, n, w }, i) => { tw(bar, { a_width: w }, m('dlp') + i * .08, .5, out); show(n, m('dlp') + i * .08 + .35, .3); });
+    draw(path(con, `M${x0 + 5 * px} 500V98`, { stroke: C.red, 'stroke-width': 3.5, 'stroke-dasharray': '.03 .02' }, { d: 0 }), m('past', -.3), .4);
+    show(head(con, '5-DAY LIMIT', x0 + 5 * px + 10, 110, 20, { fill: C.red, o: 0 }), m('past', -.1));
+    raise(con, bars);
+    bars.forEach(({ bar, nt, d }) => { if (d > 5) { tw(bar, { c_fill: C.red }, m('past'), .35); tw(nt, { c_fill: C.red }, m('past'), .35); } });
+  }],
+
+  ['notify', 'Send notifications', (m) => {
+    const p = panel(0);
+    stepper(p, 1);
+    const tool = sheet(p, 90, 160, 520, 600, { stroke: C.aman, o: 0 });
+    show(tool, .2);
+    band(tool, 520, 'UR AMAN', C.aman);
+    const title = head(tool, 'Send Notifications', 30, 132, 42, { o: 0 });
+    show(title, m('send'));
+    draw(path(tool, 'M30 150H330', { stroke: COL.task, 'stroke-width': 4 }, { d: 0 }), m('send', .2), .5);
+    const letter = sheet(p, 700, 230, 470, 430, { o: 0 }), letterT = Math.max(m('r1', -.35), m('mgr', .95));   // after both envelopes have landed
+    T(letter, 'To: Employee     Cc: Manager', { x: 30, y: 56, size: 23, weight: 700, fill: C.aman });
+    T(letter, 'Subject: Action required – UR ISA', { x: 30, y: 98, size: 22, weight: 600 });
+    mk('path', { d: 'M30 122H440', stroke: COL.faint, 'stroke-width': 1.5 }, letter);
+    serif(letter, 'Dear colleague, please complete the following:', 30, 164, 24);
+    serif(letter, 'UR ISA Group Support', 30, 394, 24, { fill: C.aman });
+    [['Complete expired courses', 'IS Essentials · Phishing Course', 'Complete expired course(s)'],
+      ['Finalize Computer Use Policy', '9595 / 9696 acknowledgement', 'Finalize the Computer Use Policy'],
+      ['Close outstanding DLP cases', 'within 5 days of the first notification', 'Close your open DLP case(s)']].forEach(([a, b, line], i) => {
+      const t0 = m('r' + (i + 1)), g = G(tool, { y: 230 + i * 118, o: .4 });
+      mk('path', { d: 'M30 62H490', stroke: COL.faint, 'stroke-width': 1.5 }, g);
+      T(g, a, { x: 30, y: 0, size: 24, weight: 600 });
+      T(g, b, { x: 30, y: 34, size: 20, fill: COL.dim });
+      const track = mk('rect', { x: 420, y: -16, width: 64, height: 34, rx: 17, fill: COL.faint }, g);
+      const knob = mk('circle', { cx: 437, cy: 1, r: 12, fill: PAPER }, g);
+      put(knob, { x: 0 });
+      tw(g, { o: 1 }, t0, .3); tw(knob, { x: 30 }, t0, .3, out); tw(track, { c_fill: C.aman }, t0, .3);     // the reminder is switched on
+      const li = G(letter, { o: 0, x: -14 });
+      mk('circle', { cx: 40, cy: 212 + i * 50, r: 5, fill: INK }, li);
+      T(li, line, { x: 58, y: 220 + i * 50, size: 25, weight: 600 });
+      tw(li, { o: 1, x: 0 }, Math.max(t0 + .25, letterT + .35), .45, out);
+    });
+    [['emp', 'Employee', 320], ['mgr', 'Manager', 580]].forEach(([mark, name, y]) => {
+      const t0 = m(mark), who = person(p, 1390, y, name);
+      pop(who, t0 - .25);
+      const route = path(p, `M620 450C900 450 900 ${y} 1290 ${y}`, { stroke: COL.dim, 'stroke-width': 2.5, 'stroke-dasharray': '.02 .02' }, { d: 0 });
+      draw(route, t0, .8); hide(route, t0 + 1, .4);
+      const env = envelope(p, 620, 450);
+      show(env, t0, .15);
+      prog(q => { const u = 1 - q, a = 3 * u * u * q, b = 3 * u * q * q, c = q * q * q;     // along the same curve as its route
+        put(env, { x: u * u * u * 620 + a * 900 + b * 900 + c * 1290, y: u * u * u * 450 + a * 450 + b * y + c * y }); }, t0, .9, io);
+    });
+    put(letter, { y: 250 }); tw(letter, { o: 1, y: 230 }, letterT, .5, out);
+  }],
+
+  ['q2', 'Quick check', () => {
+    const p = panel(0);
+    stepper(p, 1);
+    const tool = sheet(p, 90, 250, 300, 250, { stroke: C.aman, o: 0 });
+    show(tool, .2);
+    band(tool, 300, 'UR AMAN', C.aman);
+    T(tool, 'A mandatory course', { x: 150, y: 130, size: 24, weight: 600, anchor: 'middle' });
+    T(tool, 'has expired.', { x: 150, y: 162, size: 24, weight: 600, anchor: 'middle' });
+    put(pill(tool, 'Overdue', 150, 206, C.red), { o: 1, s: 1 });
+    envelope(p, 450, 375, 1);
+    head(p, '?', 450, 480, 80, { fill: COL.task, anchor: 'middle' });
+    S.q2 = [[250, 'Employee'], [560, 'Manager']].map(([y, name]) => {
+      put(person(p, 680, y, name), { o: 1, s: 1 });
+      return path(p, `M492 375C560 375 540 ${y} 610 ${y}M592 ${y - 14}L610 ${y}L592 ${y + 14}`, { stroke: C.aman, 'stroke-width': 4 }, { d: 0 });
+    });
+  }, { ask: done => quiz({ x: 850, y: 190, w: 660, cls: 'side' }, [{
+    id: 'c-who', prompt: ['A course has expired. Who does UR AMAN remind?'],
+    build: choice([['Only the employee'], ['The employee and their manager'], ['Only the manager']], 1,
+      'Both: the reminder goes to the employee, with their manager copied in.',
+      ['The employee is reminded, but not alone: someone else is copied in.', null, 'The manager is copied in, but the reminder is addressed to the employee who must act.'],
+      () => S.q2.forEach((e, i) => fx(e, { d: 1 }, i * .2, .6))),
+  }], done) }],
+
+  ['report', 'The phishing report', (m) => {
+    const p = panel(0);
+    stepper(p, 2);
+    const rep = sheet(p, 90, 140, 1420, 640, { stroke: C.aman, o: 0 });
+    show(rep, .2);
+    band(rep, 1420, 'UR AMAN · Phishing Assessment report', C.aman, 'all departments');
+    const x0 = 60, W = 1300, y = 180, hh = 56, wp = W * PASSED / TESTED, wn = W * NEUTRAL / TESTED;   // one bar, to scale
+    const big = head(rep, '0', x0, 146, 60), bigL = T(rep, 'employees tested', { x: x0 + 170, y: 144, size: 26, fill: COL.dim, weight: 600 });
+    put(big, { o: 0 }); put(bigL, { o: 0 }); show(big, m('t', -.2), .3); show(bigL, m('t', -.2), .3);
+    prog(q => { big.textContent = thou(Math.round(q * TESTED)); }, m('t', -.2), 1, out);
+    draw(path(rep, `M${x0} ${y}H${x0 + W}V${y + hh}H${x0}Z`, { stroke: INK, 'stroke-width': 2.5 }, { d: 0 }), m('t', -.2), .9);
+    const seg = (x, w, colr, t0) => { const r = mk('rect', { x, y: y + 2, width: 0, height: hh - 4, fill: colr }, rep); tw(r, { a_width: w }, t0, .7, out); };
+    const tag = (str, x, colr, t0, anchor = 'middle') => show(T(rep, str, { x, y: y + hh + 36, size: 25, weight: 700, fill: colr, anchor, o: 0 }), t0 + .3);
+    seg(x0 + 1, wp, C.green, m('p')); tag(`${thou(PASSED)} passed · ${pct(PASSED)}`, x0 + wp / 2, C.green, m('p'));
+    seg(x0 + wp, wn - 4, C.amber, m('n')); tag(`${thou(NEUTRAL)} neutral · ${pct(NEUTRAL)}`, x0 + wp + wn / 2 - 60, C.amber, m('n'));
+    seg(x0 + W - 4, 3, C.red, m('f'));                    // 1 of 2 899 is under half a pixel at this scale: drawn 3 px wide and named
+    draw(path(rep, `M${x0 + W - 2} ${y - 4}V${y - 30}H${x0 + W - 40}`, { stroke: C.red, 'stroke-width': 2.5 }, { d: 0 }), m('f'), .4);
+    show(T(rep, '1 failed', { x: x0 + W - 48, y: y - 22, size: 25, weight: 700, fill: C.red, anchor: 'end', o: 0 }), m('f', .3));
+    const tr = G(rep, { o: 0 });
+    head(tr, 'TREND ACROSS ASSESSMENTS', x0, 350, 24, { fill: COL.dim });
+    mk('path', { d: `M${x0} 380V590H${x0 + 560}`, fill: 'none', stroke: INK, 'stroke-width': 2.5 }, tr);
+    const V = [58, 61, 60, 66, 69, 68, 72, 74.6], px = i => x0 + 30 + i * 70, py = v => 590 - (v - 40) * 3.5;    // 40 % to 100 %
+    [[50, '50 %'], [75, '75 %'], [100, '100 %']].forEach(([v, s]) => { mk('path', { d: `M${x0} ${py(v)}H${x0 + 560}`, stroke: COL.faint, 'stroke-width': 1.5 }, tr); T(tr, s, { x: x0 + 568, y: py(v) + 7, size: 19, fill: COL.dim }); });
+    show(tr, m('trend', -.3));
+    draw(path(rep, 'M' + V.map((v, i) => `${px(i)} ${py(v)}`).join('L'), { stroke: C.green, 'stroke-width': 5 }, { d: 0 }), m('trend'), 1.3);
+    const end = mk('circle', { cx: px(7), cy: py(74.6), r: 8, fill: C.green }, rep);
+    put(end, { o: 0 }); show(end, m('trend', 1.2), .2);
+    show(T(rep, 'passed', { x: px(7) - 14, y: py(74.6) - 20, size: 21, weight: 700, fill: C.green, anchor: 'end', o: 0 }), m('trend', 1.2));
+    const dp = G(rep, { o: 0 });
+    head(dp, 'RESULTS BY DEPARTMENT', 780, 350, 24, { fill: COL.dim });
+    show(dp, m('dept', -.3));
+    [['UR Producing Dept', 78], ['UR Drilling 1 Dept', 71], ['UR Completion Operations Dept', 75], ['UR Logistics & Svcs Div', 73]].forEach(([name, v], i) => {
+      const yy = 402 + i * 52, g = G(rep, { o: 0, x: 16 });
+      T(g, name, { x: 780, y: yy, size: 22, weight: 600 });
+      mk('rect', { x: 1130, y: yy - 17, width: 170, height: 18, fill: C.amber }, g);
+      mk('rect', { x: 1130, y: yy - 17, width: 1.7 * v, height: 18, fill: C.green }, g);
+      T(g, v + NB + '%', { x: 1360, y: yy, size: 22, weight: 600, anchor: 'end' });
+      tw(g, { o: 1, x: 0 }, m('dept', -.1) + i * .14, .4, out);
+    });
+    serif(rep, 'illustrative data', 1360, 612, 22, { anchor: 'end' });
+  }],
+
+  ['distribute', 'Report to management', (m) => {
+    const p = panel(0);
+    stepper(p, 2);
+    const doc = sheet(p, 110, 220, 300, 400, { stroke: C.aman, o: 0 });
+    show(doc, .2);
+    band(doc, 300, 'Report', C.aman);
+    mk('rect', { x: 26, y: 96, width: 185, height: 26, fill: C.green }, doc);
+    mk('rect', { x: 211, y: 96, width: 63, height: 26, fill: C.amber }, doc);
+    mk('path', { d: 'M26 300L70 286L114 290L158 262L202 250L246 228L274 216', fill: 'none', stroke: C.green, 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, doc);
+    for (let i = 0; i < 3; i++) mk('rect', { x: 26, y: 150 + i * 24, width: 220 - i * 50, height: 10, rx: 5, fill: COL.faint, opacity: .6 }, doc);
+    T(doc, 'dashboard summary (PDF)', { x: 150, y: 366, size: 19, fill: COL.dim, anchor: 'middle' });
+    const mail = sheet(p, 520, 170, 620, 520, { o: 0 });
+    put(mail, { y: 195 }); tw(mail, { o: 1, y: 170 }, m('mail', -.3), .5, out);
+    head(mail, 'Management Report Email', 32, 66, 38);
+    mk('path', { d: 'M32 88H588', stroke: INK, 'stroke-width': 2.5 }, mail);
+    [['To:', 'Management'], ['Subject:', 'UR ISA – Phishing Assessment KPIs'], ['Attached:', 'dashboard summary (PDF)']].forEach(([a, b], i) => {
+      T(mail, a, { x: 32, y: 138 + i * 46, size: 23, fill: COL.dim, weight: 600 });
+      T(mail, b, { x: 150, y: 138 + i * 46, size: 23, weight: 600 });
+    });
+    draw(path(p, 'M420 420H500M484 406L500 420L484 434', { stroke: C.aman, 'stroke-width': 4 }, { d: 0 }), m('mail'), .4);
+    const pr = G(mail, { o: 0 });
+    head(pr, 'PROGRESS', 32, 296, 22, { fill: COL.dim });
+    show(pr, m('prog', -.2));
+    draw(path(mail, 'M32 372L110 356L190 360L270 334L350 322L430 304L500 292M476 290L500 292L490 314', { stroke: C.green, 'stroke-width': 5 }, { d: 0 }), m('prog'), .9);
+    const kpi = G(mail, { o: 0, y: 14 });
+    mk('rect', { x: 32, y: 404, width: 556, height: 84, rx: 8, fill: COL.board, stroke: COL.faint, 'stroke-width': 2 }, kpi);
+    head(kpi, 'KPI STATUS', 50, 434, 20, { fill: COL.dim });
+    [[`Tested ${thou(TESTED)}`, INK], [`Passed ${pct(PASSED)}`, C.green], [`Neutral ${pct(NEUTRAL)}`, C.amber], ['Failed 1', C.red]].forEach(([s, colr], i) =>
+      T(kpi, s, { x: [50, 184, 332, 490][i], y: 470, size: 19, weight: 700, fill: colr }));
+    tw(kpi, { o: 1, y: 0 }, m('kpi', -.2), .5, out);
+    [1250, 1370, 1490].forEach((x, i) => pop(person(p, x, 380, ''), .4 + i * .12));
+    show(head(p, 'MANAGEMENT', 1370, 470, 30, { anchor: 'middle', o: 0 }), .6);
+    const env = envelope(p, 1160, 330);
+    show(env, m('kpi', .7), .2); tw(env, { x: 1370, y: 540 }, m('kpi', .8), .8, io);
+  }],
+
+  ['wrap', 'Summary', (m) => {
+    const p = panel(0);
+    head(p, "That's UR AMAN", 800, 190, 76, { anchor: 'middle' });
+    [['Extract and verify', 'training histories, 9595 / 9696 records, open DLP cases', 'w1'],
+      ['Remediate automatically', 'reminders to employees and their managers', 'w2'],
+      ['Report performance', 'the Phishing Assessment report and KPI status', 'w3']].forEach(([a, b, mark], i) => {
+      const g = G(p, { x: -16, y: 320 + i * 130, o: 0 });
+      mk('circle', { cx: 300, cy: -14, r: 30, fill: COL.task }, g);
+      T(g, String(i + 1), { x: 300, y: -3, size: 32, fill: PAPER, weight: 700, anchor: 'middle' });
+      head(g, a, 360, 0, 46);
+      serif(g, b, 360, 44, 29);
+      tw(g, { o: 1, x: 0 }, m(mark, -.15), .5, out);
+    });
+    draw(path(p, 'M246 262V690', { stroke: C.aman, 'stroke-width': 5 }, { d: 0 }), m('end', -.2), .6);
+    const one = G(p, { o: 0, y: 12 });
+    head(one, 'ALL IN ONE PLACE', 800, 790, 44, { fill: C.aman, anchor: 'middle' });
+    tw(one, { o: 1, y: 0 }, m('end'), .5, out);
+  }],
+
+  ['final1', 'Chapter practice', () => { panel(0); }, { ask: done => quiz(SCREEN, [{
+    id: 'p-steps', prompt: ['Which step does each task belong to?'],
+    build: grid([
+      { parts: ['Send reminders to employees and their managers'], ans: ['rem'], why: 'Reminders are how UR AMAN gets overdue items fixed: remediation.' },
+      { parts: ['Download completion histories from the ISA Dashboard'], ans: ['ext'], why: 'Pulling records out of a source system is extraction.' },
+      { parts: ['Email the Phishing Assessment KPIs to management'], ans: ['rep'], why: 'Showing progress and KPI status is reporting.' },
+      { parts: ['Identify open cases in the Antileak DLP console'], ans: ['ext'], why: 'Finding the open cases is part of extracting and verifying the data.' },
+    ], [['ext', 'Extract'], ['rem', 'Remediate'], ['rep', 'Report']], { multi: false, text: true }),
+  }, {
+    id: 'p-days', prompt: ['Fill in the limit.'],
+    build: blanks([{ parts: ['Every DLP case is resolved within ', { box: '5' }, ' days of the first notification email.'],
+      why: 'Five days, counted from the first notification email sent to the user.', hint: 'Look for the red line on the DLP chart: it sits on this number of days.' }]),
+  }, {
+    id: 'p-source', prompt: ['Where do the reports that are uploaded to UR AMAN come from?'],
+    build: choice([['The ISA Dashboard and the Antileak DLP console'], ['The Management Report Email'], ['The Phishing Assessment report']], 0,
+      'Training and policy records come from the ISA Dashboard, open cases from the Antileak DLP console.',
+      [null, 'That email is what UR AMAN sends out at the end, not where its data comes from.', 'UR AMAN generates that report; it is an output, not a source.']),
+  }], done, 'Chapter practice') }],
+
+  ['finish', 'Finished', () => { panel(0); }, { ask: finishCard }],
+].map(([id, title, run, extra]) => ({ id, title, run, ...extra }));
+
+boot();
+</script>
+</body>
+</html>

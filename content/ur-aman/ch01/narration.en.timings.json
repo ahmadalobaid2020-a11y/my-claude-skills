@@ -1,0 +1,1288 @@
+{
+ "intro": {
+  "key": "130f68f4560c55f6ffe1d2677daada4afa627b5f",
+  "dur": 8.784,
+  "words": [
+   [
+    0.102083,
+    "Meet"
+   ],
+   [
+    0.414583,
+    "U"
+   ],
+   [
+    0.583875,
+    "R"
+   ],
+   [
+    0.740125,
+    "Amaan"
+   ],
+   [
+    1.352083,
+    "the"
+   ],
+   [
+    1.469291,
+    "U"
+   ],
+   [
+    1.677625,
+    "R"
+   ],
+   [
+    1.846875,
+    "I"
+   ],
+   [
+    1.990125,
+    "S"
+   ],
+   [
+    2.211458,
+    "A"
+   ],
+   [
+    2.302625,
+    "notifications"
+   ],
+   [
+    3.148958,
+    "platform"
+   ],
+   [
+    4.661458,
+    "Here's"
+   ],
+   [
+    4.973958,
+    "the"
+   ],
+   [
+    5.117208,
+    "compliance"
+   ],
+   [
+    5.703125,
+    "monitoring"
+   ],
+   [
+    6.328125,
+    "and"
+   ],
+   [
+    6.471375,
+    "remediation"
+   ],
+   [
+    7.278666,
+    "workflow"
+   ]
+  ],
+  "marks": {
+   "sub": 4.661
+  },
+  "cues": [
+   [
+    0.102,
+    "Meet UR AMAN, the UR ISA notifications platform."
+   ],
+   [
+    4.661,
+    "Here's the compliance monitoring and remediation workflow."
+   ]
+  ]
+ },
+ "extract": {
+  "key": "f65193564af4d73baa083693af6f033d2dc8213d",
+  "dur": 12.84,
+  "words": [
+   [
+    0.102083,
+    "From"
+   ],
+   [
+    0.336458,
+    "the"
+   ],
+   [
+    0.440625,
+    "I"
+   ],
+   [
+    0.662,
+    "S"
+   ],
+   [
+    0.83125,
+    "A"
+   ],
+   [
+    0.909375,
+    "dashboard"
+   ],
+   [
+    1.6125,
+    "extract"
+   ],
+   [
+    2.06825,
+    "the"
+   ],
+   [
+    2.185416,
+    "completion"
+   ],
+   [
+    2.745333,
+    "histories"
+   ],
+   [
+    3.292208,
+    "for"
+   ],
+   [
+    3.422416,
+    "the"
+   ],
+   [
+    3.513541,
+    "mandatory"
+   ],
+   [
+    4.0995,
+    "Information"
+   ],
+   [
+    4.711458,
+    "Essentials"
+   ],
+   [
+    5.245333,
+    "and"
+   ],
+   [
+    5.3625,
+    "Phishing"
+   ],
+   [
+    5.714083,
+    "courses"
+   ],
+   [
+    6.378125,
+    "and"
+   ],
+   [
+    6.521375,
+    "the"
+   ],
+   [
+    6.651583,
+    "Computer"
+   ],
+   [
+    7.159375,
+    "Use"
+   ],
+   [
+    7.354708,
+    "Policy"
+   ],
+   [
+    7.8495,
+    "acknowledgements"
+   ],
+   [
+    8.747916,
+    "forms"
+   ],
+   [
+    9.086458,
+    "ninety-five"
+   ],
+   [
+    9.7245,
+    "ninety-five"
+   ],
+   [
+    10.388541,
+    "and"
+   ],
+   [
+    10.50575,
+    "ninety-six"
+   ],
+   [
+    11.13075,
+    "ninety-six"
+   ]
+  ],
+  "marks": {
+   "hist": 1.613,
+   "c1": 4.099,
+   "c2": 5.362,
+   "pol": 6.652,
+   "f1": 9.086,
+   "f2": 10.506
+  },
+  "cues": [
+   [
+    0.102,
+    "From the ISA dashboard, extract the completion histories for the mandatory Information Essentials and Phishing courses, and the Computer Use Policy acknowledgements, forms 9595 and 9696."
+   ]
+  ]
+ },
+ "verify": {
+  "key": "fa990b49b0b58761830b78cbee0c7088323de146",
+  "dur": 4.728,
+  "words": [
+   [
+    0.102083,
+    "Verify"
+   ],
+   [
+    0.635958,
+    "expiry"
+   ],
+   [
+    1.117708,
+    "dates"
+   ],
+   [
+    1.651583,
+    "overdue"
+   ],
+   [
+    2.107291,
+    "items"
+   ],
+   [
+    2.523958,
+    "and"
+   ],
+   [
+    2.667208,
+    "upcoming"
+   ],
+   [
+    3.135958,
+    "deadlines"
+   ]
+  ],
+  "marks": {
+   "exp": 0.636,
+   "over": 1.652,
+   "soon": 2.667
+  },
+  "cues": [
+   [
+    0.102,
+    "Verify expiry dates, overdue items and upcoming deadlines."
+   ]
+  ]
+ },
+ "dlp": {
+  "key": "6dae21cfa595fb8f05a2ef7c12b249de8ae89088",
+  "dur": 11.256,
+  "words": [
+   [
+    0.102083,
+    "Then"
+   ],
+   [
+    0.3495,
+    "access"
+   ],
+   [
+    0.779166,
+    "the"
+   ],
+   [
+    0.922416,
+    "Antileak"
+   ],
+   [
+    1.560416,
+    "D"
+   ],
+   [
+    1.75575,
+    "L"
+   ],
+   [
+    1.925,
+    "P"
+   ],
+   [
+    2.120333,
+    "system"
+   ],
+   [
+    2.55,
+    "to"
+   ],
+   [
+    2.69325,
+    "identify"
+   ],
+   [
+    3.305208,
+    "open"
+   ],
+   [
+    3.63075,
+    "cases"
+   ],
+   [
+    5.117208,
+    "Make"
+   ],
+   [
+    5.351583,
+    "sure"
+   ],
+   [
+    5.559916,
+    "every"
+   ],
+   [
+    5.820333,
+    "case"
+   ],
+   [
+    6.119791,
+    "is"
+   ],
+   [
+    6.276041,
+    "resolved"
+   ],
+   [
+    6.744791,
+    "within"
+   ],
+   [
+    7.01825,
+    "five"
+   ],
+   [
+    7.34375,
+    "days"
+   ],
+   [
+    7.64325,
+    "of"
+   ],
+   [
+    7.747416,
+    "the"
+   ],
+   [
+    7.851583,
+    "initial"
+   ],
+   [
+    8.28125,
+    "notification"
+   ],
+   [
+    9.0495,
+    "email"
+   ],
+   [
+    9.440125,
+    "sent"
+   ],
+   [
+    9.6875,
+    "to"
+   ],
+   [
+    9.804708,
+    "the"
+   ],
+   [
+    9.895833,
+    "user"
+   ]
+  ],
+  "marks": {
+   "open": 3.305,
+   "five": 7.018
+  },
+  "cues": [
+   [
+    0.102,
+    "Then access the Antileak DLP system to identify open cases."
+   ],
+   [
+    5.117,
+    "Make sure every case is resolved within five days of the initial notification email sent to the user."
+   ]
+  ]
+ },
+ "q1": {
+  "key": "93c58d9e416feba1a06392ce14bd52ca2dd745c4",
+  "dur": 4.488,
+  "words": [
+   [
+    0.102083,
+    "Quick"
+   ],
+   [
+    0.427625,
+    "check"
+   ],
+   [
+    1.835958,
+    "Which"
+   ],
+   [
+    2.148458,
+    "case"
+   ],
+   [
+    2.460958,
+    "is"
+   ],
+   [
+    2.630208,
+    "past"
+   ],
+   [
+    3.007833,
+    "the"
+   ],
+   [
+    3.138041,
+    "limit"
+   ]
+  ],
+  "marks": {},
+  "cues": [
+   [
+    0.102,
+    "Quick check."
+   ],
+   [
+    1.836,
+    "Which case is past the limit?"
+   ]
+  ]
+ },
+ "upload": {
+  "key": "a93f9d185b9c4eaf2dafb91d1cb546eb83f881b8",
+  "dur": 10.968,
+  "words": [
+   [
+    0.102083,
+    "First"
+   ],
+   [
+    0.727083,
+    "upload"
+   ],
+   [
+    1.091666,
+    "the"
+   ],
+   [
+    1.208875,
+    "consolidated"
+   ],
+   [
+    2.042208,
+    "reports"
+   ],
+   [
+    2.523958,
+    "to"
+   ],
+   [
+    2.641166,
+    "the"
+   ],
+   [
+    2.771375,
+    "U"
+   ],
+   [
+    3.044791,
+    "R"
+   ],
+   [
+    3.214083,
+    "Amaan"
+   ],
+   [
+    3.539583,
+    "tool"
+   ],
+   [
+    4.856791,
+    "Training"
+   ],
+   [
+    5.2995,
+    "status"
+   ],
+   [
+    5.755208,
+    "is"
+   ],
+   [
+    5.911458,
+    "calculated"
+   ],
+   [
+    6.614583,
+    "by"
+   ],
+   [
+    6.757833,
+    "department"
+   ],
+   [
+    7.578125,
+    "and"
+   ],
+   [
+    7.721375,
+    "overdue"
+   ],
+   [
+    8.203125,
+    "or"
+   ],
+   [
+    8.385416,
+    "expiring"
+   ],
+   [
+    8.984375,
+    "courses"
+   ],
+   [
+    9.414083,
+    "are"
+   ],
+   [
+    9.53125,
+    "flagged"
+   ]
+  ],
+  "marks": {
+   "up": 0.727,
+   "calc": 4.857,
+   "flag": 7.721
+  },
+  "cues": [
+   [
+    0.102,
+    "First, upload the consolidated reports to the UR AMAN tool."
+   ],
+   [
+    4.857,
+    "Training status is calculated by department, and overdue or expiring courses are flagged."
+   ]
+  ]
+ },
+ "filter": {
+  "key": "80c588769585267bb8bd1e13127522d274668bf5",
+  "dur": 9.0,
+  "words": [
+   [
+    0.102083,
+    "Filter"
+   ],
+   [
+    0.622916,
+    "by"
+   ],
+   [
+    0.779166,
+    "requirement"
+   ],
+   [
+    1.44325,
+    "to"
+   ],
+   [
+    1.573458,
+    "see"
+   ],
+   [
+    1.807833,
+    "missing"
+   ],
+   [
+    2.172416,
+    "policy"
+   ],
+   [
+    2.667208,
+    "acknowledgements"
+   ],
+   [
+    4.375,
+    "And"
+   ],
+   [
+    4.583333,
+    "on"
+   ],
+   [
+    4.726583,
+    "the"
+   ],
+   [
+    4.869791,
+    "D"
+   ],
+   [
+    5.078125,
+    "L"
+   ],
+   [
+    5.273458,
+    "P"
+   ],
+   [
+    5.46875,
+    "page"
+   ],
+   [
+    6.067708,
+    "cases"
+   ],
+   [
+    6.497416,
+    "past"
+   ],
+   [
+    6.848958,
+    "the"
+   ],
+   [
+    6.979166,
+    "limit"
+   ],
+   [
+    7.33075,
+    "are"
+   ],
+   [
+    7.473958,
+    "highlighted"
+   ]
+  ],
+  "marks": {
+   "filt": 0.102,
+   "miss": 1.808,
+   "dlp": 4.87,
+   "past": 6.497
+  },
+  "cues": [
+   [
+    0.102,
+    "Filter by requirement to see missing policy acknowledgements."
+   ],
+   [
+    4.375,
+    "And on the DLP page, cases past the limit are highlighted."
+   ]
+  ]
+ },
+ "notify": {
+  "key": "8b8b55b9349f4ebba86f371ecb74869ccf4396d7",
+  "dur": 14.448,
+  "words": [
+   [
+    0.102083,
+    "Next"
+   ],
+   [
+    0.81825,
+    "open"
+   ],
+   [
+    1.156791,
+    "Send"
+   ],
+   [
+    1.45625,
+    "Notifications"
+   ],
+   [
+    3.385416,
+    "U"
+   ],
+   [
+    3.606791,
+    "R"
+   ],
+   [
+    3.75,
+    "Amaan"
+   ],
+   [
+    4.036458,
+    "sends"
+   ],
+   [
+    4.362,
+    "automated"
+   ],
+   [
+    4.895833,
+    "reminders"
+   ],
+   [
+    5.46875,
+    "to"
+   ],
+   [
+    5.598958,
+    "employees"
+   ],
+   [
+    6.263041,
+    "and"
+   ],
+   [
+    6.354166,
+    "their"
+   ],
+   [
+    6.510416,
+    "managers"
+   ],
+   [
+    7.03125,
+    "to"
+   ],
+   [
+    7.161458,
+    "complete"
+   ],
+   [
+    7.578125,
+    "expired"
+   ],
+   [
+    8.059916,
+    "courses"
+   ],
+   [
+    8.815125,
+    "finalize"
+   ],
+   [
+    9.401041,
+    "the"
+   ],
+   [
+    9.53125,
+    "Computer"
+   ],
+   [
+    10.039083,
+    "Use"
+   ],
+   [
+    10.234375,
+    "Policy"
+   ],
+   [
+    10.716166,
+    "acknowledgement"
+   ],
+   [
+    11.367208,
+    "and"
+   ],
+   [
+    11.497416,
+    "close"
+   ],
+   [
+    11.796875,
+    "outstanding"
+   ],
+   [
+    12.395833,
+    "D"
+   ],
+   [
+    12.578125,
+    "L"
+   ],
+   [
+    12.760416,
+    "P"
+   ],
+   [
+    12.95575,
+    "cases"
+   ]
+  ],
+  "marks": {
+   "send": 1.157,
+   "emp": 5.599,
+   "mgr": 6.51,
+   "r1": 7.161,
+   "r2": 8.815,
+   "r3": 11.497
+  },
+  "cues": [
+   [
+    0.102,
+    "Next, open Send Notifications."
+   ],
+   [
+    3.385,
+    "UR AMAN sends automated reminders to employees and their managers to complete expired courses, finalize the Computer Use Policy acknowledgement and close outstanding DLP cases."
+   ]
+  ]
+ },
+ "q2": {
+  "key": "b6cc08e917139a06767e28b5e56727716bf28d31",
+  "dur": 4.032,
+  "words": [
+   [
+    0.102083,
+    "Quick"
+   ],
+   [
+    0.427625,
+    "check"
+   ],
+   [
+    1.835958,
+    "Who"
+   ],
+   [
+    2.070333,
+    "gets"
+   ],
+   [
+    2.356791,
+    "the"
+   ],
+   [
+    2.473958,
+    "reminder"
+   ]
+  ],
+  "marks": {},
+  "cues": [
+   [
+    0.102,
+    "Quick check."
+   ],
+   [
+    1.836,
+    "Who gets the reminder?"
+   ]
+  ]
+ },
+ "report": {
+  "key": "b77f1b214e6500eb101f4e7ee8520e2e6b484270",
+  "dur": 9.696,
+  "words": [
+   [
+    0.102083,
+    "U"
+   ],
+   [
+    0.323458,
+    "R"
+   ],
+   [
+    0.466666,
+    "Amaan"
+   ],
+   [
+    0.779166,
+    "generates"
+   ],
+   [
+    1.326041,
+    "the"
+   ],
+   [
+    1.469291,
+    "Phishing"
+   ],
+   [
+    1.820833,
+    "Assessment"
+   ],
+   [
+    2.341666,
+    "report"
+   ],
+   [
+    2.745333,
+    "with"
+   ],
+   [
+    2.914583,
+    "employees"
+   ],
+   [
+    3.422416,
+    "tested"
+   ],
+   [
+    3.995333,
+    "passed"
+   ],
+   [
+    4.529166,
+    "neutral"
+   ],
+   [
+    4.958875,
+    "and"
+   ],
+   [
+    5.076041,
+    "failed"
+   ],
+   [
+    5.648958,
+    "the"
+   ],
+   [
+    5.766166,
+    "trend"
+   ],
+   [
+    6.026583,
+    "across"
+   ],
+   [
+    6.404166,
+    "assessments"
+   ],
+   [
+    7.198458,
+    "and"
+   ],
+   [
+    7.39375,
+    "the"
+   ],
+   [
+    7.497916,
+    "results"
+   ],
+   [
+    7.953666,
+    "by"
+   ],
+   [
+    8.109916,
+    "department"
+   ]
+  ],
+  "marks": {
+   "t": 3.422,
+   "p": 3.995,
+   "n": 4.529,
+   "f": 5.076,
+   "trend": 5.766,
+   "dept": 8.11
+  },
+  "cues": [
+   [
+    0.102,
+    "UR AMAN generates the Phishing Assessment report with employees tested, passed, neutral and failed, the trend across assessments, and the results by department."
+   ]
+  ]
+ },
+ "distribute": {
+  "key": "89143975df2b464ddd94a73977264c1781563661",
+  "dur": 6.24,
+  "words": [
+   [
+    0.102083,
+    "Then"
+   ],
+   [
+    0.310416,
+    "distribute"
+   ],
+   [
+    0.83125,
+    "it"
+   ],
+   [
+    0.948458,
+    "with"
+   ],
+   [
+    1.104708,
+    "the"
+   ],
+   [
+    1.208875,
+    "Management"
+   ],
+   [
+    1.703666,
+    "Report"
+   ],
+   [
+    2.08125,
+    "Email"
+   ],
+   [
+    2.458875,
+    "to"
+   ],
+   [
+    2.55,
+    "show"
+   ],
+   [
+    2.784375,
+    "U"
+   ],
+   [
+    2.953666,
+    "R's"
+   ],
+   [
+    3.175,
+    "progress"
+   ],
+   [
+    3.682833,
+    "and"
+   ],
+   [
+    3.826041,
+    "current"
+   ],
+   [
+    4.151583,
+    "K"
+   ],
+   [
+    4.346875,
+    "P"
+   ],
+   [
+    4.594291,
+    "I"
+   ],
+   [
+    4.7375,
+    "status"
+   ]
+  ],
+  "marks": {
+   "mail": 1.209,
+   "prog": 3.175,
+   "kpi": 4.152
+  },
+  "cues": [
+   [
+    0.102,
+    "Then distribute it with the Management Report Email to show UR's progress and current KPI status."
+   ]
+  ]
+ },
+ "wrap": {
+  "key": "6274381dca40f790648e3ff7a7be2a51a350857b",
+  "dur": 6.48,
+  "words": [
+   [
+    0.102083,
+    "That's"
+   ],
+   [
+    0.492708,
+    "U"
+   ],
+   [
+    0.688041,
+    "R"
+   ],
+   [
+    0.896375,
+    "Amaan"
+   ],
+   [
+    2.265625,
+    "Extract"
+   ],
+   [
+    3.151041,
+    "remediate"
+   ],
+   [
+    3.737,
+    "and"
+   ],
+   [
+    3.867208,
+    "report"
+   ],
+   [
+    4.51825,
+    "all"
+   ],
+   [
+    4.726583,
+    "in"
+   ],
+   [
+    4.856791,
+    "one"
+   ],
+   [
+    5.078125,
+    "place"
+   ]
+  ],
+  "marks": {
+   "w1": 2.266,
+   "w2": 3.151,
+   "w3": 3.867,
+   "end": 4.518
+  },
+  "cues": [
+   [
+    0.102,
+    "That's UR AMAN."
+   ],
+   [
+    2.266,
+    "Extract, remediate and report, all in one place."
+   ]
+  ]
+ },
+ "final1": {
+  "key": "b5f6186542ff41a564d86fa98f59057e97ce04e0",
+  "dur": 6.48,
+  "words": [
+   [
+    0.102083,
+    "Chapter"
+   ],
+   [
+    0.635958,
+    "practice"
+   ],
+   [
+    2.213541,
+    "Sort"
+   ],
+   [
+    2.591166,
+    "each"
+   ],
+   [
+    2.7995,
+    "task"
+   ],
+   [
+    3.164083,
+    "into"
+   ],
+   [
+    3.385416,
+    "its"
+   ],
+   [
+    3.554708,
+    "step"
+   ],
+   [
+    4.0495,
+    "then"
+   ],
+   [
+    4.270833,
+    "answer"
+   ],
+   [
+    4.583333,
+    "the"
+   ],
+   [
+    4.713541,
+    "two"
+   ],
+   [
+    4.908875,
+    "questions"
+   ]
+  ],
+  "marks": {},
+  "cues": [
+   [
+    0.102,
+    "Chapter practice."
+   ],
+   [
+    2.214,
+    "Sort each task into its step, then answer the two questions."
+   ]
+  ]
+ },
+ "finish": {
+  "key": "24c57bf41557442a8a76bd132c44c5ead54be284",
+  "dur": 4.704,
+  "words": [
+   [
+    0.102083,
+    "Well"
+   ],
+   [
+    0.479708,
+    "done"
+   ],
+   [
+    1.848958,
+    "That's"
+   ],
+   [
+    2.200541,
+    "the"
+   ],
+   [
+    2.33075,
+    "U"
+   ],
+   [
+    2.630208,
+    "R"
+   ],
+   [
+    2.825541,
+    "Amaan"
+   ],
+   [
+    3.190125,
+    "workflow"
+   ]
+  ],
+  "marks": {},
+  "cues": [
+   [
+    0.102,
+    "Well done."
+   ],
+   [
+    1.849,
+    "That's the UR AMAN workflow."
+   ]
+  ]
+ }
+}

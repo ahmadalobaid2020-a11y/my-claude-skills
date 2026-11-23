@@ -1,0 +1,15 @@
+/* UR AMAN: this book's own settings, imported by engine.css and never overwritten by engine.py.
+   A paper board with dark ink ("paper documentary"): warm paper ground, ink lines, a condensed headline face.
+   Colours that mean something (read by the chapters through bookSetting): --overdue red, --soon amber,
+   --ok green, --aman teal (the tool itself). */
+@import url("fonts.css");
+:root {
+  --page: #e2dccb; --board: #f5f0e2; --panel: #fffdf6; --edge: #d3cab3;
+  --chalk: #24211b; --dim: #6c6658; --faint: #c3baa3;
+  --task: #b4472e; --quiz: #1f5f8b; --good: #3c7a2b; --bad: #c0392b;
+  --on-fill: #fff; --vignette: rgba(90, 70, 30, .10); color-scheme: light;
+  --rule: #ebe5d5; --track: #e3dccb; --track-ask: #cddbe6;
+  --bar-edge: #e6dfce; --hover: #ece6d6; --veil: #e2dccb;
+  --overdue: #c0392b; --soon: #c8870f; --ok: #3c7a2b; --aman: #1c7a73;
+  --math-font: "Oswald", "Avenir Next", Arial, sans-serif;
+}

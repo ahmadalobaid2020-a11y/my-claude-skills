@@ -1,0 +1,81 @@
+{
+ "schema": 1,
+ "tier": 1,
+ "book": {
+  "title": "UR AMAN",
+  "slug": "ur-aman",
+  "language": "en",
+  "readers": "UR staff and the ISA group: how the compliance workflow runs",
+  "pilot": "ch01",
+  "source": "UR_AMAN.pptx: one slide holding a 111 s narrated explainer video (kept outside the repository)",
+  "use": "not asked yet: internal use assumed"
+ },
+ "words": [
+  "Format: Lesson - a training lesson for staff with quick checks inside the picture.",
+  "Script: Keep it, fix slips - same wording and order; only transcription slips corrected (phishing, 9595 / 9696).",
+  "Look: Paper documentary - warm paper ground, ink lines, condensed headline type, dashboards drawn as paper cards.",
+  "Voice: Edge, male - a calm English male narrator.",
+  "Agent's own choices, for the user to review: en-US-GuyNeural instead of en-US-AndrewNeural (Edge returned no audio for Andrew with word timings on the day); the question lines, the summary line and the practice were added to the source script; every name, date and count on screen is illustrative, as in the source video."
+ ],
+ "look": {
+  "palette": {
+   "board": "#f5f0e2",
+   "ink": "#24211b",
+   "panel": "#fffdf6",
+   "accent": [
+    "#b4472e",
+    "#1c7a73"
+   ]
+  },
+  "meaning": {
+   "overdue / past the 5-day limit": "#c0392b",
+   "expiring soon / neutral": "#c8870f",
+   "compliant / passed": "#3c7a2b",
+   "UR AMAN itself": "#1c7a73",
+   "the current step": "#b4472e"
+  },
+  "fonts": {
+   "headline": "Oswald",
+   "caption": "EB Garamond",
+   "text": "system UI"
+  },
+  "notation": "thousands with a no-break space (2 899); percentages to one decimal with a space before %; 'UR', 'ISA', 'DLP', 'KPI' spelled out by the voice"
+ },
+ "voice": {
+  "engine": "edge",
+  "voice": "en-US-GuyNeural",
+  "rate": "-4%"
+ },
+ "pacing": {
+  "minutes": [
+   2,
+   4
+  ],
+  "checks": "one quick check after each of the first two steps, practice at the end"
+ },
+ "engine": {
+  "source": "DozenTwelve/Papermorph",
+  "ref": "engine-v2.12"
+ },
+ "models": {
+  "note": "every step ran in the main conversation on its model at the host's default effort; no subagents"
+ },
+ "components": [
+  {
+   "name": "sheet / band",
+   "file": "site/ur-aman/ch01/index.html",
+   "what": "a paper card with a soft shadow and a coloured title band: a system or a document"
+  },
+  {
+   "name": "stepper",
+   "file": "site/ur-aman/ch01/index.html",
+   "what": "Extract, Remediate, Report along the top, the current step in the accent"
+  },
+  {
+   "name": "dayBars",
+   "file": "site/ur-aman/ch01/index.html",
+   "what": "cases as bars of days open on one scale, with the 5-day limit line"
+  }
+ ],
+ "approved": []
+}

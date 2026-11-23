@@ -1,0 +1,20 @@
+{
+  "voice": "en-US-GuyNeural",
+  "rate": "-4%",
+  "beats": {
+    "intro": "Meet {{UR AMAN|U R Amaan}}, the {{UR ISA|U R I S A}} notifications platform. [[sub]]Here's the compliance monitoring and remediation workflow.",
+    "extract": "From the {{ISA|I S A}} dashboard, [[hist]]extract the completion histories for the mandatory [[c1]]Information Essentials and [[c2]]Phishing courses, and the [[pol]]Computer Use Policy acknowledgements, forms [[f1]]{{9595|ninety-five ninety-five}} and [[f2]]{{9696|ninety-six ninety-six}}.",
+    "verify": "Verify [[exp]]expiry dates, [[over]]overdue items and [[soon]]upcoming deadlines.",
+    "dlp": "Then access the Antileak {{DLP|D L P}} system to identify [[open]]open cases. Make sure every case is resolved within [[five]]five days of the initial notification email sent to the user.",
+    "q1": "Quick check. Which case is past the limit?",
+    "upload": "First, [[up]]upload the consolidated reports to the {{UR AMAN|U R Amaan}} tool. [[calc]]Training status is calculated by department, and [[flag]]overdue or expiring courses are flagged.",
+    "filter": "[[filt]]Filter by requirement to see [[miss]]missing policy acknowledgements. And on the [[dlp]]{{DLP|D L P}} page, cases [[past]]past the limit are highlighted.",
+    "notify": "Next, open [[send]]Send Notifications. {{UR AMAN|U R Amaan}} sends automated reminders to [[emp]]employees and their [[mgr]]managers to [[r1]]complete expired courses, [[r2]]finalize the Computer Use Policy acknowledgement and [[r3]]close outstanding {{DLP|D L P}} cases.",
+    "q2": "Quick check. Who gets the reminder?",
+    "report": "{{UR AMAN|U R Amaan}} generates the Phishing Assessment report with employees [[t]]tested, [[p]]passed, [[n]]neutral and [[f]]failed, the [[trend]]trend across assessments, and the results by [[dept]]department.",
+    "distribute": "Then distribute it with the [[mail]]Management Report Email to show {{UR|U R}}'s [[prog]]progress and current [[kpi]]{{KPI|K P I}} status.",
+    "wrap": "That's {{UR AMAN|U R Amaan}}. [[w1]]Extract, [[w2]]remediate and [[w3]]report, [[end]]all in one place.",
+    "final1": "Chapter practice. Sort each task into its step, then answer the two questions.",
+    "finish": "Well done. That's the {{UR AMAN|U R Amaan}} workflow."
+  }
+}

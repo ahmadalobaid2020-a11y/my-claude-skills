@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+*.pdf
+*.pptx
+books/*/pages/
+books/*/review/
+Papermorph/
+content/*/*/.tts/
