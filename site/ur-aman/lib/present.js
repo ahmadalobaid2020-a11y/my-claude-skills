@@ -27,10 +27,10 @@
   let page = 0, step = 0, anim = 0, voiced = false;
   const stopAnim = () => { if (anim) cancelAnimationFrame(anim); anim = 0; };
   const drawAt = t => { P.t = t; evalTo(t); };
-  // run the beat clock from where it is to t, a little faster than the narration would
+  // run the beat clock from where it is to t, in under a second
   function runTo(t) {
     stopAnim();
-    const from = P.t, wall = Math.min(2.6, Math.max(.35, (t - from) / 1.5)), t0 = performance.now();
+    const from = P.t, wall = Math.min(.9, Math.max(.25, (t - from) / 4)), t0 = performance.now();   // quick: the presenter is talking
     const f = now => {
       const q = Math.min(1, (now - t0) / (wall * 1000));
       drawAt(from + (t - from) * q);
