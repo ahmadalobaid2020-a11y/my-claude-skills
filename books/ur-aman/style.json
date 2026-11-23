@@ -44,7 +44,7 @@
  "voice": {
   "engine": "edge",
   "voice": "en-US-GuyNeural",
-  "rate": "-4%"
+  "rate": "+12%"
  },
  "pacing": {
   "minutes": [
