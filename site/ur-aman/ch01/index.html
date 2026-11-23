@@ -515,6 +515,8 @@ const BEATS = [
 ].map(([id, title, run, extra]) => ({ id, title, run, ...extra }));
 
 boot();
+// presenter mode: the chapter as an e-book the speaker drives (lib/present.js); add ?present or #present to the address
+if (window.PRESENT || /present/.test(location.search + location.hash)) document.body.append(Object.assign(document.createElement('script'), { src: '../lib/present.js' }));
 </script>
 </body>
 </html>
