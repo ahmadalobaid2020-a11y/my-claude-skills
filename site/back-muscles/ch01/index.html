@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>عضلات الظهر</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2315224f'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' fill='%23ee8a22'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../lib/engine.css">
+<link rel="expect" href="#bar" blocking="render">
+</head>
+<body>
+<script src="../lib/engine.js"></script>
+<script src="audio/ar/timings.js"></script>
+<script>
+'use strict';
+// Back muscles, chapter 1: the three layers and seven muscles, each with its origin, insertion and action.
+// Content and pictures come from the user's own slide deck; beat ids match narration.ar.json.
+const CHAPTER = { number: 1, title: 'عضلات الظهر', minutes: 5, language: 'ar' };
+const IMG = window.IMG_BASE || '../img/';
+const NAVY = COL.chalk, ORANGE = COL.task, CYAN = bookSetting('--cyan'), WHITE = '#ffffff';
+
+/* ---------- chapter drawing helpers ---------- */
+// Arabic text: x is its right end (anchor 'start' in a right-to-left run), or its middle with anchor 'middle'
+const rt = (p, str, x, y, size = 28, o = {}) => { const e = T(p, str, { x, y, size, ...o }); e.setAttribute('direction', 'rtl'); return e; };
+function box(p, x, y, w, hh, { fill = WHITE, o = 1 } = {}) {
+  const g = G(p, { x, y, o });
+  mk('rect', { x: 0, y: 6, width: w, height: hh, rx: 16, fill: NAVY, opacity: .08 }, g);
+  mk('rect', { width: w, height: hh, rx: 16, fill, stroke: fill === WHITE ? COL.edge : fill, 'stroke-width': 1.5 }, g);
+  return g;
+}
+function picture(p, file, x, y, w, hh, t0 = .2) {
+  const g = box(p, x, y, w, hh, { o: 0 });
+  mk('image', { href: IMG + file, x: 14, y: 14, width: w - 28, height: hh - 28, preserveAspectRatio: 'xMidYMid meet' }, g);
+  put(g, { y: y + 20 }); tw(g, { o: 1, y }, t0, .6, out);
+  return g;
+}
+function title(p, n, en, arName) {
+  const g = G(p, { o: 0 }), x = n ? 176 : 90;
+  if (n) { mk('rect', { x: 90, y: 62, width: 68, height: 68, rx: 14, fill: ORANGE }, g); T(g, n, { x: 124, y: 109, size: 36, weight: 700, fill: WHITE, anchor: 'middle' }); }
+  T(g, en, { x, y: 98, size: 52, weight: 600 });
+  T(g, arName, { x, y: 144, size: 30, weight: 600, fill: ORANGE });
+  mk('rect', { x: 0, y: 878, width: 430, height: 22, fill: ORANGE }, g);       // the deck's own foot stripe
+  show(g, .2);
+}
+// one fact card in the right column: its label, then Arabic lines; returns its height
+const KIND = { o: ['ORIGIN', 'المنشأ', ORANGE], i: ['INSERTION', 'المدغم', CYAN], a: ['ACTION', 'الوظيفة', ORANGE], note: ['', '', ORANGE] };
+function fact(p, x, y, w, row, t0) {
+  const [kind, lines, lab] = row, [en, arName, colr] = lab ? [lab[0], lab[1], lab[2] || KIND[kind][2]] : KIND[kind];
+  const dark = kind === 'a', top = en ? 62 : 22, hh = top + 42 * lines.length + 8;
+  const g = box(p, x + 40, y, w, hh, { fill: dark ? NAVY : kind === 'note' ? '#fdebd6' : WHITE, o: 0 });
+  if (en) T(g, `${en}  |  ${arName}`, { x: 26, y: 40, size: 21, weight: 700, fill: colr });
+  lines.forEach((s, k) => rt(g, s, w - 28, top + 34 + k * 42, 28, { weight: 500, fill: dark ? WHITE : NAVY }));
+  tw(g, { o: 1, x }, t0, .5, out);
+  return hh;
+}
+// a muscle page: its picture on the left, its facts on the right, each on its mark
+function muscle(n, en, arName, file, rows) {
+  return (m) => {
+    const p = panel(0);
+    title(p, n, en, arName);
+    picture(p, file, 90, 200, 520, 610);
+    let y = 200;
+    rows.forEach(row => {
+      if (row[0] === 'tiles') {                       // three small action tiles in one row, each on its own mark
+        const w = (850 - 32) / 3;
+        row[1].forEach(([mark, a, b, en2], k) => {
+          const g = box(p, 660 + (2 - k) * (w + 16), y + 30, w, 150, { fill: NAVY, o: 0 });   // the first tile on the right, as Arabic reads
+          rt(g, a, w - 22, 48, 23, { weight: 700, fill: ORANGE });
+          rt(g, b, w - 22, 92, 26, { weight: 600, fill: WHITE });
+          T(g, en2, { x: 22, y: 130, size: 18, fill: CYAN });
+          tw(g, { o: 1, y }, m(mark), .45, out);
+        });
+        y += 166;
+      } else y += fact(p, 660, y, 850, row.slice(1), m(row[0])) + 16;
+    });
+  };
+}
+// numbered rows (the layers, the processes): [mark, badge, colour, English, small line, Arabic]
+function rowsList(p, m, x, y0, w, list, step = 140) {
+  list.forEach(([mark, badge, colr, en, sub, arName], i) => {
+    const g = box(p, x + 40, y0 + i * step, w, step - 22, { o: 0 });
+    mk('rect', { x: 24, y: (step - 22 - 64) / 2, width: 64, height: 64, rx: 14, fill: colr }, g);
+    T(g, badge, { x: 56, y: (step - 22) / 2 + 12, size: 30, weight: 700, fill: WHITE, anchor: 'middle' });
+    T(g, en, { x: 112, y: (step - 22) / 2 - 4, size: 32, weight: 600 });
+    const s = /[؀-ۿ]/.test(sub) ? rt(g, sub, 112, (step - 22) / 2 + 34, 22, { fill: COL.dim, anchor: 'end' }) : T(g, sub, { x: 112, y: (step - 22) / 2 + 34, size: 22, fill: COL.dim });
+    rt(g, arName, w - 28, (step - 22) / 2 + 10, 32, { weight: 700, fill: colr });
+    tw(g, { o: 1, x }, m(mark), .5, out);
+  });
+}
+
+/* ---------- beats: [id, title, run(m, D), { ask }?] ---------- */
+const BEATS = [
+  ['intro', 'عضلات الظهر', (m, D) => {
+    const g = G(scene, { o: 0, y: 24 });
+    mk('rect', { x: 0, y: 0, width: 1600, height: 900, fill: NAVY }, g);
+    mk('circle', { cx: 1420, cy: 760, r: 190, fill: ORANGE, opacity: .22 }, g);
+    T(g, 'BACK', { x: 130, y: 330, size: 150, weight: 700, fill: WHITE });
+    T(g, 'MUSCLES', { x: 130, y: 480, size: 150, weight: 700, fill: ORANGE });
+    T(g, 'عضلات الظهر', { x: 130, y: 580, size: 64, weight: 700, fill: CYAN });
+    tw(g, { o: 1, y: 0 }, .1, .8, out);
+    const sub = T(scene, 'Functional Anatomy  |  التشريح الوظيفي', { x: 130, y: 660, size: 30, fill: '#c9d2ee', o: 0 });
+    show(sub, m('sub'));
+    const ph = G(scene, { x: 1130, y: 420, s: .8, r: 4, o: 0 });
+    mk('rect', { x: -238, y: -220, width: 476, height: 440, rx: 14, fill: '#0d1840', stroke: '#2b3d86', 'stroke-width': 3 }, ph);
+    mk('image', { href: IMG + 'hero.jpg', x: -222, y: -204, width: 444, height: 408, preserveAspectRatio: 'xMidYMid slice' }, ph);
+    tw(ph, { o: 1, s: 1, r: 0 }, .5, .8, back);
+    tw(g, { o: 0 }, D - .4, .4); hide(sub, D - .4, .4); hide(ph, D - .4, .4);
+  }],
+
+  ['layers', 'الطبقات الثلاث', (m) => {
+    const p = panel(0);
+    title(p, '', 'Three Layers of the Back', 'طبقات عضلات الظهر الثلاث');
+    picture(p, 'layers.jpg', 90, 210, 560, 440);
+    rowsList(p, m, 700, 210, 810, [
+      ['l1', '01', ORANGE, 'Superficial Layer', 'Trapezius · Latissimus Dorsi', 'طبقة سطحية'],
+      ['l2', '02', CYAN, 'Intermediate Layer', 'Rhomboids · Levator Scapulae', 'طبقة متوسطة'],
+      ['l3', '03', NAVY, 'Deep Layer', 'Erector Spinae · Multifidus', 'طبقة عميقة']]);
+    show(rt(p, 'من السطح إلى العمق: كل طبقة لها وظيفة مختلفة في الحركة والثبات', 1510, 690, 26, { fill: COL.dim, o: 0 }), m('note'));
+  }],
+
+  ['q1', 'سؤال سريع', () => {
+    const p = panel(0);
+    title(p, '', 'Three Layers of the Back', 'طبقات عضلات الظهر الثلاث');
+    picture(p, 'layers.jpg', 90, 210, 560, 440);
+  }, { ask: done => quiz({ x: 720, y: 230, w: 790, cls: 'side' }, [{
+    id: 'c-layer', prompt: ['في أي طبقة تقع العضلة شبه المنحرفة (Trapezius)؟'],
+    build: choice([['الطبقة السطحية'], ['الطبقة المتوسطة'], ['الطبقة العميقة']], 0,
+      'صحيح: شبه المنحرفة والظهرية العريضة هما عضلتا الطبقة السطحية.',
+      [null, 'الطبقة المتوسطة فيها المعينيتان ورافعة لوح الكتف.', 'الطبقة العميقة فيها ناصبة الفقار والمتعددة الفلقات.']),
+  }], done) }],
+
+  ['ql', 'Quadratus Lumborum', muscle('01', 'Quadratus Lumborum', 'العضلة المربعة القطنية', 'ql.jpg', [
+    ['o', 'o', ['عظم الحوض: الحافة العلوية الحرقفية', 'والرباط الحرقفي القطني']],
+    ['i', 'i', ['الضلع 12 والفقرات القطنية 1 إلى 4']],
+    ['a', 'a', ['تثبيت الفقرات القطنية والحوض', 'الثني الجانبي للعمود القطني']]])],
+
+  ['iliopsoas', 'Iliopsoas', muscle('02', 'Iliopsoas', 'العضلة الحرقفية القطنية', 'iliopsoas.jpg', [
+    ['p', 'o', ['المنشأ: الفقرة الصدرية 12 والقطنية 1 إلى 5', 'المدغم: عظم الفخذ (Femur)'], ['PSOAS MAJOR', 'القطنية الكبرى']],
+    ['il', 'i', ['المنشأ: الحفرة الحرقفية (Iliac fossa)', 'المدغم: مع القطنية في عظم الفخذ'], ['ILIACUS', 'الحرقفية']],
+    ['a', 'a', ['ثني مفصل الورك', 'تثبيت الفقرات القطنية والحوض']]])],
+
+  ['multifidus', 'Multifidus', muscle('03', 'Multifidus', 'العضلة المتعددة الفلقات', 'multifidus.jpg', [
+    ['o', 'o', ['الفقرات العجزية والحافة الخلفية الحرقفية', 'النتوءات المستعرضة القطنية والصدرية', 'النتوءات المفصلية العنقية']],
+    ['i', 'i', ['النتوءات الشوكية للفقرات']],
+    ['a', 'a', ['تمديد العمود الفقري · الميلان لنفس الجهة', 'الدوران العكسي للعمود الفقري']],
+    ['st', 'note', ['وظيفتها الأساسية: تثبيت الوحدات الفقرية']]])],
+
+  ['processes', 'النتوءات الفقرية', (m) => {
+    const p = panel(0);
+    title(p, '', 'Vertebral Processes', 'النتوءات الفقرية: كل فقرة فيها 3 أنواع رئيسية');
+    picture(p, 'proc1.jpg', 90, 200, 430, 350);
+    picture(p, 'proc2.jpg', 90, 566, 430, 290, .4);
+    rowsList(p, m, 570, 210, 940, [
+      ['p1', '1', ORANGE, 'Spinous process', 'نتوء واحد بارز للخلف', 'النتوء الشوكي'],
+      ['p2', '2', CYAN, 'Transverse processes', 'نتوءان: يمين ويسار', 'النتوءات المستعرضة'],
+      ['p3', '3', NAVY, 'Articular processes', '2 علوية + 2 سفلية', 'النتوءات المفصلية']], 160);
+  }],
+
+  ['erector', 'Erector Spinae', muscle('04', 'Erector Spinae Group', 'المجموعة الناصبة للفقرات', 'erector.jpg', [
+    ['n', 'note', ['Iliocostalis · Longissimus · Spinalis']],
+    ['o', 'o', ['الفقرات العجزية والعرف الحرقفي', 'الأربطة والفقرات القطنية']],
+    ['i', 'i', ['الأضلاع · النتوءات المستعرضة والشوكية', 'العظم القذالي (Occipital bone)']],
+    ['a', 'a', ['تمديد العمود الفقري · الثني لنفس الجهة', 'الحفاظ على القوام']]])],
+
+  ['rhomboids', 'Rhomboids', muscle('05', 'Rhomboids', 'العضلات المعينية: الطبقة المتوسطة', 'rhomboids.jpg', [
+    ['mi', 'o', ['المنشأ: النتوءات الشوكية C7 إلى T1'], ['RHOMBOID MINOR', 'المعينية الصغرى']],
+    ['ma', 'i', ['المنشأ: النتوءات الشوكية T2 إلى T5'], ['RHOMBOID MAJOR', 'المعينية الكبرى']],
+    ['i', 'i', ['الحافة الإنسية للوح الكتف']],
+    ['a', 'a', ['سحب لوح الكتف للداخل وتثبيته']]])],
+
+  ['q2', 'سؤال سريع', () => {
+    const p = panel(0);
+    title(p, '05', 'Rhomboids', 'العضلات المعينية: الطبقة المتوسطة');
+    picture(p, 'rhomboids.jpg', 90, 200, 520, 610);
+  }, { ask: done => quiz({ x: 680, y: 230, w: 830, cls: 'side' }, [{
+    id: 'c-rhomb', prompt: ['أين تندغم العضلتان المعينيتان؟'],
+    build: choice([['عظم العضد'], ['الحافة الإنسية للوح الكتف'], ['الضلع الثاني عشر']], 1,
+      'صحيح: تندغمان في الحافة الإنسية للوح الكتف، ولذلك تسحبانه للداخل.',
+      ['عظم العضد هو مدغم الظهرية العريضة.', null, 'الضلع الثاني عشر من مدغم المربعة القطنية.']),
+  }], done) }],
+
+  ['lats', 'Latissimus Dorsi', muscle('06', 'Latissimus Dorsi', 'العضلة الظهرية العريضة: الطبقة السطحية', 'lats.jpg', [
+    ['o', 'o', ['النتوءات الشوكية للفقرات الصدرية 7 إلى 12', 'القطنية والعجزية عبر اللفافة الصدرية القطنية', 'الأضلاع 9 إلى 12']],
+    ['i', 'i', ['عظم العضد (Humerus)']],
+    ['a', 'a', ['بسط الكتف للخلف · تقريب الذراع للجذع', 'دوران داخلي للكتف']]])],
+
+  ['trapezius', 'Trapezius', muscle('07', 'Trapezius', 'العضلة شبه المنحرفة', 'trapezius.jpg', [
+    ['o', 'o', ['العظم القذالي للجمجمة', 'النتوءات الشوكية من C7 إلى T12']],
+    ['i', 'i', ['عظم الترقوة وعظم لوح الكتف']],
+    ['tiles', [['u', 'الألياف العلوية', 'رفع لوح الكتف', 'Elevation'], ['m', 'الألياف الوسطى', 'سحب لوح الكتف', 'Retraction'], ['d', 'الألياف السفلية', 'خفض ودوران لأعلى', 'Depression']]]])],
+
+  ['wrap', 'الخلاصة', (m) => {
+    const p = panel(0);
+    title(p, '', 'Summary', 'الخلاصة');
+    picture(p, 'spine.jpg', 90, 190, 440, 640);
+    [['ثلاث طبقات من السطح إلى العمق', 'سطحية · متوسطة · عميقة', 'w1'],
+      ['لكل عضلة منشأ ومدغم ووظيفة', 'Origin · Insertion · Action', 'w2'],
+      ['العميقة تثبّت العمود الفقري', 'والسطحية تحرّك الكتف والذراع', 'w3']].forEach(([a, b, mark], i) => {
+      const g = G(p, { x: 30, y: 300 + i * 170, o: 0 });
+      mk('circle', { cx: 1470, cy: -14, r: 34, fill: ORANGE }, g);
+      T(g, String(i + 1), { x: 1470, y: -2, size: 36, fill: WHITE, weight: 700, anchor: 'middle' });
+      rt(g, a, 1410, 0, 46, { weight: 700 });
+      /[؀-ۿ]/.test(b) ? rt(g, b, 1410, 50, 30, { fill: COL.dim }) : T(g, b, { x: 1410, y: 50, size: 28, fill: COL.dim, anchor: 'end' });
+      tw(g, { o: 1, x: 0 }, m(mark, -.1), .5, out);
+    });
+  }],
+
+  ['final1', 'تمرين الفصل', () => { panel(0); }, { ask: done => quiz(SCREEN, [{
+    id: 'p-humerus', prompt: ['أي عضلة تندغم في عظم العضد (Humerus)؟'],
+    build: choice([['المربعة القطنية'], ['المتعددة الفلقات'], ['الظهرية العريضة']], 2,
+      'صحيح: الظهرية العريضة تندغم في عظم العضد، فتبسط الكتف وتقرّب الذراع.',
+      ['المربعة القطنية تندغم في الضلع 12 والفقرات القطنية.', 'المتعددة الفلقات تندغم في النتوءات الشوكية للفقرات.', null]),
+  }, {
+    id: 'p-multi', prompt: ['ما الوظيفة الأساسية للعضلة المتعددة الفلقات (Multifidus)؟'],
+    build: choice([['تثبيت الوحدات الفقرية'], ['رفع لوح الكتف'], ['ثني مفصل الورك']], 0,
+      'صحيح: هي عضلة عميقة وظيفتها الأساسية تثبيت الوحدات الفقرية.',
+      [null, 'رفع لوح الكتف من عمل الألياف العلوية لشبه المنحرفة.', 'ثني مفصل الورك من عمل الحرقفية القطنية.']),
+  }, {
+    id: 'p-proc', prompt: ['كم نوعًا رئيسيًا من النتوءات في كل فقرة؟'],
+    build: choice([['اثنان'], ['ثلاثة'], ['خمسة']], 1,
+      'صحيح: الشوكي، والمستعرضة، والمفصلية.',
+      ['هناك نوع ثالث: راجع الشوكي والمستعرضة والمفصلية.', null, 'الأنواع الرئيسية أقل من ذلك: الشوكي والمستعرضة والمفصلية.']),
+  }], done, 'تمرين الفصل') }],
+
+  ['finish', 'النهاية', () => { panel(0); }, { ask: finishCard }],
+].map(([id, title, run, extra]) => ({ id, title, run, ...extra }));
+
+boot();
+// presenter mode: the chapter as an e-book the speaker drives (lib/present.js); add ?present or #present to the address
+if (window.PRESENT || /present/.test(location.search + location.hash)) document.body.append(Object.assign(document.createElement('script'), { src: '../lib/present.js' }));
+</script>
+</body>
+</html>

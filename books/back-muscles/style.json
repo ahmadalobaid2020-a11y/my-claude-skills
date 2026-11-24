@@ -1,0 +1,69 @@
+{
+ "schema": 1,
+ "tier": 1,
+ "book": {
+  "title": "عضلات الظهر",
+  "slug": "back-muscles",
+  "language": "ar",
+  "readers": "طلاب التشريح الوظيفي",
+  "pilot": "ch01",
+  "source": "a 33 s silent recording of the user's own bilingual slide deck (kept outside the repository)",
+  "use": "not asked yet: the user's own presenting assumed; the anatomy pictures come from the deck and carry third-party marks (Kenhub and others)"
+ },
+ "words": [
+  "Asked what /effects todo meant, the user chose: كتاب تفاعلي مثل UR AMAN (a Papermorph lesson in presenter mode: pages turned by click, motion for every element, quick questions).",
+  "Earlier in the session, about pace: Faster / اسرع اسرع.",
+  "Agent's own choices, for the user to review: the deck's own look (light ground, navy, orange, cyan); Arabic narration by ar-SA-HamedNeural at +15%; the questions; Arabic names for Iliocostalis, Longissimus and Spinalis in the narration."
+ ],
+ "look": {
+  "palette": {
+   "board": "#f4f6fb",
+   "ink": "#15224f",
+   "accent": [
+    "#ee8a22",
+    "#1aa3e0"
+   ]
+  },
+  "meaning": {
+   "origin": "#ee8a22",
+   "insertion": "#1aa3e0",
+   "action": "navy card, white text"
+  },
+  "fonts": {
+   "text": "system UI"
+  },
+  "notation": "English muscle names with Arabic beside; vertebrae as C7, T12; Arabic lines right-aligned"
+ },
+ "voice": {
+  "engine": "edge",
+  "voice": "ar-SA-HamedNeural",
+  "rate": "+15%"
+ },
+ "pacing": {
+  "minutes": [
+   4,
+   6
+  ],
+  "checks": "two quick checks inside, three practice questions at the end"
+ },
+ "engine": {
+  "source": "DozenTwelve/Papermorph",
+  "ref": "engine-v2.12"
+ },
+ "models": {
+  "note": "every step ran in the main conversation; no subagents"
+ },
+ "components": [
+  {
+   "name": "muscle()",
+   "file": "site/back-muscles/ch01/index.html",
+   "what": "a muscle page: picture left, origin / insertion / action cards on their marks"
+  },
+  {
+   "name": "present.js",
+   "file": "site/back-muscles/lib/present.js",
+   "what": "presenter mode: pages and steps turned by click or key"
+  }
+ ],
+ "approved": []
+}

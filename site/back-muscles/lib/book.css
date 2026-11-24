@@ -1,0 +1,11 @@
+/* Back Muscles: this book's own settings, imported by engine.css and never overwritten by engine.py.
+   The look of the source deck: a cool light ground, navy ink, an orange accent and a cyan second. */
+:root {
+  --page: #dde3ef; --board: #f4f6fb; --panel: #ffffff; --edge: #cdd5e6;
+  --chalk: #15224f; --dim: #5a6687; --faint: #b8c2d9;
+  --task: #ee8a22; --quiz: #1a8fcf; --good: #2f8a54; --bad: #d9473a;
+  --on-fill: #fff; --vignette: rgba(30, 50, 110, .07); color-scheme: light;
+  --rule: #e6eaf3; --track: #dfe5f0; --track-ask: #cfe3f1;
+  --bar-edge: #e2e7f1; --hover: #eaeef6; --veil: #dde3ef;
+  --cyan: #1aa3e0; --navy: #15224f;
+}
