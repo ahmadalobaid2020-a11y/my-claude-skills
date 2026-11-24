@@ -88,7 +88,7 @@ async def main():
                 await key("Enter"); await pg.wait_for_timeout(250)
         assert await ev("BEATS[P.i].id") == "finish" and await pg.is_visible(".card.fin"), "practice leads to the finish card"
         n = await ev("CHAPTER.number")
-        assert f"chapter {n} complete" in (await pg.inner_text(".card.fin")).lower()
+        assert str(n) in await pg.inner_text(".card.fin"), "finish card names the chapter (Arabic interface)"
         assert n in (await ev("JSON.parse(localStorage.getItem(BOOK_PROGRESS_KEY))"))["done"], "chapter marked done"
 
         for i in range(len(ids)): await ev(f"seek({i}, false)")   # every beat rebuilds without errors
