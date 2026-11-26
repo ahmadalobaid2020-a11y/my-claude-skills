@@ -1,33 +1,43 @@
 # voice.md
 
-Copy this to `~/.claude/youtube/voice.md` and fill it in. Every skill in this pack reads it. Ten
-minutes here is worth more than any prompt you will ever write, because on YouTube you have to say
-the words out loud and a script in the wrong voice is unreadable on camera.
+ملف الصوت: كل مهارات `yt-*` تقرأه قبل ما تكتب. مكتوب من إجابات صاحب القناة يوم 26 نوفمبر 2026،
+بدون تفريغ لفيديوهات سابقة. الأقسام المعلّمة بـ«غير معروف» تُسأل عنها ولا تُخمَّن.
 
 ## Who I am talking to
 
-One person. Name them properly - not "creators", but "someone with under a thousand subs who has
-made nine videos and cannot work out why none of them break 400 views".
+شخص واحد: مبتدئ في Claude. سمع عن Claude Code وما جرّبه، أو توّه بادي، وما يعرف وش هي المهارات
+(skills) ولا كيف يسوّيها. لا تفترض أنه مبرمج، ولا أنه يعرف GitHub أو سطر الأوامر: اشرح كل مصطلح
+أول مرة يمر، بجملة وحدة.
 
 ## How I actually talk
 
-Paste the transcript of your best-performing video here, or three of them. Not what you wish you
-sounded like.
+- لهجة سعودية بيضاء: خفيفة ومفهومة لكل العرب. مثل: «ليش»، «وش»، «اللي»، «عشان»، «الحين»، «شوف»،
+  «خلنا»، «أول شي».
+- بدون كلمات محلية قوية ما يفهمها غير السعودي. مثلاً «يتجاهل» بدل «يطنّش»، و«بعلّمك» بدل «بورّيك».
+- مو فصحى: لا «سأريك»، لا «لذلك»، لا «إذن»، لا تنوين منطوق.
+- المصطلحات التقنية بالإنجليزي مثل ما هي: Claude، Claude Code، GitHub، SKILL.md، install.sh.
+- جمل قصيرة تنقال بنفَس واحد.
+- غير معروف: ما فيه تفريغ لفيديو حقيقي. لما يتوفر، الصقه هنا وعدّل هذا القسم عليه.
 
 ## Words I never use
 
-The ones that are not mine. Be specific: "unlock", "game-changer", "dive in", "let's get into it".
+- كلام تسويقي مبالغ: «سر خطير»، «بيغيّر حياتك»، «أقوى أداة في العالم»، «لن تصدق»، «صدمة».
+- أي وعد بالربح أو الدخل: «اربح من الذكاء الاصطناعي»، «دخل إضافي»، «مصدر دخل».
 
 ## Words I do use
 
-Your tics. The phrases that are yours. Keep them.
+غير معروف. لا تخترع لوازم كلامية. اسأل صاحب القناة عن عباراته المعتادة، أو استخرجها من تفريغ فيديوهاته.
 
 ## What I will not claim
 
-Numbers I cannot show, results that are not mine, tools I have not used. Write them down so the
-skills refuse them for you instead of you catching it in the edit.
+- أرقام ما أقدر أثبتها: لا مشاهدات، لا أرباح، لا نتائج، لا نسب، إلا لو أعطيتك الرقم الحقيقي بنفسي.
+  لو السكربت يحتاج رقم وما هو موجود، اسألني أو اكتب الجملة بدونه.
+- وعود بالربح أو بنتيجة مضمونة للمشاهد.
+- كلام مبالغ عن أي أداة.
 
 ## My format
 
-Length, how a video opens, whether there is an intro, whether you swear, whether you appear on
-camera, what the desk looks like.
+- Shorts بالأساس: فيديوهات عمودية تحت الدقيقة.
+- عربي، والعناوين والوصف عربي مع أسماء الأدوات بالإنجليزي.
+- غير معروف: أطلع بوجهي ولا تسجيل شاشة بصوتي، وكيف أفتتح الفيديو، وهل فيه مقدمة ثابتة. اسأل قبل ما
+  تفترض، ولحد ما يتحدد: ادخل في الموضوع على طول بدون تعريف بالنفس.
