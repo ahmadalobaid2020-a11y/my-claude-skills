@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>٥ مهارات موشن جرافيك لـ Claude</title>
+<meta name="description" content="خمس مهارات موشن جرافيك مفتوحة المصدر لـ Claude Code، مع روابطها على GitHub.">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1220;--card:#111827;--line:#334155;--y:#facc15;--mut:#94a3b8;--ink:#f8fafc}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Cairo",system-ui,sans-serif;color:var(--ink);line-height:1.8;
+ background:radial-gradient(ellipse at 30% 0%,#1e3a5f 0%,var(--bg) 55%,#05080f 100%) fixed var(--bg)}
+main{max-width:680px;margin:0 auto;padding:48px 16px 64px}
+h1{font-size:clamp(34px,9vw,54px);font-weight:900;line-height:1.25;margin:0 0 12px;text-wrap:balance}
+h1 span{background:var(--y);color:#111;border-radius:12px;padding:0 14px 6px;display:inline-block;transform:rotate(-1.5deg)}
+.lead{font-size:20px;color:#cbd5e1;margin:0 0 28px}
+.btn{display:block;text-align:center;background:var(--y);color:#111;font-weight:900;font-size:22px;text-decoration:none;border-radius:16px;padding:14px 20px}
+.btn:focus-visible,button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+h2{font-size:26px;font-weight:900;margin:44px 0 12px}
+.step{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}
+.step h3{margin:0 0 6px;font-size:20px;display:flex;align-items:center;gap:12px}
+.n{flex:none;width:38px;height:38px;border-radius:50%;background:var(--y);color:#111;display:grid;place-items:center;font-weight:900}
+.step p{margin:6px 0 10px;color:#cbd5e1}
+.code{direction:ltr;display:flex;gap:10px;align-items:stretch}
+pre{flex:1;margin:0;background:#05080f;border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto;
+ font:500 14px ui-monospace,Menlo,Consolas,monospace;color:var(--y);white-space:pre}
+button{flex:none;font:700 15px "Cairo",sans-serif;background:#1f2937;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 14px;cursor:pointer;min-width:68px}
+ul{padding:0 22px 0 0;margin:8px 0}
+li{margin:6px 0}
+code{direction:ltr;unicode-bidi:isolate;font:500 .9em ui-monospace,Menlo,monospace;color:var(--y)}
+.note{border-right:4px solid var(--y);background:rgba(250,204,21,.08);border-radius:0 12px 12px 0;padding:12px 16px;color:#e2e8f0;margin:16px 0}
+footer{margin-top:48px;color:var(--mut);font-size:15px}
+a{color:var(--y)}
+.st{color:var(--y);font-weight:900;direction:ltr;unicode-bidi:isolate}
+.repo{display:block;direction:ltr;text-align:left;font:700 17px ui-monospace,Menlo,monospace;color:var(--y);word-break:break-all;margin-top:6px}
+.go{display:inline-block;margin-top:10px;background:var(--y);color:#111;font-weight:900;text-decoration:none;border-radius:12px;padding:6px 18px}
+</style>
+</head>
+<body>
+<main>
+  <h1>٥ مهارات <span>موشن جرافيك</span></h1>
+  <p class="lead">خمس مهارات مفتوحة المصدر تخلي Claude Code يسوي لك موشن جرافيك. هذي روابطها على GitHub، مرتبة حسب عدد النجوم.</p>
+
+  <div class="step">
+    <h3><span class="n">١</span>hyperframes <span class="st">★ 90,786</span></h3>
+    <p>تكتب الفيديو بـ HTML ويطلع لك MP4. تسوي فيه فيديو من الصفر أو تعدّل على مقاطعك. من شركة HeyGen.</p>
+    <span class="repo">github.com/heygen-com/hyperframes</span>
+    <a class="go" href="https://github.com/heygen-com/hyperframes">افتح على GitHub</a>
+  </div>
+  <div class="step">
+    <h3><span class="n">٢</span>video-shotcraft <span class="st">★ 22,758</span></h3>
+    <p>إعلانات منتجات بشكل سينمائي مبنية على Remotion، وتقدر تعدّل عليها بعد ما تطلع.</p>
+    <span class="repo">github.com/Vincentwei1021/video-shotcraft</span>
+    <a class="go" href="https://github.com/Vincentwei1021/video-shotcraft">افتح على GitHub</a>
+  </div>
+  <div class="step">
+    <h3><span class="n">٣</span>brag <span class="st">★ 22,661</span></h3>
+    <p>يحوّل المشروع اللي سويته لفيديو إعلان قصير تنشره، بأمر واحد.</p>
+    <span class="repo">github.com/latent-spaces/brag</span>
+    <a class="go" href="https://github.com/latent-spaces/brag">افتح على GitHub</a>
+  </div>
+  <div class="step">
+    <h3><span class="n">٤</span>bang-motion <span class="st">★ 3,081</span></h3>
+    <p>افتتاحيات وعناوين متحركة وشروحات، تطلع كصفحة وحدة تشتغل في المتصفح.</p>
+    <span class="repo">github.com/bangtutorial/bang-motion</span>
+    <a class="go" href="https://github.com/bangtutorial/bang-motion">افتح على GitHub</a>
+  </div>
+  <div class="step">
+    <h3><span class="n">٥</span>motion-skills <span class="st">★ 2,239</span></h3>
+    <p>٥٦ مهارة للموشن والأنيميشن في مكان واحد: عناوين متحركة، رسوم بيانات، شروحات، ومقاطع قصيرة.</p>
+    <span class="repo">github.com/iart-ai/motion-skills</span>
+    <a class="go" href="https://github.com/iart-ai/motion-skills">افتح على GitHub</a>
+  </div>
+
+  <div class="note">أرقام النجوم مأخوذة من GitHub يوم ٢٦ نوفمبر ٢٠٢٦، وتتغيّر مع الوقت. كل مهارة لها طريقة تثبيت مكتوبة في صفحتها؛ اقراها قبل ما تثبّت.</div>
+
+  <h2>تبي مهارات أكثر؟</h2>
+  <p>مكتبة مهارات لصنّاع المحتوى: ترجمة الفيديو، قص المقاطع القصيرة، الصور المصغّرة وغيرها.</p>
+  <a class="btn" href="./">افتح مكتبة المهارات</a>
+
+  <footer>هذي المهارات من أصحابها على GitHub، وهذي الصفحة تجمع روابطها فقط.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<title>دليل البداية مع Claude</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&display=block" rel="stylesheet">
+<style>
+@page{size:A4;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Cairo",sans-serif;color:#0f172a;line-height:1.7;font-size:16.6px}
+.pg{width:210mm;height:297mm;padding:20mm 18mm 16mm;position:relative;page-break-after:always;overflow:hidden;background:#fff}
+.pg:last-child{page-break-after:auto}
+.cover{background:radial-gradient(ellipse at 30% 30%,#1e3a5f 0%,#0b1220 60%,#05080f 100%);color:#fff;display:flex;flex-direction:column;justify-content:center}
+.cover h1{font-size:62px;font-weight:900;line-height:1.25;margin:0 0 18px}
+.pill{display:inline-block;background:#facc15;color:#111;border-radius:14px;padding:0 18px 6px}
+.cover p{font-size:23px;color:#cbd5e1;margin:0 0 10px;max-width:150mm}
+.cover .foot{position:absolute;bottom:18mm;right:18mm;left:18mm;color:#94a3b8;font-size:15px;display:flex;justify-content:space-between}
+.num{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#facc15;font-weight:900;font-size:34px;color:#111;vertical-align:middle;margin-left:14px}
+h2{font-size:34px;font-weight:900;margin:0 0 6px;line-height:1.3}
+.sub{color:#475569;font-size:17px;margin:0 0 16px}
+h3{font-size:19px;font-weight:900;margin:18px 0 6px;color:#1e3a5f}
+p{margin:0 0 8px}
+.prompt{background:#0b1220;color:#f8fafc;border-radius:14px;padding:14px 18px 16px;margin:8px 0 6px;border-right:8px solid #facc15;font-size:16px}
+.prompt small{display:block;color:#facc15;font-weight:700;font-size:13px;margin-bottom:4px}
+.tip{background:#fef9c3;border-radius:12px;padding:10px 16px 12px;margin:10px 0;font-size:15px}
+.warn{background:#f1f5f9;border-radius:12px;padding:10px 16px 12px;margin:10px 0;font-size:14.5px;color:#334155}
+ul,ol{margin:4px 0 8px;padding:0 22px 0 0} li{margin:3px 0}
+code{direction:ltr;unicode-bidi:isolate;font:500 .9em ui-monospace,Menlo,Consolas,monospace;background:#e2e8f0;border-radius:5px;padding:0 5px}
+.pn{position:absolute;bottom:9mm;left:18mm;right:18mm;display:flex;justify-content:space-between;color:#94a3b8;font-size:12.5px}
+.chk li{list-style:none;position:relative;padding-right:34px;margin:9px 0;font-size:17px}
+.chk li:before{content:"";position:absolute;right:0;top:5px;width:20px;height:20px;border:2.5px solid #0f172a;border-radius:5px}
+.link{display:block;text-align:center;background:#facc15;color:#111;font-weight:900;font-size:26px;border-radius:16px;padding:14px;margin:16px 0;text-decoration:none;direction:ltr}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.box{border:2px solid #e2e8f0;border-radius:12px;padding:10px 14px}
+.box b{display:block;color:#1e3a5f}
+</style></head><body>
+
+<section class="pg cover">
+  <h1>دليل البداية<br>مع <span class="pill">Claude</span></h1>
+  <p>خمس خطوات تسويها مرة وحدة، ويصير يفهمك من أول رسالة.</p>
+  <p>ومعها البرومبتات جاهزة: انسخ والصق.</p>
+  <div class="foot"><span>ahmad alobaid</span><span dir="ltr">tinyurl.com/maharat-claude</span></div>
+</section>
+
+<section class="pg">
+  <h2>قبل ما تبدأ</h2>
+  <p class="sub">دقيقتين تقراها، وتوفّر عليك شرح نفسك كل مرة.</p>
+  <h3>وش المشكلة؟</h3>
+  <p>كل محادثة جديدة مع Claude تبدأ من الصفر. ما يعرف من أنت، ولا وش شغلك، ولا كيف تحب يكون الرد. فتلقى نفسك تكتب نفس المقدمة كل يوم.</p>
+  <h3>وش الحل؟</h3>
+  <p>تعطيه هالمعلومات مرة وحدة، في أماكن يرجع لها هو لحاله. هذا الدليل يمشيك عليها بالترتيب:</p>
+  <ol>
+    <li><b>خله هو يسألك</b> عن شغلك.</li>
+    <li><b>حوّل إجاباتك لتعليمات ثابتة</b> وحطها في الإعدادات.</li>
+    <li><b>اربط تطبيقاتك</b> من Connectors.</li>
+    <li><b>سوّ مشروع</b> لكل شغلة.</li>
+    <li><b>حوّل المهام المتكررة لمهارات.</b></li>
+  </ol>
+  <h3>وش تحتاج؟</h3>
+  <ul>
+    <li>حساب في Claude، على الموقع <code>claude.ai</code> أو تطبيق الكمبيوتر.</li>
+    <li>ربع ساعة تقريباً للخطوتين الأولى والثانية. الباقي تسويه على مهلك.</li>
+  </ul>
+  <div class="warn"><b>ملاحظة:</b> واجهة Claude تتغيّر مع التحديثات، وبعض المزايا تعتمد على باقتك. لو ما لقيت زر بنفس الاسم المكتوب هنا، دوّر على أقرب اسم له في الإعدادات.</div>
+  <div class="tip"><b>كيف تستخدم البرومبتات:</b> كل مربع أسود في هذا الدليل نص جاهز. انسخه مثل ما هو والصقه في المحادثة، وعدّل اللي بين الأقواس.</div>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٢</span></div>
+</section>
+
+<section class="pg">
+  <h2><span class="num">١</span>خله هو يسألك</h2>
+  <p class="sub">بدل ما تحاول تتذكر كل شي عن شغلك، خله هو يطلّعه منك.</p>
+  <h3>ليش؟</h3>
+  <p>لو قلت لك «اكتب لي كل شي عن شغلك» بتنسى نص الأشياء. بس لو أحد سألك سؤال سؤال، تجاوب بسهولة. Claude شاطر في الأسئلة، فخله هو يقود.</p>
+  <h3>البرومبت</h3>
+  <div class="prompt"><small>انسخ والصق</small>أبيك تتعرّف علي عشان تساعدني أحسن. اسألني عن شغلي سؤال واحد في كل مرة، وانتظر جوابي قبل السؤال اللي بعده. اسأل عن: طبيعة شغلي، وش أستخدمك فيه غالباً، من جمهوري أو عملائي، وكيف أحب تكون ردودك من ناحية الطول والأسلوب واللغة. بعد ثمانية أسئلة تقريباً توقف وقل لي إنك خلصت.</div>
+  <h3>نصائح وأنت تجاوب</h3>
+  <ul>
+    <li><b>جاوب بصراحة ومن واقعك.</b> لا تكتب اللي تتمنى تسويه، اكتب اللي تسويه فعلاً.</li>
+    <li><b>عط أمثلة.</b> «أكتب بوستات لانستقرام عن القهوة» أحسن من «أسوي محتوى».</li>
+    <li><b>قل له وش ما تحب.</b> مثل: «ما أحب الردود الطويلة» أو «لا تستخدم كلمات إنجليزية كثير».</li>
+    <li>لو سؤال ما يخصك، قل «تخطّى هذا».</li>
+  </ul>
+  <div class="tip"><b>لا تقفل المحادثة</b> لما يخلص. الخطوة الجاية تكمل في نفس المحادثة.</div>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٣</span></div>
+</section>
+
+<section class="pg">
+  <h2><span class="num">٢</span>تعليمات ثابتة</h2>
+  <p class="sub">حوّل إجاباتك لنص قصير يقراه Claude في بداية كل محادثة.</p>
+  <h3>البرومبت</h3>
+  <div class="prompt"><small>انسخ والصق، في نفس محادثة الخطوة الأولى</small>حوّل إجاباتي فوق لتعليمات ثابتة أحطها في إعداداتك. اكتبها نقاط قصيرة، بصيغة «أنا…» و«أحب…»، وبدون أي معلومة ما قلتها أنا. خلّها أقل من عشر نقاط.</div>
+  <h3>وين تحطها؟</h3>
+  <ol>
+    <li>افتح <b>Settings</b> (الإعدادات)، من اسمك أسفل القائمة.</li>
+    <li>دوّر على خانة التعليمات أو التفضيلات الشخصية. اسمها يختلف حسب النسخة، وغالباً فيها كلمة <b>preferences</b> أو <b>instructions</b>.</li>
+    <li>الصق النقاط واحفظ.</li>
+  </ol>
+  <h3>قبل ما تحفظ: راجعها</h3>
+  <ul>
+    <li>احذف أي نقطة مو صحيحة أو مبالغ فيها.</li>
+    <li>احذف أي شي خاص ما تبيه يتكرر في كل محادثة، مثل أسماء عملاء أو أرقام.</li>
+    <li>لو فيه نقطتين متعارضتين، خل وحدة.</li>
+  </ul>
+  <h3>مثال على الشكل النهائي</h3>
+  <div class="prompt"><small>مثال فقط، لا تنسخه</small>أنا صانع محتوى عن القهوة المختصة، وجمهوري مبتدئين في السعودية.<br>أستخدمك غالباً في كتابة سكربتات قصيرة وأفكار للمحتوى.<br>أحب الردود المختصرة والمباشرة، بلهجة سعودية بيضاء.<br>لا تعطيني أكثر من ثلاث خيارات في المرة.</div>
+  <div class="tip"><b>جرّبها:</b> افتح محادثة جديدة واكتب «اقترح لي فكرة لهذا الأسبوع». لو الرد طلع على مقاسك بدون ما تشرح شي، ضبطت.</div>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٤</span></div>
+</section>
+
+<section class="pg">
+  <h2><span class="num">٣</span>اربط تطبيقاتك</h2>
+  <p class="sub">خله يوصل لمعلوماتك من مكانها، بدل ما تنسخها له كل مرة.</p>
+  <h3>وش هي Connectors؟</h3>
+  <p>وصلات بين Claude وتطبيقاتك، مثل البريد والتقويم والملفات. لما تربط تطبيق، يقدر Claude يقرا منه لما تطلب: «وش عندي بكرة؟» أو «لخّص لي آخر إيميل من فلان».</p>
+  <h3>كيف تربط</h3>
+  <ol>
+    <li>افتح <b>Settings</b> ثم <b>Connectors</b>.</li>
+    <li>اختر التطبيق واضغط <b>Connect</b>.</li>
+    <li>بتنفتح صفحة من التطبيق نفسه تطلب موافقتك. اقرا وش الصلاحيات المطلوبة قبل ما توافق.</li>
+  </ol>
+  <h3>بأيش تبدأ؟</h3>
+  <div class="two">
+    <div class="box"><b>البريد والتقويم</b>لو يومك اجتماعات ومراسلات.</div>
+    <div class="box"><b>الملفات (Drive وغيره)</b>لو شغلك في مستندات وجداول.</div>
+    <div class="box"><b>الملاحظات (Notion وغيره)</b>لو أفكارك ومشاريعك مكتوبة هناك.</div>
+    <div class="box"><b>أدوات التصميم والنشر</b>لو تسوي محتوى.</div>
+  </div>
+  <div class="warn"><b>الخصوصية أول:</b> اربط اللي تحتاجه فعلاً فقط. كل تطبيق تربطه يعني Claude يقدر يقرا منه، وبعضها يقدر يكتب أو يرسل. تقدر تفصل أي تطبيق من نفس الصفحة في أي وقت.</div>
+  <h3>جرّب بعد الربط</h3>
+  <div class="prompt"><small>انسخ والصق</small>اطّلع على (اسم التطبيق اللي ربطته) وقل لي وش أهم ثلاث أشياء أحتاج أنتبه لها هذا الأسبوع.</div>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٥</span></div>
+</section>
+
+<section class="pg">
+  <h2><span class="num">٤</span>مشروع لكل شغلة</h2>
+  <p class="sub">مكان واحد يجمع ملفات الشغلة وتعليماتها ومحادثاتها.</p>
+  <h3>وش الفرق عن الخطوة الثانية؟</h3>
+  <p>التعليمات الثابتة عنك أنت بشكل عام. المشروع عن شغلة وحدة بعينها: قناتك، عميل معيّن، دورة تجهّزها. كل محادثة داخل المشروع تبدأ وهي عارفة ملفاته وهدفه.</p>
+  <h3>كيف تسويه</h3>
+  <ol>
+    <li>من القائمة الجانبية اختر <b>Projects</b> ثم أنشئ مشروع جديد.</li>
+    <li>سمّه باسم واضح، مثل «قناة اليوتيوب».</li>
+    <li>ارفع الملفات المهمة: خطتك، أمثلة من شغلك السابق، أي مرجع ترجع له دايم.</li>
+    <li>اكتب في تعليمات المشروع وش هدفه ووش أسلوبه.</li>
+  </ol>
+  <h3>البرومبت</h3>
+  <div class="prompt"><small>انسخ والصق، داخل المشروع الجديد</small>اسألني عن هذا المشروع سؤال سؤال: وش هدفه، من جمهوره، وش خلص منه ووش باقي، ووش أكبر شي معطّلني فيه. بعدها اكتب لي ملخص من صفحة وحدة أحفظه في ملفات المشروع.</div>
+  <div class="tip"><b>حدّث الملخص</b> كل ما تغيّر شي كبير في المشروع. ملف قديم يخلي Claude يشتغل على معلومات قديمة.</div>
+  <h3>أمثلة على مشاريع</h3>
+  <ul>
+    <li>مشروع لكل عميل: فيه عقده، أسلوبه، وملاحظات اجتماعاتكم.</li>
+    <li>مشروع للمحتوى: فيه أفكارك، وأفضل منشوراتك، وطريقة كلامك.</li>
+    <li>مشروع للتعلّم: فيه ملخصاتك والكتب اللي تدرسها.</li>
+  </ul>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٦</span></div>
+</section>
+
+<section class="pg">
+  <h2><span class="num">٥</span>حوّلها لمهارة</h2>
+  <p class="sub">الشغلة اللي تشرحها له كل أسبوع، اشرحها مرة وحدة.</p>
+  <h3>وش هي المهارة؟</h3>
+  <p>المهارة (Skill) ملف تعليمات جاهز، يمشي عليه Claude كل ما طلبت نفس الشغلة. بدل ما تكتب عشر سطور كل مرة، تكتب جملة وحدة وهو يعرف الباقي.</p>
+  <h3>كل مهارة فيها ثلاث أجزاء</h3>
+  <div class="two">
+    <div class="box"><b>الاسم</b>قصير وواضح، مثل <code>weekly-report</code>.</div>
+    <div class="box"><b>الوصف</b>متى يستخدمها. هذا أهم جزء، لأنه اللي يقرر منه Claude.</div>
+  </div>
+  <div class="box" style="margin-top:12px"><b>الخطوات</b>وش يسوي بالضبط، بالترتيب. ما يقراها إلا لما يختار المهارة.</div>
+  <h3>البرومبت: اكتشف وش يستاهل</h3>
+  <div class="prompt"><small>انسخ والصق</small>اسألني عن أسبوعي: وش المهام اللي أكررها معك أو بدونك؟ بعد ما أجاوب، اقترح أي ثلاث منها تستاهل تتحول لمهارة، ورتّبها حسب الوقت اللي توفّره.</div>
+  <h3>البرومبت: اكتب المهارة</h3>
+  <div class="prompt"><small>انسخ والصق، بعد ما تختار وحدة</small>اكتب لي مهارة لـ(اسم المهمة). اسألني أول عن الخطوات اللي أسويها بالضبط، وبعدها اكتبها بثلاث أجزاء: اسم، ووصف يقول متى تُستخدم بالكلمات اللي أقولها أنا، وخطوات مرقّمة.</div>
+  <div class="tip"><b>مهارات جاهزة:</b> ما تحتاج تبدأ من الصفر. في الصفحة الأخيرة رابط لمكتبة مهارات تقدر تنسخها.</div>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٧</span></div>
+</section>
+
+<section class="pg">
+  <h2>قائمة المراجعة</h2>
+  <p class="sub">علّم على كل وحدة لما تخلصها.</p>
+  <ul class="chk">
+    <li>خليت Claude يسألني عن شغلي، وجاوبت بصراحة.</li>
+    <li>حوّلت إجاباتي لتعليمات ثابتة، وراجعتها، وحفظتها في الإعدادات.</li>
+    <li>جرّبت محادثة جديدة، والرد طلع على مقاسي.</li>
+    <li>ربطت التطبيقات اللي أحتاجها فعلاً، وقريت الصلاحيات.</li>
+    <li>سويت مشروع لأهم شغلة عندي، وحطيت فيه ملفاتها.</li>
+    <li>عرفت أي مهمة أكررها تستاهل تصير مهارة.</li>
+    <li>كتبت أول مهارة، أو نسخت وحدة جاهزة.</li>
+  </ul>
+  <h3 style="margin-top:26px">مكتبة مهارات جاهزة</h3>
+  <p>مهارات لصنّاع المحتوى: ترجمة الفيديو، قص المقاطع القصيرة، الصور المصغّرة، وغيرها. مع طريقة نسخها لجهازك.</p>
+  <a class="link" href="https://tinyurl.com/maharat-claude">tinyurl.com/maharat-claude</a>
+  <h3>لو علّقت في خطوة</h3>
+  <p>اكتب سؤالك تحت أي فيديو في القناة. وقل لـClaude نفسه «ما ضبطت معي الخطوة كذا، وش أسوي؟»، غالباً يحلها لك.</p>
+  <div class="warn" style="margin-top:20px">هذا الدليل شرح مستقل وما هو من Anthropic. أسماء القوائم والمزايا ممكن تتغيّر مع تحديثات Claude.</div>
+  <div class="pn"><span>دليل البداية مع Claude</span><span>٨</span></div>
+</section>
+</body></html>
