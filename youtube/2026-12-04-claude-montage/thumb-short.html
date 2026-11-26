@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=block" rel="stylesheet">
+<style>
+:root{--accent:#facc15;--text:#fff}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden}
+body{font-family:"Cairo","Tajawal","DejaVu Sans",sans-serif;position:relative;
+ background:radial-gradient(ellipse at 25% 55%,#1e3a5f 0%,#0b1220 60%,#05080f 100%)}
+.title{position:absolute;margin:0;color:var(--text);font-weight:900;line-height:1.08;
+ text-shadow:0 8px 0 rgba(0,0,0,.6),0 0 30px rgba(0,0,0,.6)}
+.title .hl{display:inline-block;background:var(--accent);color:#111;text-shadow:none;
+ padding:0 .18em .08em;border-radius:.12em;transform:rotate(-2deg)}
+.left{position:absolute;direction:ltr;transform:rotate(-3deg)}
+.win{position:relative;background:#111827;border:4px solid #334155;border-radius:26px;
+ box-shadow:0 30px 80px rgba(0,0,0,.7);overflow:hidden}
+.bar{background:#1f2937;display:flex;align-items:center;gap:14px;padding:16px 22px}
+.dot{width:20px;height:20px;border-radius:50%}
+.tl{padding:.5em;display:flex;flex-direction:column;gap:.28em;opacity:.55}
+.tr{display:flex;gap:.14em;height:.62em}
+.tr i{display:block;border-radius:.12em}
+.x{position:absolute;left:-4%;top:50%;width:108%;height:.26em;background:#ef4444;border-radius:.2em;
+ transform:rotate(-16deg);box-shadow:0 0 30px rgba(239,68,68,.7)}
+.prompt{margin-top:.4em;background:var(--accent);border-radius:.3em;padding:.3em .45em;display:flex;align-items:center;gap:.3em;
+ box-shadow:0 0 50px rgba(250,204,21,.55);font:900 .8em ui-monospace,Menlo,monospace;color:#111}
+.prompt b{flex:1;height:.3em;background:#111;border-radius:.15em;opacity:.75}
+.prompt u{width:.14em;height:.8em;background:#111;display:block}
+.title{right:0;left:0;text-align:center;top:300px;font-size:230px}.left{left:170px;top:900px;width:740px;font-size:100px}
+</style></head><body>
+<div class="left">
+<div class="win"><div class="bar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span></div>
+<div class="tl">
+<div class="tr"><i style="width:22%;background:#3b82f6"></i><i style="width:14%;background:#60a5fa"></i><i style="width:30%;background:#3b82f6"></i><i style="width:18%;background:#60a5fa"></i></div>
+<div class="tr"><i style="width:10%;background:#a855f7"></i><i style="width:34%;background:#c084fc"></i><i style="width:16%;background:#a855f7"></i><i style="width:24%;background:#c084fc"></i></div>
+<div class="tr"><i style="width:40%;background:#22c55e"></i><i style="width:12%;background:#4ade80"></i><i style="width:28%;background:#22c55e"></i></div>
+<div class="tr"><i style="width:16%;background:#f97316"></i><i style="width:20%;background:#fb923c"></i><i style="width:12%;background:#f97316"></i><i style="width:30%;background:#fb923c"></i></div>
+</div><div class="x"></div></div>
+<div class="prompt"><span>&gt;</span><b></b><u></u></div>
+</div>
+<h1 class="title">للحين<br><span class="hl">بيدك؟</span></h1>
+</body></html>
