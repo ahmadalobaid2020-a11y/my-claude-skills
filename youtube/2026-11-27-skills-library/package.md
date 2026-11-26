@@ -63,7 +63,7 @@
 كيف تحفظ مهارات Claude Code في مستودع واحد وتثبّتها على أي جهاز جديد بأمر واحد.
 مكتبة مهارات Claude كاملة: مجلد skills وملف install.sh.
 
-الملف والمستودع: [ضع رابط المستودع هنا]
+الملف والمستودع: https://github.com/ahmadalobaid2020-a11y/my-claude-skills
 
 في هذا الفيديو:
 ١. مستودع على GitHub وداخله مجلد skills
