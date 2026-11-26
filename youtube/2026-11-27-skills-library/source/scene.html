@@ -1,0 +1,170 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&display=block" rel="stylesheet">
+<style>
+:root{--y:#facc15;--bg1:#1e3a5f;--ink:#0b1220;--line:#334155;--mut:#94a3b8}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#05080f}
+body{font-family:"Cairo","DejaVu Sans",sans-serif;color:#fff;position:relative}
+#bg{position:absolute;inset:0}
+#bar{position:absolute;top:0;right:0;height:10px;background:var(--y)}
+.scene{position:absolute;inset:0;opacity:0}
+.head{position:absolute;top:210px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:28px;font-weight:900;font-size:84px;text-shadow:0 6px 0 rgba(0,0,0,.5)}
+.badge{width:130px;height:130px;border-radius:50%;background:var(--y);color:#111;display:flex;align-items:center;justify-content:center;font-size:88px;text-shadow:none;flex:none}
+.win{position:absolute;left:90px;right:90px;direction:ltr;background:#111827;border:4px solid var(--line);border-radius:30px;box-shadow:0 40px 100px rgba(0,0,0,.7);overflow:hidden}
+.wbar{background:#1f2937;display:flex;align-items:center;gap:14px;padding:22px 26px;font:700 36px ui-monospace,Menlo,Consolas,monospace;color:#cbd5e1}
+.dot{width:24px;height:24px;border-radius:50%}
+.wbody{padding:40px;font:700 44px ui-monospace,Menlo,Consolas,monospace;color:#e2e8f0}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;direction:ltr}
+.pill{display:inline-block;background:var(--y);color:#111;border-radius:22px;padding:0 34px 10px;text-shadow:none}
+#cap{position:absolute;left:60px;right:60px;top:1370px;text-align:center;font-weight:900;font-size:78px;line-height:1.25}
+#cap span{display:inline-block;background:rgba(5,8,15,.82);border-radius:26px;padding:10px 40px 20px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.grid{display:grid;grid-template-columns:repeat(11,1fr);gap:12px;direction:ltr}
+.tile{aspect-ratio:1;border-radius:12px;background:var(--y);opacity:0}
+.row{display:flex;align-items:center;gap:24px;border-radius:20px;padding:16px 26px;margin-top:22px;background:#0b1220;border:3px solid var(--line);opacity:0}
+.row b{color:var(--y)} .row em{font:900 54px "Cairo";font-style:normal;margin-left:auto;direction:rtl}
+.dim{color:#64748b}
+.big{position:absolute;left:0;right:0;text-align:center;font-weight:900}
+.step{display:flex;align-items:center;gap:30px;font-weight:900;font-size:76px;margin:46px 120px;opacity:0}
+.step i{font-style:normal;width:110px;height:110px;border-radius:50%;background:var(--y);color:#111;display:flex;align-items:center;justify-content:center;font-size:70px;flex:none}
+</style></head><body>
+<div id="bg"></div>
+
+<div class="scene" id="s0">
+  <div class="head" id="s0h"></div>
+  <div class="win" style="top:480px"><div class="wbar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span><span style="margin-left:12px">~/.claude/skills</span></div>
+  <div class="wbody" style="height:770px;position:relative">
+    <div id="s0num" style="font:900 330px Cairo;text-align:center;line-height:1.05;margin-top:60px"></div>
+    <div id="s0lab" style="text-align:center;color:#64748b;letter-spacing:.06em">EMPTY FOLDER</div>
+    <div class="grid" id="s0grid" style="position:absolute;left:60px;right:60px;bottom:40px"></div>
+  </div></div>
+</div>
+
+<div class="scene" id="s1">
+  <div class="big" id="s1a" style="top:300px;font-size:120px">مكتبة مهاراتك</div>
+  <div class="big" id="s1b" style="top:480px;font-size:110px"><span class="pill">مرة وحدة</span></div>
+  <div style="position:absolute;top:740px;left:0;right:0">
+    <div class="step" id="s1p1"><i>١</i>مستودع على GitHub</div>
+    <div class="step" id="s1p2"><i>٢</i>ملف التثبيت</div>
+    <div class="step" id="s1p3"><i>٣</i>أمر واحد</div>
+  </div>
+</div>
+
+<div class="scene" id="s2">
+  <div class="head"><span class="badge">١</span>مستودع على GitHub</div>
+  <div class="win" style="top:520px" id="s2w"><div class="wbar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span><span style="margin-left:12px">github.com</span></div>
+  <div class="wbody" style="height:560px">
+    <div style="font-size:56px">you / <b style="color:#fff">my-skills</b> <span style="font-size:30px;border:3px solid #475569;border-radius:30px;padding:4px 18px;color:#94a3b8;vertical-align:middle">Public</span></div>
+    <div class="row" id="s2r1" style="margin-top:50px"><span>📄</span><span class="dim">README.md</span></div>
+    <div class="row" id="s2r2"><span>📁</span><b>skills/</b></div>
+  </div></div>
+</div>
+
+<div class="scene" id="s3">
+  <div class="head">كل مهارة = مجلد</div>
+  <div class="win" style="top:440px"><div class="wbar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span><span style="margin-left:12px" id="s3t">skills/</span></div>
+  <div class="wbody" style="height:800px">
+    <div id="s3a" style="opacity:0">📁 skills/</div>
+    <div id="s3b" style="opacity:0;margin:14px 0 0 60px">└ 📁 thumbnail/</div>
+    <div id="s3c" style="opacity:0;margin:14px 0 0 150px">└ 📄 <b style="color:var(--y)">SKILL.md</b></div>
+    <div class="row" id="s3r1" style="margin-top:44px"><b>name</b><em>الاسم</em></div>
+    <div class="row" id="s3r2"><b>description</b><em>متى يستخدمها</em></div>
+    <div class="row" id="s3r3"><b>steps</b><em>الخطوات</em></div>
+  </div></div>
+</div>
+
+<div class="scene" id="s4">
+  <div class="head"><span class="badge">٢</span>ملف install.sh</div>
+  <div class="win" style="top:520px"><div class="wbar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span><span style="margin-left:12px">install.sh</span></div>
+  <div class="wbody" style="height:330px"><div class="dim">#!/bin/bash</div><div id="s4code" style="margin-top:26px;color:var(--y);font-size:41px;white-space:nowrap"></div></div></div>
+  <div id="s4flow" style="position:absolute;top:960px;left:90px;right:90px;direction:ltr;display:flex;align-items:center;justify-content:space-between;font:700 46px ui-monospace,Menlo,monospace;opacity:0">
+    <div style="background:#111827;border:4px solid var(--line);border-radius:24px;padding:30px 34px">📁 skills/</div>
+    <div id="s4arrow" style="font-size:100px;color:var(--y)">➜</div>
+    <div style="background:#111827;border:4px solid var(--y);border-radius:24px;padding:30px 34px">~/.claude/skills</div>
+  </div>
+</div>
+
+<div class="scene" id="s5">
+  <div class="head">مهارات غيرك؟</div>
+  <div class="win" style="top:480px"><div class="wbar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span><span style="margin-left:12px">install.sh</span></div>
+  <div class="wbody" style="height:420px"><div class="dim">#!/bin/bash</div><div class="dim" style="margin-top:22px;font-size:41px;white-space:nowrap">cp -r skills/* ~/.claude/skills/</div><div id="s5code" style="margin-top:22px;color:var(--y);font-size:41px;white-space:nowrap"></div></div></div>
+  <div id="s5x" class="big" style="top:1000px;font-size:80px;opacity:0"><span style="position:relative;color:#94a3b8">نسخ ولصق بيدك<span id="s5line" style="position:absolute;right:-20px;top:58%;height:12px;background:#ef4444;border-radius:6px"></span></span></div>
+  <div id="s5ok" class="big" style="top:1150px;font-size:86px;opacity:0"><span class="pill">محدّثة دايم ✓</span></div>
+</div>
+
+<div class="scene" id="s6">
+  <div class="head">أمر واحد</div>
+  <div class="win" id="s6w" style="top:430px"><div class="wbar"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#22c55e"></span><span style="margin-left:12px">Terminal</span></div>
+  <div class="wbody" style="height:790px;position:relative"><div style="font-size:60px"><span class="dim">$ </span><span id="s6code" style="color:var(--y)"></span></div>
+    <div id="s6cnt" style="font:900 96px Cairo;text-align:center;margin-top:10px;opacity:0"></div>
+    <div class="grid" id="s6grid" style="position:absolute;left:60px;right:60px;bottom:40px"></div></div></div>
+  <div id="s6link" class="big" style="top:700px;font-size:104px;opacity:0"><span class="pill">الرابط في الوصف</span><div id="s6arr" style="font-size:170px;color:var(--y);margin-top:30px;line-height:1">↓</div></div>
+</div>
+
+<div class="scene" id="s7">
+  <div class="big" id="s7q" style="top:330px;font-size:104px;line-height:1.3">وش أول مهارة<br><span class="pill">في مكتبتك؟</span></div>
+  <div id="s7b" style="position:absolute;top:760px;left:190px;right:190px;height:330px;background:#111827;border:5px solid var(--y);border-radius:60px;display:flex;align-items:center;justify-content:center;gap:34px">
+    <span class="d7" style="width:60px;height:60px;border-radius:50%;background:var(--y)"></span><span class="d7" style="width:60px;height:60px;border-radius:50%;background:var(--y)"></span><span class="d7" style="width:60px;height:60px;border-radius:50%;background:var(--y)"></span>
+  </div>
+  <div class="big" style="top:1130px;font-size:70px;color:var(--mut)">التعليقات</div>
+</div>
+
+<div id="cap"><span id="capt"></span></div>
+<div id="bar"></div>
+<script>
+const $=id=>document.getElementById(id);
+const cl=x=>Math.max(0,Math.min(1,x));
+const eo=x=>{x=cl(x);return 1-Math.pow(1-x,3)};
+const back=x=>{x=cl(x);const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const P=(t,s,d)=>cl((t-s)/d);
+const up=(el,a,dy=50)=>{a=eo(a);el.style.opacity=a;el.style.transform=`translateY(${(1-a)*dy}px)`};
+const pop=(el,a)=>{el.style.opacity=cl(a*2);el.style.transform=`scale(${0.6+0.4*back(a)})`};
+const type=(el,txt,a,cur=true)=>{const n=Math.round(cl(a)*txt.length);el.textContent=txt.slice(0,n)+(cur&&a<1?'▌':'')};
+const AR=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+for(const g of ['s0grid','s6grid']){for(let i=0;i<66;i++){const d=document.createElement('div');d.className='tile';$(g).appendChild(d)}}
+function tiles(g,a){const k=$(g).children;for(let i=0;i<66;i++){const x=cl(a*66-i);k[i].style.opacity=x;k[i].style.transform=`scale(${0.4+0.6*back(x)})`}}
+const S=[
+ (t,s)=>{ // hook
+   const b=P(t,s[2],1.6), n=Math.round(eo(b)*66);
+   $('s0h').innerHTML= t<s[2] ? 'جهاز جديد = <span class="pill" style="background:#ef4444;color:#fff">صفر</span>' : '<span class="pill">'+AR(66)+' مهارة</span> بملف واحد';
+   pop($('s0h'), t<s[2]?P(t,0.1,.5):P(t,s[2],.5));
+   $('s0num').textContent=n; $('s0num').style.color= n==0?'#ef4444':'#facc15';
+   const sh=eo(P(t,s[2],.4)); $('s0num').style.fontSize=(330-150*sh)+'px'; $('s0num').style.marginTop=(60-70*sh)+'px';
+   $('s0num').style.transform=`scale(${1+0.06*Math.sin(t*5)*(n==0?1:0)})`;
+   $('s0lab').style.opacity=1-P(t,s[2],.3); tiles('s0grid',b);
+ },
+ (t,s)=>{ up($('s1a'),P(t,0,.5)); pop($('s1b'),P(t,s[2],.45));
+   up($('s1p1'),P(t,s[1],.4)); up($('s1p2'),P(t,s[1]+.7,.4)); up($('s1p3'),P(t,s[1]+1.4,.4)); },
+ (t,s)=>{ up($('s2w'),P(t,s[1]-.2,.5),80); $('s2r1').style.opacity=eo(P(t,s[1]+.3,.4));
+   const a=P(t,s[2]+.5,.5); pop($('s2r2'),a); $('s2r2').style.borderColor=a>0?'#facc15':'#334155'; },
+ (t,s)=>{ $('s3a').style.opacity=eo(P(t,0.1,.3)); $('s3b').style.opacity=eo(P(t,s[0]+.6,.3)); $('s3c').style.opacity=eo(P(t,s[1]+.5,.3));
+   up($('s3r1'),P(t,s[2],.35)); up($('s3r2'),P(t,s[3],.35)); up($('s3r3'),P(t,s[4],.35));
+   $('s3r2').style.borderColor=t>s[3]?'#facc15':'#334155'; },
+ (t,s)=>{ type($('s4code'),'cp -r skills/* ~/.claude/skills/',P(t,s[2],1.6));
+   up($('s4flow'),P(t,s[3]-.2,.5)); $('s4arrow').style.transform=`translateX(${Math.sin(t*6)*14}px)`; },
+ (t,s)=>{ up($('s5x'),P(t,s[1]-.1,.35)); $('s5line').style.width=(P(t,s[1]+.3,.4)*106)+'%';
+   $('s5x').style.opacity=eo(P(t,s[1]-.1,.35))*(1-0.6*P(t,s[2],.4));
+   type($('s5code'),'git clone github.com/…/skill',P(t,s[2],1.5)); pop($('s5ok'),P(t,s[3],.45)); },
+ (t,s)=>{ type($('s6code'),'./install.sh',P(t,s[1]-.9,.8)); const a=P(t,s[1]+.2,1.6);
+   $('s6cnt').style.opacity=cl(a*4); $('s6cnt').innerHTML=Math.round(eo(a)*66)+' / 66'+(a>=1?' <span style="color:#22c55e">✓</span>':''); tiles('s6grid',a);
+   $('s6w').style.opacity=1-0.9*eo(P(t,s[3]-.3,.35));
+   pop($('s6link'),P(t,s[3]-.1,.45)); $('s6arr').style.transform=`translateY(${Math.sin(t*6)*16}px)`; },
+ (t,s)=>{ pop($('s7q'),P(t,0,.5)); up($('s7b'),P(t,s[2]-.3,.5),80);
+   document.querySelectorAll('.d7').forEach((d,i)=>{d.style.transform=`translateY(${Math.sin(t*6-i*0.9)*22}px)`}); },
+];
+window.render=function(t){
+  const T=window.T,B=T.beats;
+  $('bg').style.background=`radial-gradient(ellipse at ${30+20*Math.sin(t*.25)}% ${45+10*Math.cos(t*.2)}%,#1e3a5f 0%,#0b1220 55%,#05080f 100%)`;
+  $('bar').style.width=(100*t/T.total)+'%';
+  let cur=null;
+  for(let j=0;j<B.length;j++){
+    const a=B[j].start-.15, z=(j+1<B.length?B[j+1].start-.15:T.total+1);
+    const al=eo(P(t,a,.3))*(1-eo(P(t,z-.18,.18))); const el=$('s'+j);
+    el.style.opacity=al; el.style.display=al>0?'block':'none';
+    if(al>0){ S[j](t-B[j].start, B[j].segs.map(x=>x.start-B[j].start)); }
+    for(const g of B[j].segs){ if(t>=g.start-.05) cur=g; }
+  }
+  const lastEnd=B[B.length-1].segs.slice(-1)[0].end;
+  if(cur && t<lastEnd+.5 && t< (cur.end+1.2)){ $('capt').textContent=cur.text.replace(/[.,،:]+$/,''); const a=P(t,cur.start-.05,.22); $('cap').style.opacity=cl(a*2); $('cap').style.transform=`scale(${0.85+0.15*back(a)})`; }
+  else $('cap').style.opacity=0;
+};
+</script></body></html>
