@@ -125,6 +125,20 @@ if git clone -q --depth 1 https://github.com/DozenTwelve/Papermorph.git "$tmp/pa
 else
   echo "could not clone DozenTwelve/Papermorph: skipping"
 fi
+# YouTube agent (Jakeschincariol/youtube-agent-skill): eleven yt-* skills (script, package, edit, retention, shorts, ...).
+# Plain Python 3, no dependencies, no API key. The skills read the voice profile at ~/.claude/youtube/voice.md;
+# this repo's youtube/voice.md is the copy that lasts, so fill that one in.
+if git clone -q --depth 1 https://github.com/Jakeschincariol/youtube-agent-skill.git "$tmp/youtube-agent"; then
+  for d in "$tmp"/youtube-agent/skills/yt-*; do
+    rm -rf ~/.claude/skills/"$(basename "$d")"
+    cp -r "$d" ~/.claude/skills/
+  done
+  mkdir -p ~/.claude/youtube
+  if [ -f youtube/voice.md ]; then cp youtube/voice.md ~/.claude/youtube/voice.md
+  else cp -n "$tmp/youtube-agent/templates/voice.md" ~/.claude/youtube/voice.md; fi
+else
+  echo "could not clone Jakeschincariol/youtube-agent-skill: skipping"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
