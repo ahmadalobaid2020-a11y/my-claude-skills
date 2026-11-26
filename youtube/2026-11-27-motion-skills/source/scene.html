@@ -1,0 +1,142 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&display=block" rel="stylesheet">
+<style>
+:root{--y:#facc15;--bg1:#1e3a5f;--ink:#0b1220;--line:#334155;--mut:#94a3b8}
+*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#05080f}
+body{font-family:"Cairo","DejaVu Sans",sans-serif;color:#fff;position:relative}
+#bg{position:absolute;inset:0}
+#bar{position:absolute;top:0;right:0;height:10px;background:var(--y)}
+.scene{position:absolute;inset:0;opacity:0}
+.head{position:absolute;top:210px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:28px;font-weight:900;font-size:84px;text-shadow:0 6px 0 rgba(0,0,0,.5)}
+.badge{width:130px;height:130px;border-radius:50%;background:var(--y);color:#111;display:flex;align-items:center;justify-content:center;font-size:88px;text-shadow:none;flex:none}
+.win{position:absolute;left:90px;right:90px;direction:ltr;background:#111827;border:4px solid var(--line);border-radius:30px;box-shadow:0 40px 100px rgba(0,0,0,.7);overflow:hidden}
+.wbar{background:#1f2937;display:flex;align-items:center;gap:14px;padding:22px 26px;font:700 36px ui-monospace,Menlo,Consolas,monospace;color:#cbd5e1}
+.dot{width:24px;height:24px;border-radius:50%}
+.wbody{padding:40px;font:700 44px ui-monospace,Menlo,Consolas,monospace;color:#e2e8f0}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;direction:ltr}
+.pill{display:inline-block;background:var(--y);color:#111;border-radius:22px;padding:0 34px 10px;text-shadow:none}
+#cap{position:absolute;left:60px;right:60px;top:1370px;text-align:center;font-weight:900;font-size:78px;line-height:1.25}
+#cap span{display:inline-block;background:rgba(5,8,15,.82);border-radius:26px;padding:10px 40px 20px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.grid{display:grid;grid-template-columns:repeat(11,1fr);gap:12px;direction:ltr}
+.tile{aspect-ratio:1;border-radius:12px;background:var(--y);opacity:0}
+.row{display:flex;align-items:center;gap:24px;border-radius:20px;padding:16px 26px;margin-top:22px;background:#0b1220;border:3px solid var(--line);opacity:0}
+.row b{color:var(--y)} .row em{font:900 54px "Cairo";font-style:normal;margin-left:auto;direction:rtl}
+.dim{color:#64748b}
+.big{position:absolute;left:0;right:0;text-align:center;font-weight:900}
+.step{display:flex;align-items:center;gap:30px;font-weight:900;font-size:76px;margin:46px 120px;opacity:0}
+.step i{font-style:normal;width:110px;height:110px;border-radius:50%;background:var(--y);color:#111;display:flex;align-items:center;justify-content:center;font-size:70px;flex:none}
+
+.chat{display:flex;flex-direction:column;gap:22px;padding:34px;direction:rtl;font:700 46px "Cairo"}
+.bub{max-width:82%;padding:18px 30px 24px;border-radius:30px;opacity:0;line-height:1.4}
+.me{align-self:flex-start;background:#1d4ed8}
+.ai{align-self:flex-end;background:#1f2937;border:3px solid var(--line)}
+.day{font-size:30px;color:var(--mut);display:block;margin-bottom:2px}
+.inp{position:absolute;left:34px;right:34px;bottom:34px;background:#05080f;border:3px solid var(--y);border-radius:26px;padding:18px 28px 24px;direction:rtl;font:700 44px "Cairo";min-height:96px}
+.rw{display:flex;align-items:center;justify-content:space-between;border-radius:22px;padding:22px 30px;margin:0 34px 22px;background:#0b1220;border:3px solid var(--line);font:700 48px ui-monospace,Menlo,monospace;opacity:0}
+.tg{width:120px;height:64px;border-radius:32px;background:#334155;position:relative;flex:none}
+.tg i{position:absolute;top:8px;left:8px;width:48px;height:48px;border-radius:50%;background:#fff}
+.ar{direction:rtl;font:700 50px "Cairo"}
+.dots{display:flex;gap:26px;justify-content:center;direction:rtl}
+.dots i{font-style:normal;width:130px;height:130px;border-radius:50%;background:var(--y);color:#111;display:flex;align-items:center;justify-content:center;font:900 84px "Cairo";opacity:0}
+.chip{display:inline-block;background:#1f2937;border:3px solid var(--line);border-radius:22px;padding:10px 30px 16px;font:700 48px "Cairo";margin:10px;opacity:0}
+
+.rank{position:absolute;top:200px;left:0;right:0;text-align:center}
+.rank i{font-style:normal;display:inline-grid;place-items:center;width:230px;height:230px;border-radius:50%;background:var(--y);color:#111;font:900 150px "Cairo"}
+.card{position:absolute;left:80px;right:80px;top:500px;direction:ltr;background:#111827;border:4px solid var(--line);border-radius:34px;box-shadow:0 40px 100px rgba(0,0,0,.7);padding:44px 46px 50px}
+.own{font:700 40px ui-monospace,Menlo,monospace;color:var(--mut)}
+.nm{font:900 78px ui-monospace,Menlo,monospace;color:#fff;margin-top:6px;white-space:nowrap}
+.st{display:inline-flex;align-items:center;gap:18px;margin-top:34px;background:#0b1220;border:3px solid var(--y);border-radius:26px;padding:10px 34px 14px;font:900 84px "Cairo";color:var(--y)}
+.lic{display:inline-block;margin:0 0 0 24px;font:700 36px ui-monospace,Menlo,monospace;color:var(--mut);border:3px solid var(--line);border-radius:20px;padding:6px 20px;vertical-align:middle}
+.tags{position:absolute;left:60px;right:60px;top:1010px;text-align:center}
+.tag{display:inline-block;background:#1f2937;border:3px solid var(--line);border-radius:26px;padding:8px 34px 16px;font:900 56px "Cairo";margin:12px;opacity:0}
+.mini{display:flex;align-items:center;justify-content:space-between;direction:ltr;background:#111827;border:3px solid var(--line);border-radius:22px;padding:10px 30px;margin:0 90px 14px;font:700 40px ui-monospace,Menlo,monospace;opacity:0}
+.mini b{color:var(--y);font:900 42px "Cairo"}
+</style></head><body><div id="bg"></div>
+<div class="scene" id="s0">
+  <div class="big" id="s0a" style="top:230px;font-size:92px;line-height:1.3">٥ مهارات<br><span class="pill">موشن جرافيك</span></div>
+  <div style="position:absolute;top:540px;left:0;right:0">
+    <div class="mini"><span>hyperframes</span><b>★ 90.8k</b></div>
+    <div class="mini"><span>video-shotcraft</span><b>★ 22.8k</b></div>
+    <div class="mini"><span>brag</span><b>★ 22.7k</b></div>
+    <div class="mini"><span>bang-motion</span><b>★ 3.1k</b></div>
+    <div class="mini"><span>motion-skills</span><b>★ 2.2k</b></div>
+  </div>
+  <div class="big" id="s0t" style="top:1120px;font-size:86px;opacity:0"><span class="pill">+١٤٠ ألف ★</span></div>
+</div>
+<div class="scene" id="s1">
+  <div class="rank"><i id="s1k">٥</i></div>
+  <div class="card" id="s1c"><div class="own">iart-ai /</div><div class="nm" style="font-size:78px">motion-skills</div>
+    <div><span class="st">★ <span id="s1n">0</span></span><span class="lic">MIT</span></div></div>
+  <div class="tags" id="s1t"><span class="tag">٥٦ مهارة</span><span class="tag">موشن وأنيميشن</span></div>
+</div>
+<div class="scene" id="s2">
+  <div class="rank"><i id="s2k">٤</i></div>
+  <div class="card" id="s2c"><div class="own">bangtutorial /</div><div class="nm" style="font-size:78px">bang-motion</div>
+    <div><span class="st">★ <span id="s2n">0</span></span><span class="lic">MIT</span></div></div>
+  <div class="tags" id="s2t"><span class="tag">افتتاحيات</span><span class="tag">عناوين متحركة</span><span class="tag">من المتصفح</span></div>
+</div>
+<div class="scene" id="s3">
+  <div class="rank"><i id="s3k">٣</i></div>
+  <div class="card" id="s3c"><div class="own">latent-spaces /</div><div class="nm" style="font-size:78px">brag</div>
+    <div><span class="st">★ <span id="s3n">0</span></span><span class="lic">MIT</span></div></div>
+  <div class="tags" id="s3t"><span class="tag">فيديو إعلان لمشروعك</span><span class="tag">بأمر واحد</span></div>
+</div>
+<div class="scene" id="s4">
+  <div class="rank"><i id="s4k">٢</i></div>
+  <div class="card" id="s4c"><div class="own">Vincentwei1021 /</div><div class="nm" style="font-size:62px">video-shotcraft</div>
+    <div><span class="st">★ <span id="s4n">0</span></span><span class="lic">Apache-2.0</span></div></div>
+  <div class="tags" id="s4t"><span class="tag">إعلانات منتجات</span><span class="tag">سينمائي</span><span class="tag">قابل للتعديل</span></div>
+</div>
+<div class="scene" id="s5">
+  <div class="rank"><i id="s5k">١</i></div>
+  <div class="card" id="s5c"><div class="own">heygen-com /</div><div class="nm" style="font-size:78px">hyperframes</div>
+    <div><span class="st">★ <span id="s5n">0</span></span><span class="lic">Apache-2.0</span></div></div>
+  <div class="tags" id="s5t"><span class="tag">تكتب HTML</span><span class="tag">يطلع MP4</span></div>
+</div>
+<div class="scene" id="s6">
+  <div id="s6l" class="big" style="top:330px;font-size:100px;opacity:0"><span class="pill">الروابط في الوصف</span><div id="s6arr" style="font-size:150px;color:var(--y);margin-top:20px;line-height:1">↓</div></div>
+  <div class="big" id="s6q" style="top:330px;font-size:100px;line-height:1.3;opacity:0">وش أول وحدة<br><span class="pill">بتجربها؟</span></div>
+  <div id="s6b" style="position:absolute;top:760px;left:190px;right:190px;height:330px;background:#111827;border:5px solid var(--y);border-radius:60px;display:flex;align-items:center;justify-content:center;gap:34px;opacity:0">
+    <span class="d7" style="width:60px;height:60px;border-radius:50%;background:var(--y)"></span><span class="d7" style="width:60px;height:60px;border-radius:50%;background:var(--y)"></span><span class="d7" style="width:60px;height:60px;border-radius:50%;background:var(--y)"></span></div>
+  <div class="big" id="s6t" style="top:1130px;font-size:70px;color:var(--mut);opacity:0">التعليقات</div>
+</div>
+<div id="cap"><span id="capt"></span></div>
+<div id="bar"></div>
+<script>
+const $=id=>document.getElementById(id);
+const cl=x=>Math.max(0,Math.min(1,x));
+const eo=x=>{x=cl(x);return 1-Math.pow(1-x,3)};
+const back=x=>{x=cl(x);const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const P=(t,s,d)=>cl((t-s)/d);
+const up=(el,a,dy=50)=>{a=eo(a);el.style.opacity=a;el.style.transform=`translateY(${(1-a)*dy}px)`};
+const pop=(el,a)=>{el.style.opacity=cl(a*2);el.style.transform=`scale(${0.6+0.4*back(a)})`};
+const STARS=[0,2239,3081,22661,22758,90786];
+const fmt=n=>n.toLocaleString('en-US');
+function item(i){return (t,s)=>{ pop($('s'+i+'k'),P(t,0,.4)); up($('s'+i+'c'),P(t,.25,.45),90);
+  $('s'+i+'n').textContent=fmt(Math.round(eo(P(t,.5,1.3))*STARS[i]));
+  [...$('s'+i+'t').children].forEach((e,k)=>pop(e,P(t,(s[1]||1)+k*.45,.4))); }}
+const S=[
+ (t,s)=>{ pop($('s0a'),P(t,0,.45)); [...document.querySelectorAll('#s0 .mini')].forEach((e,k)=>up(e,P(t,.5+k*.28,.35))); pop($('s0t'),P(t,s[1]+.6,.45)); },
+ item(1),item(2),item(3),item(4),item(5),
+ (t,s)=>{ const out=eo(P(t,s[1]-.3,.3)); pop($('s6l'),P(t,.1,.45)); $('s6l').style.opacity=cl(P(t,.1,.45)*2)*(1-out); $('s6arr').style.transform=`translateY(${Math.sin(t*6)*16}px)`;
+   pop($('s6q'),P(t,s[1],.45)); up($('s6b'),P(t,s[2]-.2,.4),80); $('s6t').style.opacity=eo(P(t,s[2],.4));
+   document.querySelectorAll('.d7').forEach((e,i)=>{e.style.transform=`translateY(${Math.sin(t*6-i*0.9)*22}px)`}); },
+];
+window.render=function(t){
+  const T=window.T,B=T.beats;
+  $('bg').style.background=`radial-gradient(ellipse at ${30+20*Math.sin(t*.25)}% ${45+10*Math.cos(t*.2)}%,#1e3a5f 0%,#0b1220 55%,#05080f 100%)`;
+  $('bar').style.width=(100*t/T.total)+'%';
+  let cur=null;
+  for(let j=0;j<B.length;j++){
+    const a=B[j].start-.15, z=(j+1<B.length?B[j+1].start-.15:T.total+1);
+    const al=eo(P(t,a,.3))*(1-eo(P(t,z-.18,.18))); const el=$('s'+j);
+    el.style.opacity=al; el.style.display=al>0?'block':'none';
+    if(al>0){ S[j](t-B[j].start, B[j].segs.map(x=>x.start-B[j].start)); }
+    for(const g of B[j].segs){ if(t>=g.start-.05) cur=g; }
+  }
+  const lastEnd=B[B.length-1].segs.slice(-1)[0].end;
+  if(cur && t<lastEnd+.5 && t<(cur.end+1.2)){ $('capt').textContent=cur.text.replace(/[.,،:]+$/,''); $('cap').style.fontSize=(cur.text.length>32?62:78)+'px'; const a=P(t,cur.start-.05,.22); $('cap').style.opacity=cl(a*2); $('cap').style.transform=`scale(${0.85+0.15*back(a)})`; }
+  else $('cap').style.opacity=0;
+};
+</script></body></html>
