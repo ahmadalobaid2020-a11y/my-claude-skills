@@ -15,6 +15,14 @@ Ready-built APK: `docs/tv/reminders.apk`, on the install page <https://ahmadalob
 
 The phone page is open to the home network unless a PIN (4 to 8 digits) is set from the app's TV screen. With a PIN, every request must carry it; five wrong PINs in a row lock the page for a minute. It is plain HTTP, so the PIN keeps out other people on the Wi-Fi, not someone capturing the network traffic.
 
+## Built-in sounds
+
+Two sounds come with the app and appear in the list on first start (deleting one keeps it deleted). Both are CC0 1.0
+recordings from Freesound, trimmed and normalised to -16 LUFS:
+
+- "جرس باب": "Doorbell Notification" by TheBuilder15, <https://freesound.org/people/TheBuilder15/sounds/415763>
+- "تنبيه جوال": "Phone Notification" by PearceWilsonKing, <https://freesound.org/people/PearceWilsonKing/sounds/413691>
+
 ## Layout
 
 | File | What it holds |
