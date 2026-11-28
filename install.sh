@@ -140,7 +140,7 @@ else
   echo "could not clone Jakeschincariol/youtube-agent-skill: skipping"
 fi
 # CLI-Anything (HKUDS/CLI-Anything): turns software into agent-native CLIs.
-# cli-hub browses and installs ready-made CLIs (catalog at hkuds.github.io); the cli-hub-meta-skill teaches
+# cli-hub browses and installs ready-made CLIs (catalog at hkuds.github.io, redirecting to clianything.cc); the cli-hub-meta-skill teaches
 # the agent to use it; the Claude Code plugin adds /cli-anything to generate a CLI for new software.
 pip install -q --break-system-packages cli-anything-hub || echo "cli-anything-hub install failed: skipping"
 if git clone -q --depth 1 https://github.com/HKUDS/CLI-Anything.git "$tmp/cli-anything"; then
