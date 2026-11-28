@@ -15,6 +15,26 @@ Ready-built APK: `docs/tv/reminders.apk`, on the install page <https://ahmadalob
 
 The phone page is open to the home network unless a PIN (4 to 8 digits) is set from the app's TV screen. With a PIN, every request must carry it; five wrong PINs in a row lock the page for a minute. It is plain HTTP, so the PIN keeps out other people on the Wi-Fi, not someone capturing the network traffic.
 
+## Away from home
+
+Off by default; switched on from the app's TV screen, which makes a random secret. The phone page (at home) then
+shows a link, `docs/tv/remote.html#k=<secret>`, that works from any network: the same page, served over https,
+talks to the TV through a public relay ([ntfy.sh](https://ntfy.sh)) instead of directly.
+
+- The phone posts a command (add, delete, toggle, show now) to one topic; the TV listens there and posts its list
+  to a second topic, which the page reads.
+- Every message is AES-256-GCM under a key derived from the secret, and both topic names are derived from it too,
+  so the relay sees neither the reminders nor a guessable name. A command not sealed with the key, one seen
+  before, or one older than 13 hours is ignored.
+- A command sent while the TV is off waits on the relay (about 12 hours) and is carried out when the TV is back;
+  a "show now" older than five minutes is dropped.
+- Making a new link on the TV cancels the old one. Anyone holding the link can send to the TV.
+- Sounds are uploaded at home only. The relay limits message size, so the away page lists the newest reminders
+  that fit in one message.
+- `docs/tv/remote.html` is a copy of `app/src/main/assets/page.html`: copy it again after changing the page.
+- The relay's free tier counts messages per sender address and per day. That is ample for one home, but a shared
+  cloud address (such as the one this app was developed from) can find the quota already used up.
+
 ## Built-in sounds
 
 Three sounds come with the app and appear in the list on first start (deleting one keeps it deleted).
@@ -34,6 +54,7 @@ The other two are CC0 1.0 recordings from Freesound, trimmed and normalised to -
 | `Rem`, `Schedule`, `Book` | The reminder, when it is due, and the stored list. No Android types. |
 | `Sounds` | The stored sound files. No Android types. |
 | `Web` | The HTTP server behind the phone page. No Android types. |
+| `Relay` | "Away from home": sealed commands and the TV's list through the public relay. No Android types. |
 | `Svc`, `Wake` | Foreground service, alarms, boot restart. |
 | `Banner` | The strip drawn over other apps. |
 | `MainActivity` | The TV screen: phone address, permission button, test button. |
@@ -54,4 +75,7 @@ over it: uninstall the app on the TV first (its reminders go with it).
 
 The schedule, the stored list and the sound store were tested on a desktop JVM, and the phone page was driven with a headless
 browser against the same server code. The app builds and passes Android lint without errors.
+The relay path was tested end to end on a desktop JVM and a headless browser against a local stand-in for
+ntfy.sh (publishing to the real service was refused from the development machine: daily quota of its shared
+address), plus 16 checks of sealing and of refusing forged, replayed and stale commands.
 It has not been run on a TV or an emulator.

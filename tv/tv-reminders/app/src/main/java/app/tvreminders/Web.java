@@ -25,6 +25,9 @@ public class Web {
 
         /** The PIN the phone page must send, or empty when the page is open to the whole home network. */
         String pin();
+
+        /** The secret of the "away from home" link, or empty while that is switched off. */
+        String remote();
     }
 
     public static final int PORT = 8090;
@@ -152,7 +155,7 @@ public class Web {
         if (method.equals("GET") && path.equals("/")) {
             reply(sock, 200, "text/html; charset=utf-8", page);
         } else if (method.equals("GET") && path.equals("/api/list")) {
-            json(sock, 200, new JSONObject().put("now", now).put("offset", tz.getOffset(now) / 60000).put("items", book.toJson(now, tz))
+            json(sock, 200, new JSONObject().put("now", now).put("offset", tz.getOffset(now) / 60000).put("remote", host.remote()).put("items", book.toJson(now, tz))
                     .put("sounds", new org.json.JSONArray(sounds.list())));
         } else if (post && path.equals("/api/sound/delete")) {
             boolean ok = sounds.delete(param(query, "name"));

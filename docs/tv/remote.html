@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تذكيراتي</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: #102a43; color: #fff; font-family: -apple-system, "Segoe UI", Tahoma, sans-serif; }
+  main { max-width: 560px; margin: 0 auto; }
+  h1 { color: #facc15; font-size: 26px; margin: 8px 0 16px; text-align: center; }
+  h2 { font-size: 18px; margin: 26px 0 10px; color: #bcccdc; }
+  .card { background: #1c3d5a; border-radius: 16px; padding: 16px; }
+  label { display: block; font-size: 15px; margin: 14px 0 6px; color: #d9e2ec; }
+  label:first-child { margin-top: 0; }
+  textarea, input[type=time], input[type=date], select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #486581;
+    background: #0b1f33; color: #fff; font-size: 18px; font-family: inherit; }
+  textarea { height: 76px; resize: vertical; }
+  /* iOS draws an empty time or date field as a thin blank box: give it a real height and visible text. */
+  input[type=time], input[type=date] { min-height: 52px; -webkit-appearance: none; appearance: none; text-align: center;
+    font-size: 22px; font-weight: bold; color: #facc15; display: block; }
+  .quick { margin-top: 8px; }
+  .quick button { font-size: 14px; padding: 9px 2px; }
+  textarea:focus, input:focus { outline: none; border-color: #facc15; }
+  .seg { display: flex; gap: 8px; }
+  .seg button { flex: 1; padding: 11px 4px; border-radius: 10px; border: 2px solid #486581; background: #0b1f33; color: #fff;
+    font-size: 15px; font-family: inherit; }
+  .seg button.on { background: #facc15; border-color: #facc15; color: #102a43; font-weight: bold; }
+  .days { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .check { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-size: 16px; }
+  .check input { width: 22px; height: 22px; accent-color: #facc15; }
+  .row { display: flex; gap: 10px; margin-top: 18px; }
+  .go { flex: 2; padding: 15px; border: 0; border-radius: 12px; background: #facc15; color: #102a43; font-size: 18px;
+    font-weight: bold; font-family: inherit; }
+  .now { flex: 1; padding: 15px; border: 2px solid #facc15; border-radius: 12px; background: transparent; color: #facc15;
+    font-size: 16px; font-family: inherit; }
+  button:disabled { opacity: .5; }
+  #msg { min-height: 22px; margin-top: 10px; font-size: 15px; text-align: center; color: #facc15; }
+  .item { background: #1c3d5a; border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
+  .item.off { opacity: .55; }
+  .item .body { flex: 1; min-width: 0; }
+  .item .t { font-size: 17px; overflow-wrap: anywhere; }
+  .item .w { font-size: 14px; color: #bcccdc; margin-top: 4px; }
+  .item button { border: 0; border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; background: #334e68; color: #fff; }
+  .item button.del { background: #7f1d1d; }
+  #empty { text-align: center; color: #bcccdc; padding: 18px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🔔 تذكيراتي</h1>
+  <div id="remoteBadge" hidden style="text-align:center;color:#bcccdc;font-size:14px;margin:-8px 0 14px">📡 من خارج البيت · الاتصال مشفّر</div>
+  <div id="remoteNote" hidden style="margin-bottom:12px;padding:10px;border-radius:10px;background:#334e68;font-size:14px;text-align:center"></div>
+  <div class="card">
+    <label for="text">وش أذكّرك به؟</label>
+    <textarea id="text" maxlength="200" placeholder="مثال: خذ الدواء"></textarea>
+
+    <label for="time">الوقت (اضغط على الخانة وحدد الساعة والدقيقة)</label>
+    <input id="time" type="time" required>
+    <div class="seg quick" id="quick">
+      <button type="button" data-q="5">بعد 5 د</button>
+      <button type="button" data-q="15">بعد ربع</button>
+      <button type="button" data-q="30">بعد نص</button>
+      <button type="button" data-q="60">بعد ساعة</button>
+    </div>
+
+    <label>التكرار</label>
+    <div class="seg" id="mode">
+      <button type="button" data-m="0" class="on">مرة وحدة</button>
+      <button type="button" data-m="1">كل يوم</button>
+      <button type="button" data-m="2">أيام محددة</button>
+    </div>
+
+    <div id="onceBox">
+      <label for="date">اليوم</label>
+      <input id="date" type="date">
+    </div>
+    <div id="daysBox" hidden>
+      <label>أي أيام؟</label>
+      <div class="seg days" id="days">
+        <button type="button" data-d="7">السبت</button>
+        <button type="button" data-d="1">الأحد</button>
+        <button type="button" data-d="2">الاثنين</button>
+        <button type="button" data-d="3">الثلاثاء</button>
+        <button type="button" data-d="4">الأربعاء</button>
+        <button type="button" data-d="5">الخميس</button>
+        <button type="button" data-d="6">الجمعة</button>
+      </div>
+    </div>
+
+    <label for="snd">الصوت</label>
+    <select id="snd"></select>
+
+    <div class="row">
+      <button class="go" id="add">أضف التذكير</button>
+      <button class="now" id="now">اعرضه الآن</button>
+    </div>
+    <div id="msg"></div>
+    <div id="clockWarn" hidden style="margin-top:10px;padding:10px;border-radius:10px;background:#7f1d1d;font-size:14px;text-align:center"></div>
+  </div>
+
+  <h2>التذكيرات</h2>
+  <div id="list"></div>
+  <div id="empty" hidden>ما فيه تذكيرات للحين</div>
+
+  <div id="homeOnly">
+  <h2>أصواتي</h2>
+  <div class="card">
+    <label for="file">أضف صوت من جوالك (تسجيل أو ملف صوتي، لين 8 ميقا)</label>
+    <input id="file" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac,.amr,.3gp" style="width:100%;font-size:16px;color:#fff">
+    <div class="row"><button class="go" id="up">ارفع الصوت للتلفزيون</button></div>
+    <div id="msg2" style="min-height:22px;margin-top:10px;font-size:15px;text-align:center;color:#facc15"></div>
+  </div>
+  <div id="sounds" style="margin-top:10px"></div>
+
+  <h2>من خارج البيت</h2>
+  <div class="card" id="awayCard">
+    <div id="awayOff" style="font-size:15px;color:#d9e2ec">الإرسال من خارج البيت معطّل. فعّله من شاشة تطبيق «تذكيراتي» على التلفزيون، ثم حدّث هذي الصفحة.</div>
+    <div id="awayOn" hidden>
+      <div style="font-size:15px;color:#d9e2ec">افتح هذا الرابط مرة وحدة من هذا الجوال واحفظه (أو أضفه للشاشة الرئيسية). يشتغل من أي شبكة. لا ترسله لأحد: اللي معه الرابط يقدر يرسل لتلفزيونك.</div>
+      <div class="row"><a class="go" id="awayLink" style="text-align:center;text-decoration:none" target="_blank" rel="noopener">افتح صفحة «من خارج البيت»</a></div>
+      <div class="row"><button class="now" id="awayCopy" style="flex:1">انسخ الرابط</button></div>
+    </div>
+  </div>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+// Served by the TV on the home network (http), or opened from the web with the TV's secret in the link (https).
+const REMOTE = location.protocol === 'https:';
+const AWAY_PAGE = 'https://ahmadalobaid2020-a11y.github.io/my-claude-skills/tv/remote.html';
+const DOWN = REMOTE ? 'ما قدرت أوصل لخدمة الترحيل. تأكد من الإنترنت وجرّب مرة ثانية.'
+  : 'ما قدرت أوصل للتلفزيون. افتح تطبيق «تذكيراتي» على التلفزيون ثم حدّث هذي الصفحة.';
+const LATE = 'انرسل، بس التلفزيون ما رد للحين (يمكن مطفي). بيوصله أول ما يشتغل.';
+const DAY = {1: 'الأحد', 2: 'الاثنين', 3: 'الثلاثاء', 4: 'الأربعاء', 5: 'الخميس', 6: 'الجمعة', 7: 'السبت'};
+let mode = 0;
+
+function say(t) { $('msg').textContent = t; if (t) setTimeout(() => { if ($('msg').textContent === t) $('msg').textContent = ''; }, 8000); }
+
+$('mode').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  mode = +b.dataset.m;
+  for (const x of $('mode').children) x.classList.toggle('on', x === b);
+  $('onceBox').hidden = mode !== 0;
+  $('daysBox').hidden = mode !== 2;
+});
+// The time field starts at five minutes from now, so it is never an empty box.
+const two = n => String(n).padStart(2, '0');
+// Times are the TV's local time. Once its clock offset is known, "in 5 minutes" is worked out on that clock,
+// so it is right even when the phone is in another time zone.
+let tvOffset = null, timeTouched = false;
+function ahead(min) {
+  if (tvOffset === null) {
+    const d = new Date(Date.now() + min * 60000);
+    return {time: two(d.getHours()) + ':' + two(d.getMinutes()), date: d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate())};
+  }
+  const d = new Date(Date.now() + (tvOffset + min) * 60000);
+  return {time: two(d.getUTCHours()) + ':' + two(d.getUTCMinutes()), date: d.getUTCFullYear() + '-' + two(d.getUTCMonth() + 1) + '-' + two(d.getUTCDate())};
+}
+function setAhead(min) { const a = ahead(min); $('time').value = a.time; $('date').value = a.date; }
+setAhead(5);
+$('time').addEventListener('input', () => { timeTouched = true; });
+$('date').addEventListener('input', () => { timeTouched = true; });
+$('quick').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  setAhead(+b.dataset.q);
+  timeTouched = true;
+  $('mode').querySelector('[data-m="0"]').click();
+  say('الوقت: ' + clock(+$('time').value.slice(0, 2) * 60 + +$('time').value.slice(3)));
+});
+$('days').addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.classList.toggle('on'); });
+
+function say2(t) { $('msg2').textContent = t; }
+// The chosen sound: '' = silent, '*' = beeps, anything else = a stored clip's name.
+function pick() { const v = $('snd').value; return {sound: v !== '', clip: v === '' || v === '*' ? '' : v}; }
+// The clip chosen when the page opens, if the TV still has it.
+const DEFAULT = 'صوت فهد.mp3';
+let sel0 = null;
+function fillSounds(names) {
+  const first = sel0 === null, sel = $('snd');
+  const keep = first ? (names.includes(DEFAULT) ? DEFAULT : '*') : sel.value;
+  sel0 = keep;
+  sel.textContent = '';
+  for (const [v, label] of [['*', 'نغمة تنبيه'], ['', 'بدون صوت'], ...names.map(n => [n, '🎵 ' + n])]) {
+    const o = document.createElement('option'); o.value = v; o.textContent = label; sel.append(o);
+  }
+  sel.value = [...sel.options].some(o => o.value === keep) ? keep : '*';
+  const box = $('sounds');
+  box.textContent = '';
+  for (const n of names) {
+    const item = document.createElement('div'); item.className = 'item';
+    const body = document.createElement('div'); body.className = 'body';
+    const t = document.createElement('div'); t.className = 't'; t.textContent = '🎵 ' + n;
+    body.append(t); item.append(body);
+    const tryIt = document.createElement('button'); tryIt.textContent = 'جرّبه';
+    tryIt.onclick = () => post('/api/now', {text: 'تجربة الصوت: ' + n, sound: true, clip: n});
+    const del = document.createElement('button'); del.className = 'del'; del.textContent = 'حذف';
+    del.onclick = async () => { await post('/api/sound/delete?name=' + encodeURIComponent(n)); load(); };
+    item.append(tryIt, del);
+    box.append(item);
+  }
+}
+
+function clock(min) {
+  const h = Math.floor(min / 60), m = min % 60;
+  return (h % 12 === 0 ? 12 : h % 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'ص' : 'م');
+}
+function when(r) {
+  if (r.mode === 1) return 'كل يوم ' + clock(r.minute);
+  if (r.mode === 2) {
+    const d = [7, 1, 2, 3, 4, 5, 6].filter(n => r.days & (1 << n)).map(n => DAY[n]);
+    return d.join('، ') + ' ' + clock(r.minute);
+  }
+  return clock(r.minute) + ' · ' + r.date.split('-').reverse().join('/') + (r.enabled ? '' : ' · انتهى');
+}
+
+// Every request carries the PIN (kept on this phone). When the TV says it is missing or wrong, ask and retry.
+function pin() { try { return localStorage.getItem('pin') || ''; } catch (e) { return ''; } }
+// Digits only, in Latin form: a PIN typed on an Arabic keyboard (١٢٣٤) must match the TV's 1234, and a
+// request header cannot carry Arabic characters at all.
+function digits(v) {
+  return String(v).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 0x660).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 0x6F0).replace(/\D/g, '');
+}
+function setPin(v) { try { localStorage.setItem('pin', digits(v)); } catch (e) {} }
+// ---- From outside the home: commands and the TV's list travel through a public relay, sealed with AES-GCM
+// under a key made from the secret in this page's link. The relay sees neither the text nor a guessable name.
+const RELAY = 'https://ntfy.sh/';
+const enc = new TextEncoder();
+function secret() {
+  const m = location.hash.match(/k=([\w-]{16,})/);
+  try {
+    if (m) localStorage.setItem('k', m[1]);
+    return m ? m[1] : (localStorage.getItem('k') || '');
+  } catch (e) { return m ? m[1] : ''; }
+}
+const b64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64 = t => Uint8Array.from(atob(t.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+async function sha(t) { return new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(t))); }
+async function topic(label) { return 'tvr' + [...await sha(label + secret())].map(b => two(b.toString(16))).join('').slice(0, 40); }
+let keyP = null;
+function key() { return keyP || (keyP = sha('key:' + secret()).then(raw => crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']))); }
+async function seal(plain) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name: 'AES-GCM', iv}, await key(), enc.encode(plain)));
+  const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12);
+  return b64(out);
+}
+async function unseal(text) {
+  const raw = unb64(text.trim());
+  return new TextDecoder().decode(await crypto.subtle.decrypt({name: 'AES-GCM', iv: raw.slice(0, 12)}, await key(), raw.slice(12)));
+}
+// The newest list the TV posted, in the same shape the TV serves at home; null if it posted none lately.
+async function tvState() {
+  const res = await fetch(RELAY + await topic('state:') + '/json?poll=1&since=12h');
+  if (!res.ok) throw new Error('relay');
+  let last = null;
+  for (const line of (await res.text()).split('\n')) {
+    if (!line.trim()) continue;
+    const e = JSON.parse(line);
+    if (e.event !== 'message') continue;
+    try { const st = JSON.parse(await unseal(e.message)); if (!last || st.ts > last.ts) last = st; } catch (x) {}
+  }
+  if (!last) return null;
+  return {now: Date.now(), ts: last.ts, offset: last.offset, more: last.more || 0, sounds: last.sounds || [],
+    items: (last.items || []).map(r => ({id: r.i, text: r.t, minute: r.m, mode: r.o, days: r.d, date: r.a, sound: !!r.s, clip: r.c || '', enabled: !!r.e}))};
+}
+// Sends one command, then waits for the TV to post a list newer than it. Returns that list, or null if the TV stayed quiet.
+async function command(op, data) {
+  const before = await tvState().catch(() => null);
+  const cmd = {v: 1, id: b64(crypto.getRandomValues(new Uint8Array(9))), ts: Date.now(), op, data};
+  const res = await fetch(RELAY + await topic('topic:'), {method: 'POST', body: await seal(JSON.stringify(cmd))});
+  if (!res.ok) throw new Error('relay');
+  for (let i = 0; i < 6; i++) {
+    await new Promise(r => setTimeout(r, 1500));
+    const st = await tvState().catch(() => null);
+    if (st && (!before || st.ts > before.ts)) return {before, after: st};
+  }
+  return null;
+}
+// The same calls the page makes at home, answered through the relay. status 202 = sent, TV has not answered.
+async function remoteApi(path, opts) {
+  const reply = (status, body) => ({ok: status === 200, status, json: async () => body});
+  const [route, query] = path.split('?');
+  const id = decodeURIComponent((query || '').replace(/^id=/, ''));
+  if (route === '/api/list') {
+    const st = await tvState();
+    return reply(200, st || {now: Date.now(), items: [], sounds: [], none: true});
+  }
+  if (route === '/api/add') {
+    const r = await command('add', JSON.parse(opts.body));
+    if (!r) return reply(202, {});
+    const had = new Set((r.before ? r.before.items : []).map(x => x.id));
+    return reply(r.after.items.some(x => !had.has(x.id)) ? 200 : 400, {});
+  }
+  if (route === '/api/now') return reply((await command('now', JSON.parse(opts.body))) ? 200 : 202, {});
+  if (route === '/api/delete') return reply((await command('delete', {rid: id})) ? 200 : 202, {});
+  if (route === '/api/toggle') return reply((await command('toggle', {rid: id})) ? 200 : 202, {});
+  return reply(404, {});
+}
+
+async function api(path, opts) {
+  if (REMOTE) return remoteApi(path, opts);
+  for (;;) {
+    const res = await fetch(path, {...(opts || {}), headers: {'X-Pin': digits(pin())}});
+    if (res.status === 429) { alert('محاولات كثيرة غلط. انتظر دقيقة وجرّب مرة ثانية.'); throw new Error('locked'); }
+    if (res.status !== 401) return res;
+    const v = prompt(pin() ? 'الرمز السري غلط. اكتبه مرة ثانية:' : 'اكتب الرمز السري (تلقاه في تطبيق التلفزيون):');
+    if (v === null) throw new Error('no pin');
+    setPin(v.trim());
+  }
+}
+// true = done, false = refused, 'late' = sent through the relay but the TV has not answered yet.
+async function post(path, body) {
+  const res = await api(path, {method: 'POST', body: body ? JSON.stringify(body) : ''});
+  return res.status === 202 ? 'late' : res.ok;
+}
+
+async function load() {
+  let data;
+  try { data = await (await api('/api/list')).json(); } catch (e) { say(e.message === 'no pin' || e.message === 'locked' ? 'الصفحة مقفلة برمز سري' : DOWN); return; }
+  fillSounds(data.sounds || []);
+  if (typeof data.offset === 'number') {
+    const firstTime = tvOffset === null;
+    tvOffset = data.offset;
+    if (firstTime && !timeTouched) setAhead(5);
+  }
+  if (REMOTE) {
+    const note = $('remoteNote');
+    const old = data.ts ? Math.round((Date.now() - data.ts) / 3600000) : 0;
+    note.hidden = !(data.none || old >= 7 || data.more);
+    note.textContent = data.none ? 'التلفزيون ما أرسل قائمته خلال آخر 12 ساعة (يمكن مطفي أو الإرسال من خارج البيت معطّل). تقدر ترسل، وبيوصله أول ما يشتغل.'
+      : old >= 7 ? 'القائمة هذي آخر تحديث من التلفزيون قبل ' + old + ' ساعة تقريباً.'
+      : 'معروض آخر التذكيرات بس، وفيه ' + data.more + ' أقدم ما تطلع هنا. افتح الصفحة من البيت تشوفها كلها.';
+  } else {
+    $('awayOn').hidden = !data.remote;
+    $('awayOff').hidden = !!data.remote;
+    if (data.remote) $('awayLink').href = AWAY_PAGE + '#k=' + data.remote;
+  }
+  // Reminders fire on the TV's clock. Say so when it disagrees with this phone's.
+  if (typeof data.offset === 'number') {
+    const tv = ((Math.floor(data.now / 60000) + data.offset) % 1440 + 1440) % 1440;
+    const here = new Date(), me = here.getHours() * 60 + here.getMinutes();
+    const gap = Math.min(Math.abs(tv - me), 1440 - Math.abs(tv - me));
+    $('clockWarn').hidden = gap <= 3;
+    $('clockWarn').textContent = '⚠️ ساعة التلفزيون الآن ' + clock(tv) + ' وتختلف عن جوالك. التذكيرات تمشي على ساعة التلفزيون، فصحّح الوقت والمنطقة الزمنية من إعدادات التلفزيون.';
+  }
+  const list = $('list');
+  list.textContent = '';
+  $('empty').hidden = data.items.length > 0;
+  for (const r of data.items) {
+    const item = document.createElement('div');
+    item.className = 'item' + (r.enabled ? '' : ' off');
+    const body = document.createElement('div'); body.className = 'body';
+    const t = document.createElement('div'); t.className = 't'; t.textContent = (r.sound ? (r.clip ? '🎵 ' : '🔔 ') : '🔕 ') + r.text;
+    const w = document.createElement('div'); w.className = 'w'; w.textContent = when(r) + (r.clip ? ' · ' + r.clip : '');
+    body.append(t, w);
+    item.append(body);
+    if (r.mode !== 0) {
+      const tg = document.createElement('button');
+      tg.textContent = r.enabled ? 'إيقاف' : 'تشغيل';
+      tg.onclick = async () => { await post('/api/toggle?id=' + encodeURIComponent(r.id)); load(); };
+      item.append(tg);
+    }
+    const del = document.createElement('button'); del.className = 'del'; del.textContent = 'حذف';
+    del.onclick = async () => { await post('/api/delete?id=' + encodeURIComponent(r.id)); load(); };
+    item.append(del);
+    list.append(item);
+  }
+}
+
+$('add').onclick = async () => {
+  const text = $('text').value.trim(), time = $('time').value;
+  if (!text) return say('اكتب نص التذكير');
+  if (!time) return say('اختر الساعة');
+  const days = [...$('days').querySelectorAll('.on')].map(b => +b.dataset.d);
+  if (mode === 2 && !days.length) return say('اختر يوم واحد على الأقل');
+  $('add').disabled = true;
+  let ok = null;
+  try { ok = await post('/api/add', {text, time, mode, days, date: $('date').value, ...pick()}); } catch (e) {}
+  $('add').disabled = false;
+  if (ok === null) return say(DOWN);
+  if (ok === 'late') { $('text').value = ''; return say(LATE); }
+  if (!ok) return say(mode === 0 ? 'هذا الوقت عدّى، اختر وقت جاي' : 'ما انضاف، جرّب مرة ثانية');
+  $('text').value = '';
+  say('انضاف ✅');
+  load();
+};
+$('now').onclick = async () => {
+  const text = $('text').value.trim();
+  if (!text) return say('اكتب النص أول');
+  let ok = false;
+  try { ok = await post('/api/now', {text, ...pick()}); } catch (e) {}
+  say(ok === 'late' ? 'انرسل، بس التلفزيون ما رد. الرسالة الفورية تطلع بس إذا التلفزيون شغّال الحين.' : ok ? 'طلع على التلفزيون ✅' : DOWN);
+};
+
+$('up').onclick = async () => {
+  const f = $('file').files[0];
+  if (!f) return say2('اختر ملف الصوت أول');
+  if (f.size > 8 * 1024 * 1024) return say2('الملف أكبر من 8 ميقا');
+  $('up').disabled = true; say2('جاري الرفع…');
+  let res = null;
+  try { res = await (await api('/api/sound?name=' + encodeURIComponent(f.name), {method: 'POST', body: f})).json(); } catch (e) {}
+  $('up').disabled = false;
+  if (!res || !res.ok) return say2('ما انرفع. تأكد إنه ملف صوتي (mp3 أو m4a أو wav)');
+  $('file').value = '';
+  say2('انرفع ✅');
+  await load();
+  $('snd').value = res.name;
+};
+
+$('awayCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('awayLink').href); say2('انتسخ الرابط ✅'); } catch (e) { prompt('انسخ الرابط:', $('awayLink').href); }
+};
+if (REMOTE) {
+  $('homeOnly').hidden = true;
+  $('remoteBadge').hidden = false;
+  if (!secret()) {
+    $('remoteNote').hidden = false;
+    $('remoteNote').textContent = 'هذي الصفحة تحتاج رابطها الخاص. افتحه من صفحة التذكيرات وأنت في البيت (قسم «من خارج البيت»).';
+  }
+}
+
+load();
+let busy = false;
+setInterval(async () => { if (busy) return; busy = true; try { await load(); } finally { busy = false; } }, 30000);
+</script>
+</body>
+</html>

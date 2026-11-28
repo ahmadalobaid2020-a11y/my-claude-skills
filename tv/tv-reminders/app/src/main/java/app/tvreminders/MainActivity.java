@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
         box.setOrientation(LinearLayout.VERTICAL);
         box.setGravity(Gravity.CENTER);
         box.setBackgroundColor(0xFF102A43);
-        box.setPadding(120, 50, 120, 50);
+        box.setPadding(120, 30, 120, 30);
 
         boolean overlay = Banner.allowed(this);
         String ip = address(this);
@@ -70,7 +70,22 @@ public class MainActivity extends Activity {
             Svc.setPin(this, "");
             draw();
         });
-        setContentView(box);
+        boolean away = !Svc.remote(this).isEmpty();
+        text(box, away ? "📡  الإرسال من خارج البيت مفعّل. الرابط تلقاه في صفحة الجوال، قسم «من خارج البيت»"
+                : "📡  الإرسال من خارج البيت معطّل", 20, 0xFFBCCCDC);
+        button(box, away ? "غيّر رابط خارج البيت (يلغي القديم)" : "فعّل الإرسال من خارج البيت", () -> {
+            Svc.setRemote(this, Relay.newSecret());
+            draw();
+        });
+        if (away) button(box, "عطّل الإرسال من خارج البيت", () -> {
+            Svc.setRemote(this, "");
+            draw();
+        });
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.setFillViewport(true);
+        scroll.setBackgroundColor(0xFF102A43);
+        scroll.addView(box);
+        setContentView(scroll);
         first.requestFocus();
     }
 
