@@ -55,6 +55,14 @@ public class Svc extends Service implements Web.Host {
         return sounds;
     }
 
+    static String pin(Context c) {
+        return c.getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE).getString("pin", "");
+    }
+
+    static void setPin(Context c, String pin) {
+        c.getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE).edit().putString("pin", pin).apply();
+    }
+
     static void start(Context c) {
         try {
             c.startForegroundService(new Intent(c, Svc.class));
@@ -148,6 +156,11 @@ public class Svc extends Service implements Web.Host {
     @Override
     public void changed() {
         check(this);
+    }
+
+    @Override
+    public String pin() {
+        return pin(this);
     }
 
     @Override

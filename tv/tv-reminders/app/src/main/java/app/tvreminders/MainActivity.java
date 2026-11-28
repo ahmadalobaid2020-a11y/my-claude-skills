@@ -62,8 +62,40 @@ public class MainActivity extends Activity {
             text(box, "✅  التذكيرات جاهزة وتطلع فوق أي شي شغال", 22, Color.WHITE);
             first = button(box, "جرّب تذكير الآن", () -> Banner.show(this, "هذا تذكير تجريبي", true, ""));
         }
+        boolean locked = !Svc.pin(this).isEmpty();
+        text(box, locked ? "🔒  صفحة الجوال مقفلة برمز سري" : "🔓  صفحة الجوال بدون رمز: أي أحد على الواي فاي يقدر يفتحها", 20, 0xFFBCCCDC);
+        button(box, locked ? "غيّر الرمز السري" : "حط رمز سري لصفحة الجوال", this::askPin);
+        if (locked) button(box, "شيل الرمز السري", () -> {
+            Svc.setPin(this, "");
+            draw();
+        });
         setContentView(box);
         first.requestFocus();
+    }
+
+    /** Asks for a new PIN with the TV keyboard: 4 to 8 digits. */
+    private void askPin() {
+        android.widget.EditText in = new android.widget.EditText(this);
+        in.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        in.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(8)});
+        in.setTextSize(28);
+        in.setGravity(Gravity.CENTER);
+        in.setHint("من 4 إلى 8 أرقام");
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("الرمز السري لصفحة الجوال")
+                .setView(in)
+                .setPositiveButton("حفظ", (d, w) -> {
+                    String pin = in.getText().toString().trim();
+                    if (pin.matches("\\d{4,8}")) {
+                        Svc.setPin(this, pin);
+                    } else {
+                        android.widget.Toast.makeText(this, "الرمز لازم يكون من 4 إلى 8 أرقام", android.widget.Toast.LENGTH_LONG).show();
+                    }
+                    draw();
+                })
+                .setNegativeButton("إلغاء", null)
+                .show();
+        in.requestFocus();
     }
 
     private void text(LinearLayout box, String s, int size, int color) {

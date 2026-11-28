@@ -154,14 +154,27 @@ function when(r) {
   return clock(r.minute) + ' · ' + r.date.split('-').reverse().join('/') + (r.enabled ? '' : ' · انتهى');
 }
 
+// Every request carries the PIN (kept on this phone). When the TV says it is missing or wrong, ask and retry.
+function pin() { try { return localStorage.getItem('pin') || ''; } catch (e) { return ''; } }
+function setPin(v) { try { localStorage.setItem('pin', v); } catch (e) {} }
+async function api(path, opts) {
+  for (;;) {
+    const res = await fetch(path, {...(opts || {}), headers: {'X-Pin': pin()}});
+    if (res.status === 429) { alert('محاولات كثيرة غلط. انتظر دقيقة وجرّب مرة ثانية.'); throw new Error('locked'); }
+    if (res.status !== 401) return res;
+    const v = prompt(pin() ? 'الرمز السري غلط. اكتبه مرة ثانية:' : 'اكتب الرمز السري (تلقاه في تطبيق التلفزيون):');
+    if (v === null) throw new Error('no pin');
+    setPin(v.trim());
+  }
+}
 async function post(path, body) {
-  const res = await fetch(path, {method: 'POST', body: body ? JSON.stringify(body) : ''});
+  const res = await api(path, {method: 'POST', body: body ? JSON.stringify(body) : ''});
   return res.ok;
 }
 
 async function load() {
   let data;
-  try { data = await (await fetch('/api/list')).json(); } catch (e) { say('ما قدرت أوصل للتلفزيون'); return; }
+  try { data = await (await api('/api/list')).json(); } catch (e) { say(e.message === 'no pin' || e.message === 'locked' ? 'الصفحة مقفلة برمز سري' : 'ما قدرت أوصل للتلفزيون'); return; }
   fillSounds(data.sounds || []);
   const list = $('list');
   list.textContent = '';
@@ -216,7 +229,7 @@ $('up').onclick = async () => {
   if (f.size > 8 * 1024 * 1024) return say2('الملف أكبر من 8 ميقا');
   $('up').disabled = true; say2('جاري الرفع…');
   let res = null;
-  try { res = await (await fetch('/api/sound?name=' + encodeURIComponent(f.name), {method: 'POST', body: f})).json(); } catch (e) {}
+  try { res = await (await api('/api/sound?name=' + encodeURIComponent(f.name), {method: 'POST', body: f})).json(); } catch (e) {}
   $('up').disabled = false;
   if (!res || !res.ok) return say2('ما انرفع. تأكد إنه ملف صوتي (mp3 أو m4a أو wav)');
   $('file').value = '';
@@ -226,7 +239,8 @@ $('up').onclick = async () => {
 };
 
 load();
-setInterval(load, 30000);
+let busy = false;
+setInterval(async () => { if (busy) return; busy = true; try { await load(); } finally { busy = false; } }, 30000);
 </script>
 </body>
 </html>
