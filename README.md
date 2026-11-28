@@ -39,6 +39,7 @@ Personal Claude Code skills.
 | Remotion skills | 14 `remotion-*` skills from [remotion-dev/skills](https://github.com/remotion-dev/skills) for making video in code. Remotion needs a paid licence for companies above its free threshold (`remotion-license`). |
 | `graphify` | Turns a codebase into a knowledge graph to query (`/graphify .`). `install.sh` runs `uv tool install graphifyy` and `graphify install`, which also adds a graphify section to `~/.claude/CLAUDE.md`. |
 | Obsidian skills | `obsidian-markdown`, `obsidian-bases`, `obsidian-cli`, `obsidian-headless`, `json-canvas`, `defuddle`, `knap` from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills). The CLI skills need Obsidian on your own machine. |
+| `ruflo` | Multi-agent orchestration (swarms, shared memory, workflows) from [ruvnet/ruflo](https://github.com/ruvnet/ruflo). Only the core skill is installed, so it runs `npx ruflo` when asked; its plugins, MCP server and always-on hooks are not installed. Running `npx ruflo init` inside a project adds those hooks to that project. |
 | Perplexity MCP | Web search through [Perplexity](https://github.com/perplexityai/modelcontextprotocol). `install.sh` registers it only when `PERPLEXITY_API_KEY` is set (paid API key). |
 | Anthropic skills | `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `frontend-design`, `canvas-design`, `mcp-builder`, `webapp-testing` and the rest of [anthropics/skills](https://github.com/anthropics/skills). Cloned and copied by `install.sh`, not stored here. |
 
