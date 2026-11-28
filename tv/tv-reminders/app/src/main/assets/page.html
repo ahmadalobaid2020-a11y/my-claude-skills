@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تذكيراتي</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: #102a43; color: #fff; font-family: -apple-system, "Segoe UI", Tahoma, sans-serif; }
+  main { max-width: 560px; margin: 0 auto; }
+  h1 { color: #facc15; font-size: 26px; margin: 8px 0 16px; text-align: center; }
+  h2 { font-size: 18px; margin: 26px 0 10px; color: #bcccdc; }
+  .card { background: #1c3d5a; border-radius: 16px; padding: 16px; }
+  label { display: block; font-size: 15px; margin: 14px 0 6px; color: #d9e2ec; }
+  label:first-child { margin-top: 0; }
+  textarea, input[type=time], input[type=date] { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #486581;
+    background: #0b1f33; color: #fff; font-size: 18px; font-family: inherit; }
+  textarea { height: 76px; resize: vertical; }
+  textarea:focus, input:focus { outline: none; border-color: #facc15; }
+  .seg { display: flex; gap: 8px; }
+  .seg button { flex: 1; padding: 11px 4px; border-radius: 10px; border: 2px solid #486581; background: #0b1f33; color: #fff;
+    font-size: 15px; font-family: inherit; }
+  .seg button.on { background: #facc15; border-color: #facc15; color: #102a43; font-weight: bold; }
+  .days { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .check { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-size: 16px; }
+  .check input { width: 22px; height: 22px; accent-color: #facc15; }
+  .row { display: flex; gap: 10px; margin-top: 18px; }
+  .go { flex: 2; padding: 15px; border: 0; border-radius: 12px; background: #facc15; color: #102a43; font-size: 18px;
+    font-weight: bold; font-family: inherit; }
+  .now { flex: 1; padding: 15px; border: 2px solid #facc15; border-radius: 12px; background: transparent; color: #facc15;
+    font-size: 16px; font-family: inherit; }
+  button:disabled { opacity: .5; }
+  #msg { min-height: 22px; margin-top: 10px; font-size: 15px; text-align: center; color: #facc15; }
+  .item { background: #1c3d5a; border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
+  .item.off { opacity: .55; }
+  .item .body { flex: 1; min-width: 0; }
+  .item .t { font-size: 17px; overflow-wrap: anywhere; }
+  .item .w { font-size: 14px; color: #bcccdc; margin-top: 4px; }
+  .item button { border: 0; border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; background: #334e68; color: #fff; }
+  .item button.del { background: #7f1d1d; }
+  #empty { text-align: center; color: #bcccdc; padding: 18px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🔔 تذكيراتي</h1>
+  <div class="card">
+    <label for="text">وش أذكّرك به؟</label>
+    <textarea id="text" maxlength="200" placeholder="مثال: خذ الدواء"></textarea>
+
+    <label for="time">الساعة</label>
+    <input id="time" type="time">
+
+    <label>التكرار</label>
+    <div class="seg" id="mode">
+      <button type="button" data-m="0" class="on">مرة وحدة</button>
+      <button type="button" data-m="1">كل يوم</button>
+      <button type="button" data-m="2">أيام محددة</button>
+    </div>
+
+    <div id="onceBox">
+      <label for="date">اليوم (اتركه فاضي لأقرب وقت)</label>
+      <input id="date" type="date">
+    </div>
+    <div id="daysBox" hidden>
+      <label>أي أيام؟</label>
+      <div class="seg days" id="days">
+        <button type="button" data-d="7">السبت</button>
+        <button type="button" data-d="1">الأحد</button>
+        <button type="button" data-d="2">الاثنين</button>
+        <button type="button" data-d="3">الثلاثاء</button>
+        <button type="button" data-d="4">الأربعاء</button>
+        <button type="button" data-d="5">الخميس</button>
+        <button type="button" data-d="6">الجمعة</button>
+      </div>
+    </div>
+
+    <div class="check"><input id="sound" type="checkbox" checked><label for="sound" style="margin:0">مع صوت تنبيه</label></div>
+
+    <div class="row">
+      <button class="go" id="add">أضف التذكير</button>
+      <button class="now" id="now">اعرضه الآن</button>
+    </div>
+    <div id="msg"></div>
+  </div>
+
+  <h2>التذكيرات</h2>
+  <div id="list"></div>
+  <div id="empty" hidden>ما فيه تذكيرات للحين</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const DAY = {1: 'الأحد', 2: 'الاثنين', 3: 'الثلاثاء', 4: 'الأربعاء', 5: 'الخميس', 6: 'الجمعة', 7: 'السبت'};
+let mode = 0;
+
+function say(t) { $('msg').textContent = t; if (t) setTimeout(() => { if ($('msg').textContent === t) $('msg').textContent = ''; }, 4000); }
+
+$('mode').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  mode = +b.dataset.m;
+  for (const x of $('mode').children) x.classList.toggle('on', x === b);
+  $('onceBox').hidden = mode !== 0;
+  $('daysBox').hidden = mode !== 2;
+});
+$('days').addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.classList.toggle('on'); });
+
+function clock(min) {
+  const h = Math.floor(min / 60), m = min % 60;
+  return (h % 12 === 0 ? 12 : h % 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'ص' : 'م');
+}
+function when(r) {
+  if (r.mode === 1) return 'كل يوم ' + clock(r.minute);
+  if (r.mode === 2) {
+    const d = [7, 1, 2, 3, 4, 5, 6].filter(n => r.days & (1 << n)).map(n => DAY[n]);
+    return d.join('، ') + ' ' + clock(r.minute);
+  }
+  return clock(r.minute) + ' · ' + r.date.split('-').reverse().join('/') + (r.enabled ? '' : ' · انتهى');
+}
+
+async function post(path, body) {
+  const res = await fetch(path, {method: 'POST', body: body ? JSON.stringify(body) : ''});
+  return res.ok;
+}
+
+async function load() {
+  let data;
+  try { data = await (await fetch('/api/list')).json(); } catch (e) { say('ما قدرت أوصل للتلفزيون'); return; }
+  const list = $('list');
+  list.textContent = '';
+  $('empty').hidden = data.items.length > 0;
+  for (const r of data.items) {
+    const item = document.createElement('div');
+    item.className = 'item' + (r.enabled ? '' : ' off');
+    const body = document.createElement('div'); body.className = 'body';
+    const t = document.createElement('div'); t.className = 't'; t.textContent = (r.sound ? '🔔 ' : '🔕 ') + r.text;
+    const w = document.createElement('div'); w.className = 'w'; w.textContent = when(r);
+    body.append(t, w);
+    item.append(body);
+    if (r.mode !== 0) {
+      const tg = document.createElement('button');
+      tg.textContent = r.enabled ? 'إيقاف' : 'تشغيل';
+      tg.onclick = async () => { await post('/api/toggle?id=' + encodeURIComponent(r.id)); load(); };
+      item.append(tg);
+    }
+    const del = document.createElement('button'); del.className = 'del'; del.textContent = 'حذف';
+    del.onclick = async () => { await post('/api/delete?id=' + encodeURIComponent(r.id)); load(); };
+    item.append(del);
+    list.append(item);
+  }
+}
+
+$('add').onclick = async () => {
+  const text = $('text').value.trim(), time = $('time').value;
+  if (!text) return say('اكتب نص التذكير');
+  if (!time) return say('اختر الساعة');
+  const days = [...$('days').querySelectorAll('.on')].map(b => +b.dataset.d);
+  if (mode === 2 && !days.length) return say('اختر يوم واحد على الأقل');
+  $('add').disabled = true;
+  let ok = false;
+  try { ok = await post('/api/add', {text, time, mode, days, date: $('date').value, sound: $('sound').checked}); } catch (e) {}
+  $('add').disabled = false;
+  if (!ok) return say(mode === 0 && $('date').value ? 'هذا الوقت عدّى، اختر وقت جاي' : 'ما انضاف، جرّب مرة ثانية');
+  $('text').value = '';
+  say('انضاف ✅');
+  load();
+};
+$('now').onclick = async () => {
+  const text = $('text').value.trim();
+  if (!text) return say('اكتب النص أول');
+  let ok = false;
+  try { ok = await post('/api/now', {text, sound: $('sound').checked}); } catch (e) {}
+  say(ok ? 'طلع على التلفزيون ✅' : 'ما قدرت أوصل للتلفزيون');
+};
+
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>
