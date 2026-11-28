@@ -61,14 +61,22 @@ public class Svc extends Service implements Web.Host {
         return sounds;
     }
 
-    /** The sounds that come with the app, by the name they get in the list. */
-    private static final String[][] BUILT_IN = {{"doorbell.mp3", "جرس باب.mp3"}, {"phone.mp3", "تنبيه جوال.mp3"}};
+    /** The spoken "you have a reminder" clip, which the phone page selects unless told otherwise. */
+    static final String DEFAULT_CLIP = "صوت فهد.mp3";
 
-    /** Copies the built-in sounds into the store once, so deleting one from the phone page stays deleted. */
+    /** The sounds that come with the app, by the name they get in the list. */
+    private static final String[][] BUILT_IN = {{"fahad.mp3", DEFAULT_CLIP}, {"doorbell.mp3", "جرس باب.mp3"}, {"phone.mp3", "تنبيه جوال.mp3"}};
+
+    /** Copies each built-in sound into the store once, so deleting one from the phone page stays deleted. */
     private static void seed(Context app, Sounds store) {
         SharedPreferences p = app.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        if (p.getBoolean("seeded1", false)) return;
+        // Version 1.5 copied the doorbell and the phone tone under one flag.
+        boolean old = p.getBoolean("seeded1", false);
+        SharedPreferences.Editor done = p.edit();
         for (String[] s : BUILT_IN) {
+            String flag = "seeded:" + s[0];
+            if (p.getBoolean(flag, old && !s[0].equals("fahad.mp3"))) continue;
+            done.putBoolean(flag, true);
             try (InputStream in = app.getAssets().open("sounds/" + s[0])) {
                 ByteArrayOutputStream b = new ByteArrayOutputStream();
                 byte[] buf = new byte[8192];
@@ -79,7 +87,7 @@ public class Svc extends Service implements Web.Host {
                 // a missing asset only means one sound fewer in the list
             }
         }
-        p.edit().putBoolean("seeded1", true).apply();
+        done.apply();
     }
 
     static String pin(Context c) {
