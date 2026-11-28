@@ -152,7 +152,7 @@ public class Web {
         if (method.equals("GET") && path.equals("/")) {
             reply(sock, 200, "text/html; charset=utf-8", page);
         } else if (method.equals("GET") && path.equals("/api/list")) {
-            json(sock, 200, new JSONObject().put("now", now).put("items", book.toJson(now, tz))
+            json(sock, 200, new JSONObject().put("now", now).put("offset", tz.getOffset(now) / 60000).put("items", book.toJson(now, tz))
                     .put("sounds", new org.json.JSONArray(sounds.list())));
         } else if (post && path.equals("/api/sound/delete")) {
             boolean ok = sounds.delete(param(query, "name"));

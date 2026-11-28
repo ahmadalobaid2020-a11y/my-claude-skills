@@ -16,6 +16,11 @@
   textarea, input[type=time], input[type=date], select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #486581;
     background: #0b1f33; color: #fff; font-size: 18px; font-family: inherit; }
   textarea { height: 76px; resize: vertical; }
+  /* iOS draws an empty time or date field as a thin blank box: give it a real height and visible text. */
+  input[type=time], input[type=date] { min-height: 52px; -webkit-appearance: none; appearance: none; text-align: center;
+    font-size: 22px; font-weight: bold; color: #facc15; display: block; }
+  .quick { margin-top: 8px; }
+  .quick button { font-size: 14px; padding: 9px 2px; }
   textarea:focus, input:focus { outline: none; border-color: #facc15; }
   .seg { display: flex; gap: 8px; }
   .seg button { flex: 1; padding: 11px 4px; border-radius: 10px; border: 2px solid #486581; background: #0b1f33; color: #fff;
@@ -49,8 +54,14 @@
     <label for="text">وش أذكّرك به؟</label>
     <textarea id="text" maxlength="200" placeholder="مثال: خذ الدواء"></textarea>
 
-    <label for="time">الساعة</label>
-    <input id="time" type="time">
+    <label for="time">الوقت (اضغط على الخانة وحدد الساعة والدقيقة)</label>
+    <input id="time" type="time" required>
+    <div class="seg quick" id="quick">
+      <button type="button" data-q="5">بعد 5 د</button>
+      <button type="button" data-q="15">بعد ربع</button>
+      <button type="button" data-q="30">بعد نص</button>
+      <button type="button" data-q="60">بعد ساعة</button>
+    </div>
 
     <label>التكرار</label>
     <div class="seg" id="mode">
@@ -60,7 +71,7 @@
     </div>
 
     <div id="onceBox">
-      <label for="date">اليوم (اتركه فاضي لأقرب وقت)</label>
+      <label for="date">اليوم</label>
       <input id="date" type="date">
     </div>
     <div id="daysBox" hidden>
@@ -84,6 +95,7 @@
       <button class="now" id="now">اعرضه الآن</button>
     </div>
     <div id="msg"></div>
+    <div id="clockWarn" hidden style="margin-top:10px;padding:10px;border-radius:10px;background:#7f1d1d;font-size:14px;text-align:center"></div>
   </div>
 
   <h2>التذكيرات</h2>
@@ -112,6 +124,20 @@ $('mode').addEventListener('click', e => {
   for (const x of $('mode').children) x.classList.toggle('on', x === b);
   $('onceBox').hidden = mode !== 0;
   $('daysBox').hidden = mode !== 2;
+});
+// The time field starts at five minutes from now, so it is never an empty box.
+const two = n => String(n).padStart(2, '0');
+function ahead(min) {
+  const d = new Date(Date.now() + min * 60000);
+  return {time: two(d.getHours()) + ':' + two(d.getMinutes()), date: d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate())};
+}
+function setAhead(min) { const a = ahead(min); $('time').value = a.time; $('date').value = a.date; }
+setAhead(5);
+$('quick').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  setAhead(+b.dataset.q);
+  $('mode').querySelector('[data-m="0"]').click();
+  say('الوقت: ' + clock(+$('time').value.slice(0, 2) * 60 + +$('time').value.slice(3)));
 });
 $('days').addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.classList.toggle('on'); });
 
@@ -181,6 +207,14 @@ async function load() {
   let data;
   try { data = await (await api('/api/list')).json(); } catch (e) { say(e.message === 'no pin' || e.message === 'locked' ? 'الصفحة مقفلة برمز سري' : 'ما قدرت أوصل للتلفزيون'); return; }
   fillSounds(data.sounds || []);
+  // Reminders fire on the TV's clock. Say so when it disagrees with this phone's.
+  if (typeof data.offset === 'number') {
+    const tv = ((Math.floor(data.now / 60000) + data.offset) % 1440 + 1440) % 1440;
+    const here = new Date(), me = here.getHours() * 60 + here.getMinutes();
+    const gap = Math.min(Math.abs(tv - me), 1440 - Math.abs(tv - me));
+    $('clockWarn').hidden = gap <= 3;
+    $('clockWarn').textContent = '⚠️ ساعة التلفزيون الآن ' + clock(tv) + ' وتختلف عن جوالك. التذكيرات تمشي على ساعة التلفزيون، فصحّح الوقت والمنطقة الزمنية من إعدادات التلفزيون.';
+  }
   const list = $('list');
   list.textContent = '';
   $('empty').hidden = data.items.length > 0;
