@@ -139,6 +139,20 @@ if git clone -q --depth 1 https://github.com/Jakeschincariol/youtube-agent-skill
 else
   echo "could not clone Jakeschincariol/youtube-agent-skill: skipping"
 fi
+# CLI-Anything (HKUDS/CLI-Anything): turns software into agent-native CLIs.
+# cli-hub browses and installs ready-made CLIs (catalog at hkuds.github.io); the cli-hub-meta-skill teaches
+# the agent to use it; the Claude Code plugin adds /cli-anything to generate a CLI for new software.
+pip install -q --break-system-packages cli-anything-hub || echo "cli-anything-hub install failed: skipping"
+if git clone -q --depth 1 https://github.com/HKUDS/CLI-Anything.git "$tmp/cli-anything"; then
+  rm -rf ~/.claude/skills/cli-hub-meta-skill
+  cp -r "$tmp/cli-anything/cli-hub-meta-skill" ~/.claude/skills/cli-hub-meta-skill
+else
+  echo "could not clone HKUDS/CLI-Anything: skipping"
+fi
+if command -v claude >/dev/null; then
+  { claude plugin marketplace add HKUDS/CLI-Anything && claude plugin install cli-anything; } >/dev/null 2>&1 \
+    || echo "cli-anything plugin install failed: run '/plugin marketplace add HKUDS/CLI-Anything' then '/plugin install cli-anything'"
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
