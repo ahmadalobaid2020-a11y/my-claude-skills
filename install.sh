@@ -153,6 +153,15 @@ if command -v claude >/dev/null; then
   { claude plugin marketplace add HKUDS/CLI-Anything && claude plugin install cli-anything; } >/dev/null 2>&1 \
     || echo "cli-anything plugin install failed: run '/plugin marketplace add HKUDS/CLI-Anything' then '/plugin install cli-anything'"
 fi
+# noor-tv (majedphotos/noor-tv): cleans an Android TV / Google TV over adb (disables, never uninstalls) and adds a
+# home screen with prayer times, adhan and reminders. Needs a laptop on the same Wi-Fi as the TV, so it cannot run
+# from a cloud session. The repo is kept in ~/noor-tv because the skill runs its tools/ and launcher-patch/ scripts.
+if [ -d ~/noor-tv/.git ]; then git -C ~/noor-tv pull -q --ff-only || true
+else git clone -q --depth 1 https://github.com/majedphotos/noor-tv.git ~/noor-tv || echo "could not clone majedphotos/noor-tv: skipping"; fi
+if [ -d ~/noor-tv/skills/noor-tv ]; then
+  rm -rf ~/.claude/skills/noor-tv
+  cp -r ~/noor-tv/skills/noor-tv ~/.claude/skills/noor-tv
+fi
 rm -rf "$tmp"
 if command -v npx >/dev/null; then
   npm install -g --silent skills           # skills CLI (vercel-labs/skills)
