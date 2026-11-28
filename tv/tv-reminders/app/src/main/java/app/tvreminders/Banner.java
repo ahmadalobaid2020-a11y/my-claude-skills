@@ -21,7 +21,8 @@ final class Banner {
     private Banner() {
     }
 
-    static final long SHOWN = 60_000;
+    /** How long a message stays on screen. Its sound, if longer, plays on to the end. */
+    static final long SHOWN = 6_000;
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static LinearLayout stack;
 
@@ -57,12 +58,7 @@ final class Banner {
             }
             View line = line(c, text);
             stack.addView(line);
-            long shown = SHOWN;
-            if (sound) {
-                int ms = play(c, clip);
-                if (ms == 0) beep();
-                else shown = Math.max(SHOWN, ms + 2000L); // the message stays up while its sound plays
-            }
+            if (sound && play(c, clip) == 0) beep();
             MAIN.postDelayed(() -> {
                 if (stack == null) return;
                 stack.removeView(line);
@@ -73,7 +69,7 @@ final class Banner {
                     }
                     stack = null;
                 }
-            }, shown);
+            }, SHOWN);
         });
     }
 
