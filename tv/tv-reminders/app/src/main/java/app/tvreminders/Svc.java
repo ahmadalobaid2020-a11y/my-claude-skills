@@ -53,8 +53,33 @@ public class Svc extends Service implements Web.Host {
     }
 
     static synchronized Sounds sounds(Context c) {
-        if (sounds == null) sounds = new Sounds(new java.io.File(c.getApplicationContext().getFilesDir(), "sounds"));
+        if (sounds == null) {
+            Context app = c.getApplicationContext();
+            sounds = new Sounds(new java.io.File(app.getFilesDir(), "sounds"));
+            seed(app, sounds);
+        }
         return sounds;
+    }
+
+    /** The sounds that come with the app, by the name they get in the list. */
+    private static final String[][] BUILT_IN = {{"doorbell.mp3", "جرس باب.mp3"}, {"phone.mp3", "تنبيه جوال.mp3"}};
+
+    /** Copies the built-in sounds into the store once, so deleting one from the phone page stays deleted. */
+    private static void seed(Context app, Sounds store) {
+        SharedPreferences p = app.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if (p.getBoolean("seeded1", false)) return;
+        for (String[] s : BUILT_IN) {
+            try (InputStream in = app.getAssets().open("sounds/" + s[0])) {
+                ByteArrayOutputStream b = new ByteArrayOutputStream();
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) b.write(buf, 0, n);
+                store.save(s[1], b.toByteArray());
+            } catch (Exception ignored) {
+                // a missing asset only means one sound fewer in the list
+            }
+        }
+        p.edit().putBoolean("seeded1", true).apply();
     }
 
     static String pin(Context c) {
