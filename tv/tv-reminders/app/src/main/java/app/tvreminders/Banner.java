@@ -29,7 +29,10 @@ final class Banner {
         return Settings.canDrawOverlays(c);
     }
 
-    static void show(Context context, String text, boolean sound) {
+    private static android.media.MediaPlayer player;
+
+    /** clip: a stored sound's name to play with the strip; without one, sound means three beeps. */
+    static void show(Context context, String text, boolean sound, String clip) {
         Context c = context.getApplicationContext();
         if (!allowed(c)) return;
         MAIN.post(() -> {
@@ -54,7 +57,12 @@ final class Banner {
             }
             View line = line(c, text);
             stack.addView(line);
-            if (sound) beep();
+            long shown = SHOWN;
+            if (sound) {
+                int ms = play(c, clip);
+                if (ms == 0) beep();
+                else shown = Math.max(SHOWN, ms + 2000L); // the message stays up while its sound plays
+            }
             MAIN.postDelayed(() -> {
                 if (stack == null) return;
                 stack.removeView(line);
@@ -65,8 +73,33 @@ final class Banner {
                     }
                     stack = null;
                 }
-            }, SHOWN);
+            }, shown);
         });
+    }
+
+    /** Plays a stored clip on the media stream. Returns its length in ms, or 0 when there is nothing to play. */
+    private static int play(Context c, String clip) {
+        java.io.File f = clip == null || clip.isEmpty() ? null : Svc.sounds(c).file(clip);
+        if (f == null) return 0;
+        try {
+            if (player != null) player.release();
+            android.media.MediaPlayer p = new android.media.MediaPlayer();
+            p.setAudioAttributes(new android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC).build());
+            p.setDataSource(f.getAbsolutePath());
+            p.prepare();
+            p.setOnCompletionListener(mp -> {
+                mp.release();
+                if (player == mp) player = null;
+            });
+            p.start();
+            player = p;
+            return Math.min(Math.max(p.getDuration(), 1), 10 * 60_000);
+        } catch (Exception e) {
+            player = null;
+            return 0; // unreadable file: fall back to beeps
+        }
     }
 
     private static View line(Context c, String text) {

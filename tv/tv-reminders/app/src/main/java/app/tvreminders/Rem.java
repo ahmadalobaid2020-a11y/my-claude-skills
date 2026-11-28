@@ -13,7 +13,10 @@ public class Rem {
     public int days;
     /** For ONCE: yyyy-MM-dd. */
     public String date;
+    /** Play something with the strip: the stored clip if one is named, otherwise three beeps. */
     public boolean sound;
+    /** File name of a stored sound (see Sounds), or empty. */
+    public String clip = "";
     public boolean enabled = true;
     /** Occurrences at or before this moment are done with (shown, or older than the reminder itself). */
     public long doneUntil;

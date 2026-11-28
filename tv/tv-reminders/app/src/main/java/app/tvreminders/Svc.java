@@ -28,6 +28,7 @@ public class Svc extends Service implements Web.Host {
     static final String CHECK = "app.tvreminders.CHECK";
 
     private static Book book;
+    private static Sounds sounds;
     private Web web;
     private BroadcastReceiver screenOn;
 
@@ -49,6 +50,11 @@ public class Svc extends Service implements Web.Host {
         return book;
     }
 
+    static synchronized Sounds sounds(Context c) {
+        if (sounds == null) sounds = new Sounds(new java.io.File(c.getApplicationContext().getFilesDir(), "sounds"));
+        return sounds;
+    }
+
     static void start(Context c) {
         try {
             c.startForegroundService(new Intent(c, Svc.class));
@@ -68,7 +74,7 @@ public class Svc extends Service implements Web.Host {
         for (Rem r : b.all()) {
             long due = Schedule.due(r, now, tz);
             if (due != -1 && screen && Banner.allowed(c)) {
-                Banner.show(c, now - due > 5 * 60_000 ? r.text + "  (كان " + clock(due, tz) + ")" : r.text, r.sound);
+                Banner.show(c, now - due > 5 * 60_000 ? r.text + "  (كان " + clock(due, tz) + ")" : r.text, r.sound, r.clip);
                 b.done(r, now);
             }
             long next = Schedule.upcoming(r, now, tz);
@@ -107,7 +113,7 @@ public class Svc extends Service implements Web.Host {
         startForeground(1, n);
 
         try {
-            web = new Web(book(this), this, asset("page.html"));
+            web = new Web(book(this), sounds(this), this, asset("page.html"));
             web.start(Web.PORT);
         } catch (Exception e) {
             web = null; // port taken or no network yet: reminders still fire, the phone page is just not up
@@ -145,8 +151,8 @@ public class Svc extends Service implements Web.Host {
     }
 
     @Override
-    public void show(String text, boolean sound) {
-        Banner.show(this, text, sound);
+    public void show(String text, boolean sound, String clip) {
+        Banner.show(this, text, sound, clip);
     }
 
     private byte[] asset(String name) throws Exception {

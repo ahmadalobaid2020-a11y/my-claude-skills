@@ -55,6 +55,8 @@ public class Book {
         r.text = text.length() > MAX_TEXT ? text.substring(0, MAX_TEXT) : text;
         r.mode = in.optInt("mode", Rem.ONCE);
         r.sound = in.optBoolean("sound", false);
+        String clip = Sounds.clean(in.optString("clip", ""));
+        r.clip = r.sound && clip != null ? clip : "";
         r.doneUntil = now; // a daily 08:00 reminder made at 10:00 starts tomorrow, not as "missed"
         if (r.mode == Rem.DAYS) {
             JSONArray d = in.optJSONArray("days");
@@ -132,7 +134,7 @@ public class Book {
 
     private static JSONObject json(Rem r) throws Exception {
         return new JSONObject().put("id", r.id).put("text", r.text).put("minute", r.minute).put("mode", r.mode)
-                .put("days", r.days).put("date", r.date == null ? "" : r.date).put("sound", r.sound)
+                .put("days", r.days).put("date", r.date == null ? "" : r.date).put("sound", r.sound).put("clip", r.clip)
                 .put("enabled", r.enabled).put("doneUntil", r.doneUntil);
     }
 
@@ -145,6 +147,7 @@ public class Book {
         r.days = o.optInt("days");
         r.date = o.optString("date");
         r.sound = o.optBoolean("sound");
+        r.clip = o.optString("clip", "");
         r.enabled = o.optBoolean("enabled", true);
         r.doneUntil = o.optLong("doneUntil");
         return r;
