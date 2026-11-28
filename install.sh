@@ -195,6 +195,9 @@ if command -v npx >/dev/null; then
     echo "could not clone AgriciDaniel/claude-ads: skipping"
   fi
   rm -rf "$ads_tmp"
+  # ruflo (ruvnet/ruflo): multi-agent orchestration. Only its core skill, which runs `npx ruflo` when asked.
+  # Not installed: its plugins, MCP server and the hooks that run around every command and file edit.
+  skills add ruvnet/ruflo --skill ruflo -g -y || echo "ruflo skill install failed: skipping"
   # playwright-cli (microsoft/playwright-cli): browser automation from the terminal, plus its skill.
   npm install -g --silent @playwright/cli || echo "playwright-cli install failed: skipping"
   skills add microsoft/playwright-cli --skill playwright-cli -g -y || echo "playwright-cli skill install failed: skipping"
