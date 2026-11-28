@@ -172,7 +172,46 @@ if command -v npx >/dev/null; then
   # video-director only, from imMamdouhaboammar/designly (AI video directing and multi-model prompting)
   skills add imMamdouhaboammar/designly --skill video-director -g -y || echo "video-director install failed: skipping"
   npm install -g --silent @hypit/hypit     # Hypit CLI
+  # Design, coding, marketing, video and notes skills. Installed as skills only: the plugin forms of
+  # impeccable and ponytail also add hooks that run on every session, and those are left out here.
+  for r in pbakaus/impeccable DietrichGebert/ponytail coreyhaines31/marketingskills heygen-com/hyperframes \
+           remotion-dev/skills kepano/obsidian-skills; do
+    skills add "$r" -g -y || echo "$r install failed: skipping"
+  done
+  # marketingskills and claude-ads both ship a skill named "ads"; the marketing one becomes marketing-ads.
+  if [ -d ~/.agents/skills/ads ] && grep -q '^name: ads$' ~/.agents/skills/ads/SKILL.md; then
+    rm -rf ~/.agents/skills/marketing-ads ~/.claude/skills/marketing-ads ~/.claude/skills/ads
+    mv ~/.agents/skills/ads ~/.agents/skills/marketing-ads
+    sed -i '0,/^name: ads$/s//name: marketing-ads/' ~/.agents/skills/marketing-ads/SKILL.md
+    ln -s ../../.agents/skills/marketing-ads ~/.claude/skills/marketing-ads
+  fi
+  # claude-ads (AgriciDaniel/claude-ads): paid-ads audits and plans for 12 platforms, via its own installer
+  # (34 skills in ~/.claude/skills, 25 agents in ~/.claude/agents). --no-deps: its hash-locked Python
+  # dependencies (PDF reports, screenshots) have no lock for every Python version; install them by hand if needed.
+  ads_tmp=$(mktemp -d)
+  if git clone -q --depth 1 https://github.com/AgriciDaniel/claude-ads.git "$ads_tmp/claude-ads"; then
+    (cd "$ads_tmp/claude-ads" && bash install.sh --source=local --no-deps >/dev/null) || echo "claude-ads install failed: skipping"
+  else
+    echo "could not clone AgriciDaniel/claude-ads: skipping"
+  fi
+  rm -rf "$ads_tmp"
+  # playwright-cli (microsoft/playwright-cli): browser automation from the terminal, plus its skill.
+  npm install -g --silent @playwright/cli || echo "playwright-cli install failed: skipping"
+  skills add microsoft/playwright-cli --skill playwright-cli -g -y || echo "playwright-cli skill install failed: skipping"
 else
   echo "npx not found: skipping skills CLI and hypit"
+fi
+# graphify (safishamsi/graphify): maps a codebase into a knowledge graph you can query (/graphify .).
+# `graphify install` writes the skill and adds a short graphify section to ~/.claude/CLAUDE.md.
+if command -v uv >/dev/null; then
+  { uv tool install -q graphifyy && PATH="$HOME/.local/bin:$PATH" graphify install >/dev/null; } || echo "graphify install failed: skipping"
+else
+  echo "uv not found: skipping graphify"
+fi
+# Perplexity MCP server (perplexityai/modelcontextprotocol): web search inside Claude. Needs a paid API key,
+# so it is registered only when PERPLEXITY_API_KEY is set in the environment.
+if [ -n "${PERPLEXITY_API_KEY:-}" ] && command -v claude >/dev/null && ! claude mcp get perplexity >/dev/null 2>&1; then
+  claude mcp add perplexity --scope user -e PERPLEXITY_API_KEY="$PERPLEXITY_API_KEY" \
+    -- npx -y @perplexity-ai/mcp-server || echo "perplexity MCP registration failed: skipping"
 fi
 echo "installed: $(ls skills | tr '\n' ' ')"
