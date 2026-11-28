@@ -22,10 +22,18 @@ public class Web {
 
         /** Show this text on the TV right now, with the stored clip if one is named, else beeps if sound is set. */
         void show(String text, boolean sound, String clip);
+
+        /** The PIN the phone page must send, or empty when the page is open to the whole home network. */
+        String pin();
     }
 
     public static final int PORT = 8090;
     private static final int MAX_BODY = 8192;
+    /** After this many wrong PINs in a row, every request is refused for LOCK_MS. */
+    static final int MAX_WRONG = 5;
+    static final long LOCK_MS = 60_000;
+    private int wrong;
+    private long lockedUntil;
 
     private final Book book;
     private final Sounds sounds;
@@ -76,6 +84,18 @@ public class Web {
             for (String l : lines) {
                 if (l.toLowerCase(java.util.Locale.ROOT).startsWith("content-length:")) length = Integer.parseInt(l.substring(15).trim());
             }
+            String sent = "";
+            for (String l : lines) {
+                if (l.toLowerCase(java.util.Locale.ROOT).startsWith("x-pin:")) sent = l.substring(6).trim();
+            }
+            if (first[1].startsWith("/api/")) {
+                int gate = gate(sent);
+                if (gate != 200) {
+                    // Answer before reading the body, so a locked-out client cannot make the TV buffer uploads.
+                    json(sock, gate, new JSONObject().put("ok", false).put("pin", true));
+                    return;
+                }
+            }
             boolean upload = first[0].equals("POST") && first[1].startsWith("/api/sound?");
             if (length < 0 || length > (upload ? Sounds.MAX_BYTES : MAX_BODY)) {
                 reply(sock, 413, "text/plain", "too large".getBytes(StandardCharsets.UTF_8));
@@ -100,6 +120,23 @@ public class Web {
         } catch (Exception ignored) {
             // a client that hangs up or sends rubbish is not worth more than this
         }
+    }
+
+    /** 200 when the request may go on, 401 for a missing or wrong PIN, 429 while locked out. */
+    private synchronized int gate(String sent) {
+        String pin = host.pin();
+        if (pin == null || pin.isEmpty()) return 200;
+        long now = System.currentTimeMillis();
+        if (now < lockedUntil) return 429;
+        if (java.security.MessageDigest.isEqual(pin.getBytes(StandardCharsets.UTF_8), sent.getBytes(StandardCharsets.UTF_8))) {
+            wrong = 0;
+            return 200;
+        }
+        if (!sent.isEmpty() && ++wrong >= MAX_WRONG) {
+            wrong = 0;
+            lockedUntil = now + LOCK_MS;
+        }
+        return 401;
     }
 
     private void route(Socket sock, String method, String target, String body) throws Exception {

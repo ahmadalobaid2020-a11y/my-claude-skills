@@ -13,7 +13,7 @@ Ready-built APK: `docs/tv/reminders.apk`, on the install page <https://ahmadalob
 (short link <https://tinyurl.com/noor-tv-app>). Install it on the TV with the Downloader app, open it once and allow
 "display over other apps". The app's screen shows the address to open on the phone.
 
-The phone page has no password: anyone on the same Wi-Fi can add, remove or show reminders and upload sounds.
+The phone page is open to the home network unless a PIN (4 to 8 digits) is set from the app's TV screen. With a PIN, every request must carry it; five wrong PINs in a row lock the page for a minute. It is plain HTTP, so the PIN keeps out other people on the Wi-Fi, not someone capturing the network traffic.
 
 ## Layout
 
