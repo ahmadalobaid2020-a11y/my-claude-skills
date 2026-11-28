@@ -4,7 +4,7 @@ An Android TV / Google TV app that shows reminders over whatever is on screen. R
 the TV serves a small page on the home network at `http://<tv-ip>:8090`.
 
 - A reminder has a text, a time, and repeats once, every day, or on chosen weekdays.
-- Its sound is silent, three beeps, or a sound file sent from the phone and kept on the TV (mp3, m4a, wav and similar, up to 8 MB, 20 files). The message stays on screen while the sound plays.
+- Its sound is silent, three beeps, or a sound file sent from the phone and kept on the TV (mp3, m4a, wav and similar, up to 8 MB, 20 files). The message leaves the screen after 6 seconds; a longer sound plays on to its end.
 - "Show now" puts a line on the TV immediately.
 - A reminder that comes due while the TV is in standby shows when the screen comes back, if that is within 12 hours.
 - Reminders are stored on the TV. The service restarts after a reboot.
