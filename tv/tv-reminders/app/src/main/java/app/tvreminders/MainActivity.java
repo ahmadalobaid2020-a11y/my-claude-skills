@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
             text(box, "إذا ما انفتح الإعداد: الإعدادات ← التطبيقات ← أذونات خاصة للتطبيقات", 18, 0xFFBCCCDC);
         } else {
             text(box, "✅  التذكيرات جاهزة وتطلع فوق أي شي شغال", 22, Color.WHITE);
-            first = button(box, "جرّب تذكير الآن", () -> Banner.show(this, "هذا تذكير تجريبي", true, ""));
+            first = button(box, "جرّب تذكير الآن", () -> Banner.show(this, "هذا تذكير تجريبي", true, Svc.DEFAULT_CLIP));
         }
         boolean locked = !Svc.pin(this).isEmpty();
         text(box, locked ? "🔒  صفحة الجوال مقفلة برمز سري" : "🔓  صفحة الجوال بدون رمز: أي أحد على الواي فاي يقدر يفتحها", 20, 0xFFBCCCDC);

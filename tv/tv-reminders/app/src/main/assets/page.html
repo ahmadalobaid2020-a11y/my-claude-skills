@@ -118,8 +118,13 @@ $('days').addEventListener('click', e => { const b = e.target.closest('button');
 function say2(t) { $('msg2').textContent = t; }
 // The chosen sound: '' = silent, '*' = beeps, anything else = a stored clip's name.
 function pick() { const v = $('snd').value; return {sound: v !== '', clip: v === '' || v === '*' ? '' : v}; }
+// The clip chosen when the page opens, if the TV still has it.
+const DEFAULT = 'صوت فهد.mp3';
+let sel0 = null;
 function fillSounds(names) {
-  const sel = $('snd'), keep = sel.value || '*';
+  const first = sel0 === null, sel = $('snd');
+  const keep = first ? (names.includes(DEFAULT) ? DEFAULT : '*') : sel.value;
+  sel0 = keep;
   sel.textContent = '';
   for (const [v, label] of [['*', 'نغمة تنبيه'], ['', 'بدون صوت'], ...names.map(n => [n, '🎵 ' + n])]) {
     const o = document.createElement('option'); o.value = v; o.textContent = label; sel.append(o);
