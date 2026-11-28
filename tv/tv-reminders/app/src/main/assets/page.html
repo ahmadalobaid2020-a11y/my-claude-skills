@@ -13,7 +13,7 @@
   .card { background: #1c3d5a; border-radius: 16px; padding: 16px; }
   label { display: block; font-size: 15px; margin: 14px 0 6px; color: #d9e2ec; }
   label:first-child { margin-top: 0; }
-  textarea, input[type=time], input[type=date] { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #486581;
+  textarea, input[type=time], input[type=date], select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #486581;
     background: #0b1f33; color: #fff; font-size: 18px; font-family: inherit; }
   textarea { height: 76px; resize: vertical; }
   textarea:focus, input:focus { outline: none; border-color: #facc15; }
@@ -76,7 +76,8 @@
       </div>
     </div>
 
-    <div class="check"><input id="sound" type="checkbox" checked><label for="sound" style="margin:0">مع صوت تنبيه</label></div>
+    <label for="snd">الصوت</label>
+    <select id="snd"></select>
 
     <div class="row">
       <button class="go" id="add">أضف التذكير</button>
@@ -88,6 +89,15 @@
   <h2>التذكيرات</h2>
   <div id="list"></div>
   <div id="empty" hidden>ما فيه تذكيرات للحين</div>
+
+  <h2>أصواتي</h2>
+  <div class="card">
+    <label for="file">أضف صوت من جوالك (تسجيل أو ملف صوتي، لين 8 ميقا)</label>
+    <input id="file" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac,.amr,.3gp" style="width:100%;font-size:16px;color:#fff">
+    <div class="row"><button class="go" id="up">ارفع الصوت للتلفزيون</button></div>
+    <div id="msg2" style="min-height:22px;margin-top:10px;font-size:15px;text-align:center;color:#facc15"></div>
+  </div>
+  <div id="sounds" style="margin-top:10px"></div>
 </main>
 <script>
 const $ = id => document.getElementById(id);
@@ -104,6 +114,32 @@ $('mode').addEventListener('click', e => {
   $('daysBox').hidden = mode !== 2;
 });
 $('days').addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.classList.toggle('on'); });
+
+function say2(t) { $('msg2').textContent = t; }
+// The chosen sound: '' = silent, '*' = beeps, anything else = a stored clip's name.
+function pick() { const v = $('snd').value; return {sound: v !== '', clip: v === '' || v === '*' ? '' : v}; }
+function fillSounds(names) {
+  const sel = $('snd'), keep = sel.value || '*';
+  sel.textContent = '';
+  for (const [v, label] of [['*', 'نغمة تنبيه'], ['', 'بدون صوت'], ...names.map(n => [n, '🎵 ' + n])]) {
+    const o = document.createElement('option'); o.value = v; o.textContent = label; sel.append(o);
+  }
+  sel.value = [...sel.options].some(o => o.value === keep) ? keep : '*';
+  const box = $('sounds');
+  box.textContent = '';
+  for (const n of names) {
+    const item = document.createElement('div'); item.className = 'item';
+    const body = document.createElement('div'); body.className = 'body';
+    const t = document.createElement('div'); t.className = 't'; t.textContent = '🎵 ' + n;
+    body.append(t); item.append(body);
+    const tryIt = document.createElement('button'); tryIt.textContent = 'جرّبه';
+    tryIt.onclick = () => post('/api/now', {text: 'تجربة الصوت: ' + n, sound: true, clip: n});
+    const del = document.createElement('button'); del.className = 'del'; del.textContent = 'حذف';
+    del.onclick = async () => { await post('/api/sound/delete?name=' + encodeURIComponent(n)); load(); };
+    item.append(tryIt, del);
+    box.append(item);
+  }
+}
 
 function clock(min) {
   const h = Math.floor(min / 60), m = min % 60;
@@ -126,6 +162,7 @@ async function post(path, body) {
 async function load() {
   let data;
   try { data = await (await fetch('/api/list')).json(); } catch (e) { say('ما قدرت أوصل للتلفزيون'); return; }
+  fillSounds(data.sounds || []);
   const list = $('list');
   list.textContent = '';
   $('empty').hidden = data.items.length > 0;
@@ -133,8 +170,8 @@ async function load() {
     const item = document.createElement('div');
     item.className = 'item' + (r.enabled ? '' : ' off');
     const body = document.createElement('div'); body.className = 'body';
-    const t = document.createElement('div'); t.className = 't'; t.textContent = (r.sound ? '🔔 ' : '🔕 ') + r.text;
-    const w = document.createElement('div'); w.className = 'w'; w.textContent = when(r);
+    const t = document.createElement('div'); t.className = 't'; t.textContent = (r.sound ? (r.clip ? '🎵 ' : '🔔 ') : '🔕 ') + r.text;
+    const w = document.createElement('div'); w.className = 'w'; w.textContent = when(r) + (r.clip ? ' · ' + r.clip : '');
     body.append(t, w);
     item.append(body);
     if (r.mode !== 0) {
@@ -158,7 +195,7 @@ $('add').onclick = async () => {
   if (mode === 2 && !days.length) return say('اختر يوم واحد على الأقل');
   $('add').disabled = true;
   let ok = false;
-  try { ok = await post('/api/add', {text, time, mode, days, date: $('date').value, sound: $('sound').checked}); } catch (e) {}
+  try { ok = await post('/api/add', {text, time, mode, days, date: $('date').value, ...pick()}); } catch (e) {}
   $('add').disabled = false;
   if (!ok) return say(mode === 0 && $('date').value ? 'هذا الوقت عدّى، اختر وقت جاي' : 'ما انضاف، جرّب مرة ثانية');
   $('text').value = '';
@@ -169,8 +206,23 @@ $('now').onclick = async () => {
   const text = $('text').value.trim();
   if (!text) return say('اكتب النص أول');
   let ok = false;
-  try { ok = await post('/api/now', {text, sound: $('sound').checked}); } catch (e) {}
+  try { ok = await post('/api/now', {text, ...pick()}); } catch (e) {}
   say(ok ? 'طلع على التلفزيون ✅' : 'ما قدرت أوصل للتلفزيون');
+};
+
+$('up').onclick = async () => {
+  const f = $('file').files[0];
+  if (!f) return say2('اختر ملف الصوت أول');
+  if (f.size > 8 * 1024 * 1024) return say2('الملف أكبر من 8 ميقا');
+  $('up').disabled = true; say2('جاري الرفع…');
+  let res = null;
+  try { res = await (await fetch('/api/sound?name=' + encodeURIComponent(f.name), {method: 'POST', body: f})).json(); } catch (e) {}
+  $('up').disabled = false;
+  if (!res || !res.ok) return say2('ما انرفع. تأكد إنه ملف صوتي (mp3 أو m4a أو wav)');
+  $('file').value = '';
+  say2('انرفع ✅');
+  await load();
+  $('snd').value = res.name;
 };
 
 load();

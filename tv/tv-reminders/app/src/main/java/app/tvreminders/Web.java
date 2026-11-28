@@ -20,20 +20,22 @@ public class Web {
         /** The reminders changed: set the next alarm again. */
         void changed();
 
-        /** Show this text on the TV right now. */
-        void show(String text, boolean sound);
+        /** Show this text on the TV right now, with the stored clip if one is named, else beeps if sound is set. */
+        void show(String text, boolean sound, String clip);
     }
 
     public static final int PORT = 8090;
     private static final int MAX_BODY = 8192;
 
     private final Book book;
+    private final Sounds sounds;
     private final Host host;
     private final byte[] page;
     private ServerSocket server;
 
-    public Web(Book book, Host host, byte[] page) {
+    public Web(Book book, Sounds sounds, Host host, byte[] page) {
         this.book = book;
+        this.sounds = sounds;
         this.host = host;
         this.page = page;
     }
@@ -74,7 +76,8 @@ public class Web {
             for (String l : lines) {
                 if (l.toLowerCase(java.util.Locale.ROOT).startsWith("content-length:")) length = Integer.parseInt(l.substring(15).trim());
             }
-            if (length < 0 || length > MAX_BODY) {
+            boolean upload = first[0].equals("POST") && first[1].startsWith("/api/sound?");
+            if (length < 0 || length > (upload ? Sounds.MAX_BYTES : MAX_BODY)) {
                 reply(sock, 413, "text/plain", "too large".getBytes(StandardCharsets.UTF_8));
                 return;
             }
@@ -85,6 +88,11 @@ public class Web {
                 got += n;
             }
             try {
+                if (upload) {
+                    String saved = sounds.save(param(first[1].substring(first[1].indexOf('?') + 1), "name"), body);
+                    json(sock, saved != null ? 200 : 400, new JSONObject().put("ok", saved != null).put("name", saved == null ? "" : saved));
+                    return;
+                }
                 route(sock, first[0], first[1], new String(body, StandardCharsets.UTF_8));
             } catch (org.json.JSONException e) {
                 reply(sock, 400, "text/plain", "bad request".getBytes(StandardCharsets.UTF_8));
@@ -107,7 +115,11 @@ public class Web {
         if (method.equals("GET") && path.equals("/")) {
             reply(sock, 200, "text/html; charset=utf-8", page);
         } else if (method.equals("GET") && path.equals("/api/list")) {
-            json(sock, 200, new JSONObject().put("now", now).put("items", book.toJson(now, tz)));
+            json(sock, 200, new JSONObject().put("now", now).put("items", book.toJson(now, tz))
+                    .put("sounds", new org.json.JSONArray(sounds.list())));
+        } else if (post && path.equals("/api/sound/delete")) {
+            boolean ok = sounds.delete(param(query, "name"));
+            json(sock, ok ? 200 : 404, new JSONObject().put("ok", ok));
         } else if (post && path.equals("/api/add")) {
             Rem r = book.add(new JSONObject(body), now, tz);
             if (r != null) host.changed();
@@ -124,7 +136,8 @@ public class Web {
             JSONObject o = new JSONObject(body);
             String text = o.optString("text", "").replaceAll("\\s+", " ").trim();
             if (text.length() > Book.MAX_TEXT) text = text.substring(0, Book.MAX_TEXT);
-            if (!text.isEmpty()) host.show(text, o.optBoolean("sound", false));
+            String clip = Sounds.clean(o.optString("clip", ""));
+            if (!text.isEmpty()) host.show(text, o.optBoolean("sound", false), clip == null ? "" : clip);
             json(sock, text.isEmpty() ? 400 : 200, new JSONObject().put("ok", !text.isEmpty()));
         } else {
             reply(sock, 404, "text/plain", "not found".getBytes(StandardCharsets.UTF_8));
