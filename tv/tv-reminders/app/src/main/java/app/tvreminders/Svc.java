@@ -32,6 +32,8 @@ public class Svc extends Service implements Web.Host {
     static volatile boolean pageUp;
     private static Sounds sounds;
     private Web web;
+    private Relay relay;
+    private static Svc self;
     private BroadcastReceiver screenOn;
 
     static synchronized Book book(Context c) {
@@ -96,6 +98,38 @@ public class Svc extends Service implements Web.Host {
 
     static void setPin(Context c, String pin) {
         c.getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE).edit().putString("pin", pin).apply();
+    }
+
+    static String remote(Context c) {
+        return c.getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE).getString("remote", "");
+    }
+
+    /** Switches "away from home" on with a new secret (which cancels any old link), or off with an empty one. */
+    static void setRemote(Context c, String secret) {
+        c.getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE).edit()
+                .putString("remote", secret).remove("relay:since").remove("relay:seen").apply();
+        if (self != null) self.relay();
+    }
+
+    /** Starts, restarts or stops the relay listener to match the stored secret. */
+    private synchronized void relay() {
+        if (relay != null) relay.stop();
+        relay = null;
+        String secret = remote(this);
+        if (secret.isEmpty()) return;
+        SharedPreferences p = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        relay = new Relay(secret, book(this), sounds(this), this, new Relay.Memory() {
+            @Override
+            public String get(String key) {
+                return p.getString("relay:" + key, "");
+            }
+
+            @Override
+            public void put(String key, String value) {
+                p.edit().putString("relay:" + key, value).apply();
+            }
+        });
+        relay.start();
     }
 
     static void start(Context c) {
@@ -169,6 +203,8 @@ public class Svc extends Service implements Web.Host {
             }
         };
         registerReceiver(screenOn, new IntentFilter(Intent.ACTION_SCREEN_ON));
+        self = this;
+        relay();
         check(this);
     }
 
@@ -179,6 +215,8 @@ public class Svc extends Service implements Web.Host {
 
     @Override
     public void onDestroy() {
+        if (relay != null) relay.stop();
+        self = null;
         if (web != null) web.stop();
         pageUp = false;
         if (screenOn != null) unregisterReceiver(screenOn);
@@ -193,6 +231,14 @@ public class Svc extends Service implements Web.Host {
     @Override
     public void changed() {
         check(this);
+        // A change made at home: tell the phone that is away. (The relay posts its own answer to a command.)
+        Relay r = relay;
+        if (r != null && !"relay".equals(Thread.currentThread().getName())) new Thread(r::publishState, "relay-state").start();
+    }
+
+    @Override
+    public String remote() {
+        return remote(this);
     }
 
     @Override

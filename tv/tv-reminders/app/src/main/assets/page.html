@@ -50,6 +50,8 @@
 <body>
 <main>
   <h1>🔔 تذكيراتي</h1>
+  <div id="remoteBadge" hidden style="text-align:center;color:#bcccdc;font-size:14px;margin:-8px 0 14px">📡 من خارج البيت · الاتصال مشفّر</div>
+  <div id="remoteNote" hidden style="margin-bottom:12px;padding:10px;border-radius:10px;background:#334e68;font-size:14px;text-align:center"></div>
   <div class="card">
     <label for="text">وش أذكّرك به؟</label>
     <textarea id="text" maxlength="200" placeholder="مثال: خذ الدواء"></textarea>
@@ -102,6 +104,7 @@
   <div id="list"></div>
   <div id="empty" hidden>ما فيه تذكيرات للحين</div>
 
+  <div id="homeOnly">
   <h2>أصواتي</h2>
   <div class="card">
     <label for="file">أضف صوت من جوالك (تسجيل أو ملف صوتي، لين 8 ميقا)</label>
@@ -110,10 +113,26 @@
     <div id="msg2" style="min-height:22px;margin-top:10px;font-size:15px;text-align:center;color:#facc15"></div>
   </div>
   <div id="sounds" style="margin-top:10px"></div>
+
+  <h2>من خارج البيت</h2>
+  <div class="card" id="awayCard">
+    <div id="awayOff" style="font-size:15px;color:#d9e2ec">الإرسال من خارج البيت معطّل. فعّله من شاشة تطبيق «تذكيراتي» على التلفزيون، ثم حدّث هذي الصفحة.</div>
+    <div id="awayOn" hidden>
+      <div style="font-size:15px;color:#d9e2ec">افتح هذا الرابط مرة وحدة من هذا الجوال واحفظه (أو أضفه للشاشة الرئيسية). يشتغل من أي شبكة. لا ترسله لأحد: اللي معه الرابط يقدر يرسل لتلفزيونك.</div>
+      <div class="row"><a class="go" id="awayLink" style="text-align:center;text-decoration:none" target="_blank" rel="noopener">افتح صفحة «من خارج البيت»</a></div>
+      <div class="row"><button class="now" id="awayCopy" style="flex:1">انسخ الرابط</button></div>
+    </div>
+  </div>
+  </div>
 </main>
 <script>
 const $ = id => document.getElementById(id);
-const DOWN = 'ما قدرت أوصل للتلفزيون. افتح تطبيق «تذكيراتي» على التلفزيون ثم حدّث هذي الصفحة.';
+// Served by the TV on the home network (http), or opened from the web with the TV's secret in the link (https).
+const REMOTE = location.protocol === 'https:';
+const AWAY_PAGE = 'https://ahmadalobaid2020-a11y.github.io/my-claude-skills/tv/remote.html';
+const DOWN = REMOTE ? 'ما قدرت أوصل لخدمة الترحيل. تأكد من الإنترنت وجرّب مرة ثانية.'
+  : 'ما قدرت أوصل للتلفزيون. افتح تطبيق «تذكيراتي» على التلفزيون ثم حدّث هذي الصفحة.';
+const LATE = 'انرسل، بس التلفزيون ما رد للحين (يمكن مطفي). بيوصله أول ما يشتغل.';
 const DAY = {1: 'الأحد', 2: 'الاثنين', 3: 'الثلاثاء', 4: 'الأربعاء', 5: 'الخميس', 6: 'الجمعة', 7: 'السبت'};
 let mode = 0;
 
@@ -128,15 +147,25 @@ $('mode').addEventListener('click', e => {
 });
 // The time field starts at five minutes from now, so it is never an empty box.
 const two = n => String(n).padStart(2, '0');
+// Times are the TV's local time. Once its clock offset is known, "in 5 minutes" is worked out on that clock,
+// so it is right even when the phone is in another time zone.
+let tvOffset = null, timeTouched = false;
 function ahead(min) {
-  const d = new Date(Date.now() + min * 60000);
-  return {time: two(d.getHours()) + ':' + two(d.getMinutes()), date: d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate())};
+  if (tvOffset === null) {
+    const d = new Date(Date.now() + min * 60000);
+    return {time: two(d.getHours()) + ':' + two(d.getMinutes()), date: d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate())};
+  }
+  const d = new Date(Date.now() + (tvOffset + min) * 60000);
+  return {time: two(d.getUTCHours()) + ':' + two(d.getUTCMinutes()), date: d.getUTCFullYear() + '-' + two(d.getUTCMonth() + 1) + '-' + two(d.getUTCDate())};
 }
 function setAhead(min) { const a = ahead(min); $('time').value = a.time; $('date').value = a.date; }
 setAhead(5);
+$('time').addEventListener('input', () => { timeTouched = true; });
+$('date').addEventListener('input', () => { timeTouched = true; });
 $('quick').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   setAhead(+b.dataset.q);
+  timeTouched = true;
   $('mode').querySelector('[data-m="0"]').click();
   say('الوقت: ' + clock(+$('time').value.slice(0, 2) * 60 + +$('time').value.slice(3)));
 });
@@ -194,7 +223,84 @@ function digits(v) {
   return String(v).replace(/[\u0660-\u0669]/g, c => c.charCodeAt(0) - 0x660).replace(/[\u06F0-\u06F9]/g, c => c.charCodeAt(0) - 0x6F0).replace(/\D/g, '');
 }
 function setPin(v) { try { localStorage.setItem('pin', digits(v)); } catch (e) {} }
+// ---- From outside the home: commands and the TV's list travel through a public relay, sealed with AES-GCM
+// under a key made from the secret in this page's link. The relay sees neither the text nor a guessable name.
+const RELAY = 'https://ntfy.sh/';
+const enc = new TextEncoder();
+function secret() {
+  const m = location.hash.match(/k=([\w-]{16,})/);
+  try {
+    if (m) localStorage.setItem('k', m[1]);
+    return m ? m[1] : (localStorage.getItem('k') || '');
+  } catch (e) { return m ? m[1] : ''; }
+}
+const b64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64 = t => Uint8Array.from(atob(t.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+async function sha(t) { return new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(t))); }
+async function topic(label) { return 'tvr' + [...await sha(label + secret())].map(b => two(b.toString(16))).join('').slice(0, 40); }
+let keyP = null;
+function key() { return keyP || (keyP = sha('key:' + secret()).then(raw => crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']))); }
+async function seal(plain) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name: 'AES-GCM', iv}, await key(), enc.encode(plain)));
+  const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12);
+  return b64(out);
+}
+async function unseal(text) {
+  const raw = unb64(text.trim());
+  return new TextDecoder().decode(await crypto.subtle.decrypt({name: 'AES-GCM', iv: raw.slice(0, 12)}, await key(), raw.slice(12)));
+}
+// The newest list the TV posted, in the same shape the TV serves at home; null if it posted none lately.
+async function tvState() {
+  const res = await fetch(RELAY + await topic('state:') + '/json?poll=1&since=12h');
+  if (!res.ok) throw new Error('relay');
+  let last = null;
+  for (const line of (await res.text()).split('\n')) {
+    if (!line.trim()) continue;
+    const e = JSON.parse(line);
+    if (e.event !== 'message') continue;
+    try { const st = JSON.parse(await unseal(e.message)); if (!last || st.ts > last.ts) last = st; } catch (x) {}
+  }
+  if (!last) return null;
+  return {now: Date.now(), ts: last.ts, offset: last.offset, more: last.more || 0, sounds: last.sounds || [],
+    items: (last.items || []).map(r => ({id: r.i, text: r.t, minute: r.m, mode: r.o, days: r.d, date: r.a, sound: !!r.s, clip: r.c || '', enabled: !!r.e}))};
+}
+// Sends one command, then waits for the TV to post a list newer than it. Returns that list, or null if the TV stayed quiet.
+async function command(op, data) {
+  const before = await tvState().catch(() => null);
+  const cmd = {v: 1, id: b64(crypto.getRandomValues(new Uint8Array(9))), ts: Date.now(), op, data};
+  const res = await fetch(RELAY + await topic('topic:'), {method: 'POST', body: await seal(JSON.stringify(cmd))});
+  if (!res.ok) throw new Error('relay');
+  for (let i = 0; i < 6; i++) {
+    await new Promise(r => setTimeout(r, 1500));
+    const st = await tvState().catch(() => null);
+    if (st && (!before || st.ts > before.ts)) return {before, after: st};
+  }
+  return null;
+}
+// The same calls the page makes at home, answered through the relay. status 202 = sent, TV has not answered.
+async function remoteApi(path, opts) {
+  const reply = (status, body) => ({ok: status === 200, status, json: async () => body});
+  const [route, query] = path.split('?');
+  const id = decodeURIComponent((query || '').replace(/^id=/, ''));
+  if (route === '/api/list') {
+    const st = await tvState();
+    return reply(200, st || {now: Date.now(), items: [], sounds: [], none: true});
+  }
+  if (route === '/api/add') {
+    const r = await command('add', JSON.parse(opts.body));
+    if (!r) return reply(202, {});
+    const had = new Set((r.before ? r.before.items : []).map(x => x.id));
+    return reply(r.after.items.some(x => !had.has(x.id)) ? 200 : 400, {});
+  }
+  if (route === '/api/now') return reply((await command('now', JSON.parse(opts.body))) ? 200 : 202, {});
+  if (route === '/api/delete') return reply((await command('delete', {rid: id})) ? 200 : 202, {});
+  if (route === '/api/toggle') return reply((await command('toggle', {rid: id})) ? 200 : 202, {});
+  return reply(404, {});
+}
+
 async function api(path, opts) {
+  if (REMOTE) return remoteApi(path, opts);
   for (;;) {
     const res = await fetch(path, {...(opts || {}), headers: {'X-Pin': digits(pin())}});
     if (res.status === 429) { alert('محاولات كثيرة غلط. انتظر دقيقة وجرّب مرة ثانية.'); throw new Error('locked'); }
@@ -204,15 +310,33 @@ async function api(path, opts) {
     setPin(v.trim());
   }
 }
+// true = done, false = refused, 'late' = sent through the relay but the TV has not answered yet.
 async function post(path, body) {
   const res = await api(path, {method: 'POST', body: body ? JSON.stringify(body) : ''});
-  return res.ok;
+  return res.status === 202 ? 'late' : res.ok;
 }
 
 async function load() {
   let data;
   try { data = await (await api('/api/list')).json(); } catch (e) { say(e.message === 'no pin' || e.message === 'locked' ? 'الصفحة مقفلة برمز سري' : DOWN); return; }
   fillSounds(data.sounds || []);
+  if (typeof data.offset === 'number') {
+    const firstTime = tvOffset === null;
+    tvOffset = data.offset;
+    if (firstTime && !timeTouched) setAhead(5);
+  }
+  if (REMOTE) {
+    const note = $('remoteNote');
+    const old = data.ts ? Math.round((Date.now() - data.ts) / 3600000) : 0;
+    note.hidden = !(data.none || old >= 7 || data.more);
+    note.textContent = data.none ? 'التلفزيون ما أرسل قائمته خلال آخر 12 ساعة (يمكن مطفي أو الإرسال من خارج البيت معطّل). تقدر ترسل، وبيوصله أول ما يشتغل.'
+      : old >= 7 ? 'القائمة هذي آخر تحديث من التلفزيون قبل ' + old + ' ساعة تقريباً.'
+      : 'معروض آخر التذكيرات بس، وفيه ' + data.more + ' أقدم ما تطلع هنا. افتح الصفحة من البيت تشوفها كلها.';
+  } else {
+    $('awayOn').hidden = !data.remote;
+    $('awayOff').hidden = !!data.remote;
+    if (data.remote) $('awayLink').href = AWAY_PAGE + '#k=' + data.remote;
+  }
   // Reminders fire on the TV's clock. Say so when it disagrees with this phone's.
   if (typeof data.offset === 'number') {
     const tv = ((Math.floor(data.now / 60000) + data.offset) % 1440 + 1440) % 1440;
@@ -256,6 +380,7 @@ $('add').onclick = async () => {
   try { ok = await post('/api/add', {text, time, mode, days, date: $('date').value, ...pick()}); } catch (e) {}
   $('add').disabled = false;
   if (ok === null) return say(DOWN);
+  if (ok === 'late') { $('text').value = ''; return say(LATE); }
   if (!ok) return say(mode === 0 ? 'هذا الوقت عدّى، اختر وقت جاي' : 'ما انضاف، جرّب مرة ثانية');
   $('text').value = '';
   say('انضاف ✅');
@@ -266,7 +391,7 @@ $('now').onclick = async () => {
   if (!text) return say('اكتب النص أول');
   let ok = false;
   try { ok = await post('/api/now', {text, ...pick()}); } catch (e) {}
-  say(ok ? 'طلع على التلفزيون ✅' : DOWN);
+  say(ok === 'late' ? 'انرسل، بس التلفزيون ما رد. الرسالة الفورية تطلع بس إذا التلفزيون شغّال الحين.' : ok ? 'طلع على التلفزيون ✅' : DOWN);
 };
 
 $('up').onclick = async () => {
@@ -283,6 +408,18 @@ $('up').onclick = async () => {
   await load();
   $('snd').value = res.name;
 };
+
+$('awayCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('awayLink').href); say2('انتسخ الرابط ✅'); } catch (e) { prompt('انسخ الرابط:', $('awayLink').href); }
+};
+if (REMOTE) {
+  $('homeOnly').hidden = true;
+  $('remoteBadge').hidden = false;
+  if (!secret()) {
+    $('remoteNote').hidden = false;
+    $('remoteNote').textContent = 'هذي الصفحة تحتاج رابطها الخاص. افتحه من صفحة التذكيرات وأنت في البيت (قسم «من خارج البيت»).';
+  }
+}
 
 load();
 let busy = false;
