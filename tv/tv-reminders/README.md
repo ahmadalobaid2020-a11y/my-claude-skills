@@ -1,0 +1,43 @@
+# تذكيراتي (tv-reminders)
+
+An Android TV / Google TV app that shows reminders over whatever is on screen. Reminders are added from a phone:
+the TV serves a small page on the home network at `http://<tv-ip>:8090`.
+
+- A reminder has a text, a time, and repeats once, every day, or on chosen weekdays, with an optional beep.
+- "Show now" puts a line on the TV immediately.
+- A reminder that comes due while the TV is in standby shows when the screen comes back, if that is within 12 hours.
+- Reminders are stored on the TV. The service restarts after a reboot.
+
+Ready-built APK: `docs/tv/reminders.apk`, on the install page <https://ahmadalobaid2020-a11y.github.io/my-claude-skills/tv/>
+(short link <https://tinyurl.com/noor-tv-app>). Install it on the TV with the Downloader app, open it once and allow
+"display over other apps". The app's screen shows the address to open on the phone.
+
+The phone page has no password: anyone on the same Wi-Fi can add, remove or show reminders.
+
+## Layout
+
+| File | What it holds |
+| --- | --- |
+| `Rem`, `Schedule`, `Book` | The reminder, when it is due, and the stored list. No Android types. |
+| `Web` | The HTTP server behind the phone page. No Android types. |
+| `Svc`, `Wake` | Foreground service, alarms, boot restart. |
+| `Banner` | The strip drawn over other apps. |
+| `MainActivity` | The TV screen: phone address, permission button, test button. |
+| `assets/page.html` | The phone page. |
+
+## Build
+
+Needs JDK 17+ and the Android SDK (`platforms;android-34`, `build-tools;34.0.0`); point `local.properties` at it.
+
+```bash
+./gradlew assembleRelease   # app/build/outputs/apk/release/app-release.apk
+```
+
+The APK in `docs/tv/` is signed with a throwaway debug key that was not kept, so a rebuilt APK will not install
+over it: uninstall the app on the TV first (its reminders go with it).
+
+## Tested
+
+The schedule and the stored list were tested on a desktop JVM, and the phone page was driven with a headless
+browser against the same server code. The app builds and passes Android lint without errors.
+It has not been run on a TV or an emulator.
