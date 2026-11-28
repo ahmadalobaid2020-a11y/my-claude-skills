@@ -28,6 +28,8 @@ public class Svc extends Service implements Web.Host {
     static final String CHECK = "app.tvreminders.CHECK";
 
     private static Book book;
+    /** Whether the phone page's server is listening, for the TV screen to say so. */
+    static volatile boolean pageUp;
     private static Sounds sounds;
     private Web web;
     private BroadcastReceiver screenOn;
@@ -123,6 +125,7 @@ public class Svc extends Service implements Web.Host {
         try {
             web = new Web(book(this), sounds(this), this, asset("page.html"));
             web.start(Web.PORT);
+            pageUp = true;
         } catch (Exception e) {
             web = null; // port taken or no network yet: reminders still fire, the phone page is just not up
         }
@@ -144,6 +147,7 @@ public class Svc extends Service implements Web.Host {
     @Override
     public void onDestroy() {
         if (web != null) web.stop();
+        pageUp = false;
         if (screenOn != null) unregisterReceiver(screenOn);
         super.onDestroy();
     }

@@ -38,11 +38,12 @@ public class MainActivity extends Activity {
         box.setPadding(120, 50, 120, 50);
 
         boolean overlay = Banner.allowed(this);
-        String ip = address();
+        String ip = address(this);
         text(box, "🔔 تذكيراتي", 40, 0xFFFACC15);
         text(box, "افتح هذا العنوان من متصفح جوالك (على نفس الواي فاي):", 24, Color.WHITE);
         text(box, ip == null ? "التلفزيون غير متصل بالشبكة" : "http://" + ip + ":" + Web.PORT, 44, 0xFFFACC15);
-        text(box, "عدد التذكيرات: " + Svc.book(this).all().size(), 22, 0xFFBCCCDC);
+        text(box, "عدد التذكيرات: " + Svc.book(this).all().size()
+                + (Svc.pageUp ? "   ·   صفحة الجوال شغّالة" : "   ·   ⚠️ صفحة الجوال ما اشتغلت، أعد فتح التطبيق"), 22, 0xFFBCCCDC);
 
         Button first;
         if (!overlay) {
@@ -117,11 +118,24 @@ public class MainActivity extends Activity {
         return btn;
     }
 
-    /** The TV's address on the home network, or null. */
-    private static String address() {
+    /**
+     * The TV's address on the home network, or null. Asks the system for the network in use first: a TV often has
+     * a second, Wi-Fi Direct interface (for screen casting) whose address no phone can reach.
+     */
+    private static String address(android.content.Context c) {
+        try {
+            android.net.ConnectivityManager cm = c.getSystemService(android.net.ConnectivityManager.class);
+            android.net.LinkProperties lp = cm.getLinkProperties(cm.getActiveNetwork());
+            if (lp != null) {
+                for (android.net.LinkAddress la : lp.getLinkAddresses()) {
+                    if (la.getAddress() instanceof Inet4Address && !la.getAddress().isLoopbackAddress()) return la.getAddress().getHostAddress();
+                }
+            }
+        } catch (Exception ignored) {
+        }
         try {
             for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (!ni.isUp() || ni.isLoopback()) continue;
+                if (!ni.isUp() || ni.isLoopback() || ni.getName().startsWith("p2p")) continue;
                 for (InetAddress a : Collections.list(ni.getInetAddresses())) {
                     if (a instanceof Inet4Address && a.isSiteLocalAddress()) return a.getHostAddress();
                 }
